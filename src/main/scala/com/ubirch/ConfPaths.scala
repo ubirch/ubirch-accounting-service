@@ -29,11 +29,33 @@ object ConfPaths {
     final val PREPARED_STATEMENT_CACHE_SIZE = "acctSystem.cassandra.cluster.preparedStatementCacheSize"
   }
 
+  trait AcctConsumerConfPaths {
+    final val BOOTSTRAP_SERVERS = "acctSystem.kafkaConsumer.bootstrapServers"
+    final val IMPORT_TOPIC_PATH = "acctSystem.kafkaConsumer.import"
+    final val ACTIVATION_TOPIC_PATH = "acctSystem.kafkaConsumer.activation"
+    final val MAX_POLL_RECORDS = "acctSystem.kafkaConsumer.maxPollRecords"
+    final val GROUP_ID_PATH = "acctSystem.kafkaConsumer.groupId"
+    final val GRACEFUL_TIMEOUT_PATH = "acctSystem.kafkaConsumer.gracefulTimeout"
+    final val METRICS_SUB_NAMESPACE = "acctSystem.kafkaConsumer.metricsSubNamespace"
+    final val FETCH_MAX_BYTES_CONFIG = "acctSystem.kafkaConsumer.fetchMaxBytesConfig"
+    final val MAX_PARTITION_FETCH_BYTES_CONFIG = "acctSystem.kafkaConsumer.maxPartitionFetchBytesConfig"
+    final val RECONNECT_BACKOFF_MS_CONFIG = "acctSystem.kafkaConsumer.reconnectBackoffMsConfig"
+    final val RECONNECT_BACKOFF_MAX_MS_CONFIG = "acctSystem.kafkaConsumer.reconnectBackoffMaxMsConfig"
+  }
+
+  trait AcctProducerConfPaths {
+    final val LINGER_MS = "acctSystem.kafkaProducer.lingerMS"
+    final val BOOTSTRAP_SERVERS = "acctSystem.kafkaProducer.bootstrapServers"
+    final val ERROR_TOPIC_PATH = "acctSystem.kafkaProducer.errorTopic"
+  }
+
   trait PrometheusConfPaths {
     final val PORT = "acctSystem.metrics.prometheus.port"
   }
 
   object GenericConfPaths extends GenericConfPaths
+  object AcctConsumerConfPaths extends AcctConsumerConfPaths
+  object AcctProducerConfPaths extends AcctProducerConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
 
 }

@@ -66,6 +66,9 @@
         <scalatest.version>3.0.5</scalatest.version>
         <scala.logging.version>3.9.0</scala.logging.version>
 
+        <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
+        <embedded-kafka>2.3.0</embedded-kafka>
+
         <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
         <quill.cassandra.version>3.4.1</quill.cassandra.version>
         <embedded-cassandra>3.0.3</embedded-cassandra>
@@ -122,6 +125,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.ubirch</groupId>
+            <artifactId>ubirch-kafka-express</artifactId>
+            <version>${ubirch-kafka-express.version}</version>
+        </dependency>
 
         <!--BouncyCastle-->
         <dependency>
@@ -372,6 +380,12 @@
             <groupId>com.github.nosan</groupId>
             <artifactId>embedded-cassandra</artifactId>
             <version>${embedded-cassandra}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.embeddedkafka</groupId>
+            <artifactId>embedded-kafka_${scala.major.version}</artifactId>
+            <version>${embedded-kafka}</version>
         </dependency>
 
     </dependencies>
