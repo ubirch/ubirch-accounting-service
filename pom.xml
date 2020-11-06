@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ubirch</groupId>
-    <artifactId>ubirch-accouting-service</artifactId>
+    <artifactId>ubirch-accounting-service</artifactId>
     <version>0.6.4</version>
     <packaging>jar</packaging>
 
