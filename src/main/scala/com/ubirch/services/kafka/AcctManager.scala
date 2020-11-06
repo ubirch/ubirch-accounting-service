@@ -1,20 +1,30 @@
 package com.ubirch
 package services.kafka
 
+import java.io.ByteArrayInputStream
+import java.util.Date
+import java.util.concurrent.ExecutionException
+
+import com.datastax.driver.core.exceptions.{ InvalidQueryException, NoHostAvailableException }
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths, GenericConfPaths }
 import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
+import com.ubirch.kafka.util.Exceptions.NeedForPauseException
+import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.lifeCycle.Lifecycle
-import com.ubirch.util.ServiceMetrics
+import com.ubirch.util.{ Hasher, ServiceMetrics }
 import io.prometheus.client.Counter
 import javax.inject._
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
+import monix.reactive.Observable
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization._
+import org.json4s.Formats
+import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.{ ExecutionContext, Promise }
 
@@ -67,11 +77,77 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 
 @Singleton
 class DefaultAcctManager @Inject() (
+    acctEventDAO: AcctEventDAO,
     config: Config,
     lifecycle: Lifecycle
-)(implicit val ec: ExecutionContext, scheduler: Scheduler) extends AcctManager(config, lifecycle) {
+)(implicit val ec: ExecutionContext, scheduler: Scheduler, formats: Formats) extends AcctManager(config, lifecycle) {
 
-  override def storeAcctEvents(consumerRecords: Vector[ConsumerRecord[String, Array[Byte]]])(implicit scheduler: Scheduler): Promise[Unit] = ???
+  override def storeAcctEvents(consumerRecords: Vector[ConsumerRecord[String, Array[Byte]]])(implicit scheduler: Scheduler): Promise[Unit] = {
+    val p = Promise[Unit]()
+
+    Observable.fromIterable(consumerRecords)
+      .map(_.value())
+      .mapEval { bytes =>
+
+        Task(read[AcctEvent](new ByteArrayInputStream(bytes)))
+          .map { acctEvent =>
+            if (acctEvent.validate) acctEvent
+            else {
+              throw new Exception("Acct Event received is not valid. The validation process failed: " + acctEvent.toString)
+            }
+          }
+          .doOnFinish { maybeError =>
+            Task {
+              maybeError.foreach { x =>
+                logger.error("Error parsing: {}", x.getMessage)
+              }
+            }
+          }
+          .attempt
+
+      }
+      .collect {
+        case Right(acctEvent) => acctEvent
+      }
+      .flatMap { acctEvent =>
+
+        val row = AcctEventRow(
+          acctEvent.id,
+          acctEvent.ownerId,
+          acctEvent.identityId,
+          acctEvent.category,
+          acctEvent.description,
+          acctEvent.occurredAt,
+          new Date()
+        )
+        acctEventDAO
+          .insert(row)
+          .map(x => (acctEvent, row, x))
+      }
+      .flatMap { case (_, row, c) =>
+        logger.info("acct_evt_inserted={}", row.toString)
+        Observable.unit
+      }
+      .onErrorHandle {
+        case e: ExecutionException =>
+          e.getCause match {
+            case e: NoHostAvailableException =>
+              logger.error("Error connecting to host: " + e)
+              p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))
+            case e: InvalidQueryException =>
+              logger.error("Error storing data (invalid query): " + e)
+              p.failure(StoringException("Invalid Query ", e.getMessage))
+          }
+        case e: Exception =>
+          logger.error("Error storing data (other): " + e)
+          p.failure(StoringException("Error storing data (other)", e.getMessage))
+      }
+      .doOnComplete(Task(p.success(())))
+      .foreachL(_ => ())
+      .runToFuture(consumption.scheduler)
+
+    p
+  }
 
   override val process: Process = Process.async(logic)
 
