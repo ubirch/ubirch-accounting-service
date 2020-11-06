@@ -11,9 +11,12 @@ import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.ServiceMetrics
 import io.prometheus.client.Counter
 import javax.inject._
+import monix.eval.Task
+import monix.execution.{ CancelableFuture, Scheduler }
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Promise }
 
 abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
   extends ExpressKafka[String, Array[Byte], Unit]
@@ -52,6 +55,12 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
   override val producerBootstrapServers: String = config.getString(AcctProducerConfPaths.BOOTSTRAP_SERVERS)
   override val lingerMs: Int = config.getInt(AcctProducerConfPaths.LINGER_MS)
 
+  def storeAcctEvents(consumerRecords: Vector[ConsumerRecord[String, Array[Byte]]])(implicit scheduler: Scheduler): Promise[Unit]
+
+  def logic(consumerRecords: Vector[ConsumerRecord[String, Array[Byte]]])(implicit scheduler: Scheduler): CancelableFuture[Unit] = {
+    Task.defer(Task.fromFuture(storeAcctEvents(consumerRecords).future)).runToFuture
+  }
+
   lifecycle.addStopHooks(hookFunc(consumerGracefulTimeout, consumption), hookFunc(production))
 
 }
@@ -60,13 +69,11 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 class DefaultAcctManager @Inject() (
     config: Config,
     lifecycle: Lifecycle
-)(implicit val ec: ExecutionContext) extends AcctManager(config, lifecycle) {
+)(implicit val ec: ExecutionContext, scheduler: Scheduler) extends AcctManager(config, lifecycle) {
 
-  override val process: Process = Process { crs =>
+  override def storeAcctEvents(consumerRecords: Vector[ConsumerRecord[String, Array[Byte]]])(implicit scheduler: Scheduler): Promise[Unit] = ???
 
-    crs.foreach { _ => }
-
-  }
+  override val process: Process = Process.async(logic)
 
   override def prefix: String = "Ubirch"
 

@@ -13,10 +13,10 @@ import javax.inject.{ Inject, Singleton }
 @Singleton
 class Service @Inject() (restService: RestService, acctManager: AcctManager) extends LazyLogging {
 
-  def start: Unit = {
+  def start(): Unit = {
 
     acctManager.start()
-    restService.start
+    restService.start()
 
     val cd = new CountDownLatch(1)
     cd.await()
@@ -26,6 +26,6 @@ class Service @Inject() (restService: RestService, acctManager: AcctManager) ext
 
 object Service extends Boot(List(new Binder)) {
   def main(args: Array[String]): Unit = * {
-    get[Service].start
+    get[Service].start()
   }
 }
