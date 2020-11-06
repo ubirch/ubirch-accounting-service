@@ -50,7 +50,14 @@ trait EmbeddedCassandra {
 
 object EmbeddedCassandra {
 
-  def truncateScript: CqlScript = ???
+  def truncateScript: CqlScript = {
+    CqlScript.ofString("truncate acct_system.acct_events;")
+  }
 
-  def creationScripts: Seq[CqlScript] = ???
+  def creationScripts: Seq[CqlScript] = List(
+    CqlScript.ofString("drop keyspace IF EXISTS acct_system;"),
+    CqlScript.ofString("CREATE KEYSPACE acct_system WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};"),
+    CqlScript.ofString("USE acct_system;"),
+    CqlScript.ofClasspath("db/migrations/v1_Adding_basic_acct_table.cql")
+  )
 }

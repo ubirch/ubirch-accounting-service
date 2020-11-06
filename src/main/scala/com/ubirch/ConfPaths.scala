@@ -31,8 +31,7 @@ object ConfPaths {
 
   trait AcctConsumerConfPaths {
     final val BOOTSTRAP_SERVERS = "acctSystem.kafkaConsumer.bootstrapServers"
-    final val IMPORT_TOPIC_PATH = "acctSystem.kafkaConsumer.import"
-    final val ACTIVATION_TOPIC_PATH = "acctSystem.kafkaConsumer.activation"
+    final val ACCT_EVT_TOPIC_PATH = "acctSystem.kafkaConsumer.acctEvtTopic"
     final val MAX_POLL_RECORDS = "acctSystem.kafkaConsumer.maxPollRecords"
     final val GROUP_ID_PATH = "acctSystem.kafkaConsumer.groupId"
     final val GRACEFUL_TIMEOUT_PATH = "acctSystem.kafkaConsumer.gracefulTimeout"

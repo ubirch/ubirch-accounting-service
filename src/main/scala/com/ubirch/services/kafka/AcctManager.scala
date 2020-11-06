@@ -15,7 +15,7 @@ import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
 import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.lifeCycle.Lifecycle
-import com.ubirch.util.{ Hasher, ServiceMetrics }
+import com.ubirch.util.ServiceMetrics
 import io.prometheus.client.Counter
 import javax.inject._
 import monix.eval.Task
@@ -51,7 +51,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 
   override val keyDeserializer: Deserializer[String] = new StringDeserializer
   override val valueDeserializer: Deserializer[Array[Byte]] = new ByteArrayDeserializer
-  override val consumerTopics: Set[String] = Set(config.getString(AcctConsumerConfPaths.IMPORT_TOPIC_PATH))
+  override val consumerTopics: Set[String] = Set(config.getString(AcctConsumerConfPaths.ACCT_EVT_TOPIC_PATH))
   override val keySerializer: Serializer[String] = new StringSerializer
   override val valueSerializer: Serializer[Array[Byte]] = new ByteArraySerializer
   override val consumerBootstrapServers: String = config.getString(AcctConsumerConfPaths.BOOTSTRAP_SERVERS)

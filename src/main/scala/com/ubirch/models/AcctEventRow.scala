@@ -9,5 +9,5 @@ case class AcctEventRow(
     category: String,
     description: Option[String],
     occurredAt: Date,
-    createAt: Date
+    createdAt: Date
 )

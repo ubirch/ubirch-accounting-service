@@ -10,5 +10,5 @@ case class AcctEvent(
     description: Option[String],
     occurredAt: Date
 ) {
-  def validate: Boolean = false
+  def validate: Boolean = identityId.isDefined && description.isDefined
 }

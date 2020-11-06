@@ -1,0 +1,96 @@
+package com.ubirch.services.kafka
+
+import java.util.{ Date, UUID }
+
+import com.google.inject.binder.ScopedBindingBuilder
+import com.typesafe.config.{ Config, ConfigValueFactory }
+import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
+import com.ubirch._
+import com.ubirch.kafka.util.PortGiver
+import com.ubirch.models.{ AcctEvent, AcctEventDAO }
+import com.ubirch.services.config.ConfigProvider
+import com.ubirch.services.formats.JsonConverterService
+import io.prometheus.client.CollectorRegistry
+import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
+
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
+class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka {
+
+  val cassandra = new CassandraTest
+
+  def FakeInjector(bootstrapServers: String, acctEvtTopic: String) = new InjectorHelper(List(new Binder {
+    override def Config: ScopedBindingBuilder = bind(classOf[Config]).toProvider(new ConfigProvider {
+      override def conf: Config = super.conf
+        .withValue(AcctConsumerConfPaths.BOOTSTRAP_SERVERS, ConfigValueFactory.fromAnyRef(bootstrapServers))
+        .withValue(AcctProducerConfPaths.BOOTSTRAP_SERVERS, ConfigValueFactory.fromAnyRef(bootstrapServers))
+        .withValue(AcctConsumerConfPaths.ACCT_EVT_TOPIC_PATH, ConfigValueFactory.fromAnyRef(acctEvtTopic))
+    })
+  })) {}
+
+  "read and process acct events with success and errors" in {
+
+    implicit val kafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig(kafkaPort = PortGiver.giveMeKafkaPort, zooKeeperPort = PortGiver.giveMeZookeeperPort)
+
+    val acctEvtTopic = "ubirch-acct-evt-json"
+
+    val Injector = FakeInjector("localhost:" + kafkaConfig.kafkaPort, acctEvtTopic)
+
+    val jsonConverter = Injector.get[JsonConverterService]
+    val acctEventDAO = Injector.get[AcctEventDAO]
+
+    val batch = 50
+
+    def id = UUID.randomUUID()
+    def ownerId = UUID.randomUUID()
+    def identityId = UUID.randomUUID()
+
+    val validAcctEvents = (1 to batch).map { _ =>
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), new Date())
+      val idAsString = jsonConverter.toString[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      (acctEvent, idAsString)
+    }
+
+    val invalidAcctEvents = (1 to batch).map { _ =>
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, new Date())
+      val acctEventAsString = jsonConverter.toString[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      (acctEvent, acctEventAsString)
+    }
+
+    val totalAcctEvents = validAcctEvents ++ invalidAcctEvents
+
+    withRunningKafka {
+
+      totalAcctEvents.foreach { case (_, id) =>
+        publishStringMessageToKafka(acctEvtTopic, id)
+      }
+
+      val acctManager = Injector.get[AcctManager]
+      acctManager.consumption.startPolling()
+
+      Thread.sleep(7000)
+
+      val presentAcctEvents = await(acctEventDAO.selectAll, 5 seconds)
+
+      assert(presentAcctEvents.nonEmpty)
+      assert(presentAcctEvents.size == validAcctEvents.size)
+
+    }
+
+  }
+
+  override protected def beforeEach(): Unit = {
+    CollectorRegistry.defaultRegistry.clear()
+    EmbeddedCassandra.truncateScript.forEachStatement(cassandra.connection.execute _)
+  }
+
+  protected override def afterAll(): Unit = {
+    cassandra.stop()
+  }
+
+  protected override def beforeAll(): Unit = {
+    cassandra.startAndCreateDefaults()
+  }
+
+}
