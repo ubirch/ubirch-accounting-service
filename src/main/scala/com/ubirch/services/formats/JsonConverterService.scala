@@ -1,9 +1,10 @@
 package com.ubirch.services.formats
 
 import javax.inject._
+import org.json4s.native.JsonMethods
 import org.json4s.native.JsonMethods.{ compact, render }
 import org.json4s.native.Serialization.{ read, write }
-import org.json4s.{ Formats, JValue }
+import org.json4s.{ Formats, JValue, JsonInput }
 
 /**
   * Represents an internal service or component for managing Json.
@@ -14,6 +15,7 @@ trait JsonConverterService {
   def toJValue(value: String): Either[Exception, JValue]
   def toJValue[T](obj: T): Either[Exception, JValue]
   def as[T: Manifest](value: String): Either[Exception, T]
+  def fromJsonInput[A](json: JsonInput)(f: JValue => JValue)(implicit formats: Formats, mf: Manifest[A]): A
 }
 
 /**
@@ -57,6 +59,11 @@ class DefaultJsonConverterService @Inject() (implicit formats: Formats) extends 
       case e: Exception =>
         Left(e)
     }
+  }
+
+  def fromJsonInput[A](json: JsonInput)(f: JValue => JValue)(implicit formats: Formats, mf: Manifest[A]): A = {
+    val jv = JsonMethods.parse(json, formats.wantsBigDecimal, formats.wantsBigInt)
+    f(jv).extract(formats, mf)
   }
 
 }

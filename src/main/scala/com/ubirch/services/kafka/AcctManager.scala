@@ -14,6 +14,7 @@ import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
 import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
+import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.ServiceMetrics
 import io.prometheus.client.Counter
@@ -24,7 +25,6 @@ import monix.reactive.Observable
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization._
 import org.json4s.Formats
-import org.json4s.jackson.Serialization.read
 
 import scala.concurrent.{ ExecutionContext, Promise }
 
@@ -78,6 +78,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 @Singleton
 class DefaultAcctManager @Inject() (
     acctEventDAO: AcctEventDAO,
+    jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle
 )(implicit val ec: ExecutionContext, scheduler: Scheduler, formats: Formats) extends AcctManager(config, lifecycle) {
@@ -89,7 +90,7 @@ class DefaultAcctManager @Inject() (
       .map(_.value())
       .mapEval { bytes =>
 
-        Task(read[AcctEvent](new ByteArrayInputStream(bytes)))
+        Task(jsonConverterService.fromJsonInput[AcctEvent](new ByteArrayInputStream(bytes))(_.camelizeKeys))
           .map { acctEvent =>
             if (acctEvent.validate) acctEvent
             else {

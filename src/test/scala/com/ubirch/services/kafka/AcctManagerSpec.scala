@@ -48,13 +48,15 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
 
     val validAcctEvents = (1 to batch).map { _ =>
       val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), new Date())
-      val idAsString = jsonConverter.toString[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
-      (acctEvent, idAsString)
+      val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
+      (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
       val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, new Date())
-      val acctEventAsString = jsonConverter.toString[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
