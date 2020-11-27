@@ -16,7 +16,7 @@ import com.ubirch.kafka.util.Exceptions.NeedForPauseException
 import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
-import com.ubirch.util.ServiceMetrics
+import com.ubirch.util.{ DateUtil, ServiceMetrics }
 import io.prometheus.client.Counter
 import javax.inject._
 import monix.eval.Task
@@ -118,6 +118,7 @@ class DefaultAcctManager @Inject() (
           acctEvent.identityId,
           acctEvent.category,
           acctEvent.description,
+          DateUtil.resetTimeInDate(acctEvent.occurredAt),
           acctEvent.occurredAt,
           new Date()
         )
@@ -125,7 +126,7 @@ class DefaultAcctManager @Inject() (
           .insert(row)
           .map(x => (acctEvent, row, x))
       }
-      .flatMap { case (_, row, c) =>
+      .flatMap { case (_, row, _) =>
         logger.info("acct_evt_inserted={}", row.toString)
         Observable.unit
       }

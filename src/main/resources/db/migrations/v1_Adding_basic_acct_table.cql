@@ -10,7 +10,8 @@ create table if not exists acct_events (id UUID,
                                         identity_id UUID,
                                         category text,
                                         description text,
+                                        day timestamp,
                                         occurred_at timestamp,
                                         created_at timestamp,
-                                        PRIMARY KEY (owner_id, identity_id));
+                                        PRIMARY KEY ((owner_id, identity_id), day, id));
 

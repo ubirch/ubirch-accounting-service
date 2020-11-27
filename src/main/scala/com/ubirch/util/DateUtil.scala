@@ -1,5 +1,7 @@
 package com.ubirch.util
 
+import java.util.{ Calendar, Date }
+
 import org.joda.time.format.{ DateTimeFormatter, ISODateTimeFormat }
 import org.joda.time.{ DateTime, DateTimeZone, LocalTime, Period }
 
@@ -42,5 +44,15 @@ object DateUtil {
   }
 
   def toString_YYYY_MM_dd(date: DateTime): String = date.toString("YYYY-MM-dd")
+
+  def resetTimeInDate(date: Date): Date = {
+    val calendar = Calendar.getInstance
+    calendar.setTime(date)
+    calendar.set(Calendar.MILLISECOND, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.HOUR, 0)
+    calendar.getTime
+  }
 
 }

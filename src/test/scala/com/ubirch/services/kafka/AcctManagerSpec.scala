@@ -82,6 +82,59 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
 
   }
 
+  "read and process acct events with success and errors same sources" in {
+
+    implicit val kafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig(kafkaPort = PortGiver.giveMeKafkaPort, zooKeeperPort = PortGiver.giveMeZookeeperPort)
+
+    val acctEvtTopic = "ubirch-acct-evt-json"
+
+    val Injector = FakeInjector("localhost:" + kafkaConfig.kafkaPort, acctEvtTopic)
+
+    val jsonConverter = Injector.get[JsonConverterService]
+    val acctEventDAO = Injector.get[AcctEventDAO]
+
+    val batch = 50
+
+    def id = UUID.randomUUID()
+    val ownerId = UUID.randomUUID()
+    val identityId = UUID.randomUUID()
+
+    val validAcctEvents = (1 to batch).map { _ =>
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), new Date())
+      val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
+      (acctEvent, acctEventAsString)
+    }
+
+    val invalidAcctEvents = (1 to batch).map { _ =>
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, new Date())
+      val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
+      (acctEvent, acctEventAsString)
+    }
+
+    val totalAcctEvents = validAcctEvents ++ invalidAcctEvents
+
+    withRunningKafka {
+
+      totalAcctEvents.foreach { case (_, id) =>
+        publishStringMessageToKafka(acctEvtTopic, id)
+      }
+
+      val acctManager = Injector.get[AcctManager]
+      acctManager.consumption.startPolling()
+
+      Thread.sleep(7000)
+
+      val presentAcctEvents = await(acctEventDAO.selectAll, 5 seconds)
+
+      assert(presentAcctEvents.nonEmpty)
+      assert(presentAcctEvents.size == validAcctEvents.size)
+
+    }
+
+  }
+
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
     EmbeddedCassandra.truncateScript.forEachStatement(cassandra.connection.execute _)
