@@ -8,6 +8,7 @@ case class AcctEventRow(
     identityId: Option[UUID],
     category: String,
     description: Option[String],
+    tokenValue: Option[String],
     day: Date,
     occurredAt: Date,
     createdAt: Date

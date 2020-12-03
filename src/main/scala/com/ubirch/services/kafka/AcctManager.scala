@@ -113,14 +113,15 @@ class DefaultAcctManager @Inject() (
       .flatMap { acctEvent =>
 
         val row = AcctEventRow(
-          acctEvent.id,
-          acctEvent.ownerId,
-          acctEvent.identityId,
-          acctEvent.category,
-          acctEvent.description,
-          DateUtil.resetTimeInDate(acctEvent.occurredAt),
-          acctEvent.occurredAt,
-          new Date()
+          id = acctEvent.id,
+          ownerId = acctEvent.ownerId,
+          identityId = acctEvent.identityId,
+          category = acctEvent.category,
+          description = acctEvent.description,
+          tokenValue = acctEvent.token,
+          day = DateUtil.resetTimeInDate(acctEvent.occurredAt),
+          occurredAt = acctEvent.occurredAt,
+          createdAt = new Date()
         )
         acctEventDAO
           .insert(row)
