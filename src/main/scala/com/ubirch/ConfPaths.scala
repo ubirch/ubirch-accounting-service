@@ -53,8 +53,8 @@ object ConfPaths {
   }
 
   trait TokenVerificationPaths {
-    final val CONFIG_URL = "tokenSystem.tokenVerification.configURL"
-    final val KID = "tokenSystem.tokenVerification.kid"
+    final val CONFIG_URL = "acctSystem.tokenVerification.configURL"
+    final val KID = "acctSystem.tokenVerification.kid"
   }
 
   object GenericConfPaths extends GenericConfPaths

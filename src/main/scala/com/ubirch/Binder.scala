@@ -7,6 +7,7 @@ import com.ubirch.services.cluster._
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
+import com.ubirch.services.jwt.{ DefaultPublicKeyDiscoveryService, DefaultPublicKeyPoolService, DefaultTokenVerificationService, PublicKeyDiscoveryService, PublicKeyPoolService, TokenVerificationService }
 import com.ubirch.services.kafka.{ AcctManager, DefaultAcctManager }
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.rest.SwaggerProvider
@@ -33,6 +34,9 @@ class Binder
   def ClusterService = bind(classOf[ClusterService]).to(classOf[DefaultClusterService])
   def ConnectionService = bind(classOf[ConnectionService]).to(classOf[DefaultConnectionService])
   def AcctManager: ScopedBindingBuilder = bind(classOf[AcctManager]).to(classOf[DefaultAcctManager])
+  def TokenVerificationService: ScopedBindingBuilder = bind(classOf[TokenVerificationService]).to(classOf[DefaultTokenVerificationService])
+  def PublicKeyDiscoveryService: ScopedBindingBuilder = bind(classOf[PublicKeyDiscoveryService]).to(classOf[DefaultPublicKeyDiscoveryService])
+  def PublicKeyPoolService: ScopedBindingBuilder = bind(classOf[PublicKeyPoolService]).to(classOf[DefaultPublicKeyPoolService])
 
   def configure(): Unit = {
     Config
@@ -46,6 +50,9 @@ class Binder
     ClusterService
     ConnectionService
     AcctManager
+    TokenVerificationService
+    PublicKeyDiscoveryService
+    PublicKeyPoolService
   }
 
 }
