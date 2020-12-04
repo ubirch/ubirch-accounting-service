@@ -46,7 +46,7 @@ class CachedBodyServletInputStream(cachedBody: Array[Byte], raw: ServletInputStr
  * Initially, it supports the re-consumption of the body stream
  * @param httpServletRequest Represents the original Request
  */
-class SystemRequest(httpServletRequest: HttpServletRequest) extends HttpServletRequestWrapper(httpServletRequest) {
+class ServiceRequest(httpServletRequest: HttpServletRequest) extends HttpServletRequestWrapper(httpServletRequest) {
 
   val cachedBody = IOUtils.toByteArray(httpServletRequest.getInputStream)
 
@@ -61,7 +61,7 @@ class SystemRequest(httpServletRequest: HttpServletRequest) extends HttpServletR
   */
 trait RequestEnricher extends Handler {
   abstract override def handle(request: HttpServletRequest, res: HttpServletResponse): Unit = {
-    super.handle(new SystemRequest(request), res)
+    super.handle(new ServiceRequest(request), res)
   }
 }
 
@@ -89,11 +89,10 @@ abstract class ControllerBase extends ScalatraServlet
             BadRequest(NOK.parsingError(msg))
         }
         .onErrorHandle { e =>
-
           val name = e.getClass.getCanonicalName
           val cause = Try(e.getCause.getMessage).getOrElse(e.getMessage)
           logger.error("Error 0.1 ", e)
-          logger.error(s"Error 0.1 exception={} message={}", name, cause)
+          logger.error("Error 0.1 exception={} message={}", name, cause)
           InternalServerError(NOK.serverError("Sorry, something happened"))
 
         }

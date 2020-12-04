@@ -52,9 +52,15 @@ object ConfPaths {
     final val PORT = "acctSystem.metrics.prometheus.port"
   }
 
+  trait TokenVerificationPaths {
+    final val CONFIG_URL = "tokenSystem.tokenVerification.configURL"
+    final val KID = "tokenSystem.tokenVerification.kid"
+  }
+
   object GenericConfPaths extends GenericConfPaths
   object AcctConsumerConfPaths extends AcctConsumerConfPaths
   object AcctProducerConfPaths extends AcctProducerConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
+  object TokenVerificationPaths extends TokenVerificationPaths
 
 }
