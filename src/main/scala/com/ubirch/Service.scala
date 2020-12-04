@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch.services.kafka.AcctManager
 import com.ubirch.services.rest.RestService
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import monix.eval.Task
 import monix.execution.Scheduler
 
@@ -14,7 +14,7 @@ import monix.execution.Scheduler
   * Represents a bootable service object that starts the system
   */
 @Singleton
-class Service @Inject() (restService: RestService, acctManager: AcctManager, publicKeyPoolService: PublicKeyPoolService)(implicit scheduler: Scheduler)  extends LazyLogging {
+class Service @Inject() (restService: RestService, acctManager: AcctManager, publicKeyPoolService: PublicKeyPoolService)(implicit scheduler: Scheduler) extends LazyLogging {
 
   def start(): Unit = {
 
@@ -22,7 +22,7 @@ class Service @Inject() (restService: RestService, acctManager: AcctManager, pub
       case Some(e) =>
         Task.delay(logger.error("error_loading_keys", e))
       case None =>
-        Task.delay{
+        Task.delay {
           acctManager.start()
           restService.start()
         }
