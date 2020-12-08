@@ -1,6 +1,75 @@
 # Ubirch Accounting Service
 
-This service listens for AcctEvent records and stores them on Cassandra.
+This service listens for AcctEvent records and stores them on Cassandra. It exposes a http interface as well.
+
+## Http Interface
+
+1. [Getting Started](#steps-to-prepare-a-request)
+2. [List Your Acct Event](#list-your-acct-events)
+3. [Keycloak and Responses](#keycloak-token-and-responses)
+
+## Steps to prepare a request
+
+1. Get your keycloak token.
+2. Prepare the query params.
+3. Prepare the request and send.
+
+#### List Your Acct Event
+
+#### Keycloak Token
+
+```json
+token=`curl -s -d "client_id=ubirch-2.0-user-access" -d "username=$TOKEN_USER" -d "password=$TOKEN_PASS" -d "grant_type=password" -d "client_secret=$TOKEN_CLIENT_ID" $keycloak | jq -r .access_token`
+```
+
+#### Get Request
+
+```shell script
+curl -s -X GET \
+    -H "authorization: bearer ${token}" \
+    -H "content-type: application/json" \
+    "${host}/api/acct_events/v1/${ownerId}" | jq .
+```
+
+#### Keycloak Token and Responses
+ 
+In order for any request be received and executed, the initiator must provide proof it has been granted with the required permissions. 
+In order to do so, its request must contain an Authorization header. 
+
+#### The Header
+
+```
+Authorization: <type> <token>
+
+where 
+  <type> is Bearer
+  <token> is the JWT token for the current logged in user. This token originates from Keycloak.
+``` 
+  
+#### The Responses
+
+```
+The <response> codes could be:
+
+1. <200 OK>           When the system found a proper verification.
+2. <400 Badrequest>   When the incoming data has not been properly parsed or accepted.            
+3. <403 Forbidden>    When the token is invalid.
+4. <401 Unauthorized> When no Authorization header is found in the request.
+                      In this case, the response will contain the following header 
+                      WWW-Authenticate: <type> realm=<realm>
+                      
+                      where <type> is Bearer and
+                           <realm> is "Ubirch Token Service"
+5. <500 Internal Server Error> When an internal error happened from which it is not possible to recover.
+```
+
+## Swagger
+
+Visit https://accounting.dev.ubirch.com/docs on your browser to see the swagger docs.
+
+# Kafka
+
+The system will be listening to the configured port and will store the account events to cassandra.
 
 ## An Account Event
 
