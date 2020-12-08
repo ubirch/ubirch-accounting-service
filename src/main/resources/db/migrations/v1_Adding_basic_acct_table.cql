@@ -3,9 +3,9 @@
 
    Adding basic acct table */
 
-drop table if exists acct_events;
+drop table if exists acct_system.acct_events;
 
-create table if not exists acct_events (id UUID,
+create table if not exists acct_system.acct_events (id UUID,
                                         owner_id UUID,
                                         identity_id UUID,
                                         category text,
@@ -14,5 +14,5 @@ create table if not exists acct_events (id UUID,
                                         day timestamp,
                                         occurred_at timestamp,
                                         created_at timestamp,
-                                        PRIMARY KEY ((owner_id, identity_id), day, id));
+                                        PRIMARY KEY ((owner_id), identity_id, day, id));
 

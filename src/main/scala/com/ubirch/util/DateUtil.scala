@@ -12,6 +12,8 @@ object DateUtil {
 
   def nowUTC: DateTime = DateTime.now(DateTimeZone.UTC)
 
+  def yesterdayUTC: DateTime = nowUTC.minusDays(1)
+
   def todayAtMidnight: DateTime = nowUTC.withTime(LocalTime.MIDNIGHT)
 
   def parseDateToUTC(dateString: String): DateTime = {
