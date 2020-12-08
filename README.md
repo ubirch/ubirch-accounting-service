@@ -31,6 +31,12 @@ curl -s -X GET \
     "${host}/api/acct_events/v1/${ownerId}" | jq .
 ```
 
+**Fields**
+
+_ownerId_: it is the keycloak id of the logged in user. 
+
+_identity_id_: (Optional) It is a device id or identity id. 
+
 #### Keycloak Token and Responses
  
 In order for any request be received and executed, the initiator must provide proof it has been granted with the required permissions. 
