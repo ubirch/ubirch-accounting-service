@@ -1,6 +1,6 @@
 package com.ubirch.controllers.concerns
 
-import java.util.Locale
+import java.util.{ Locale, UUID }
 
 import com.ubirch.models.NOK
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
@@ -10,6 +10,7 @@ import org.scalatra.ScalatraBase
 import org.scalatra.auth.{ ScentryConfig, ScentryStrategy, ScentrySupport }
 
 import scala.language.implicitConversions
+import scala.util.Try
 
 trait BearerAuthSupport[TokenType <: AnyRef] {
   self: ScalatraBase with ScentrySupport[TokenType] =>
@@ -81,6 +82,7 @@ case class Token(value: String, json: JValue, sub: String, name: String, email: 
   def ownerId: String = id
   def isAdmin: Boolean = roles.contains(Token.ADMIN)
   def isUser: Boolean = roles.contains(Token.USER)
+  def ownerIdAsUUID: Try[UUID] = Try(UUID.fromString(ownerId))
 }
 
 object Token {
