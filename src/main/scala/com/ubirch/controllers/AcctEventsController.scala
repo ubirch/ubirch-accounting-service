@@ -4,8 +4,8 @@ import java.util.UUID
 
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
-import com.ubirch.controllers.concerns.{ ControllerBase, KeycloakBearerAuthStrategy, KeycloakBearerAuthenticationSupport }
-import com.ubirch.models.{ Good, NOK }
+import com.ubirch.controllers.concerns.{ ControllerBase, KeycloakBearerAuthStrategy, KeycloakBearerAuthenticationSupport, SwaggerElements }
+import com.ubirch.models.{ AcctEventRow, Good, NOK }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.jwt.{ PublicKeyPoolService, TokenVerificationService }
 import com.ubirch.util.TaskHelpers
@@ -16,7 +16,7 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra._
-import org.scalatra.swagger.Swagger
+import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
 import scala.concurrent.ExecutionContext
 
@@ -52,7 +52,18 @@ class AcctEventsController @Inject() (
     contentType = "application/json"
   }
 
-  get("/v1/:ownerId") {
+  val getV1: SwaggerSupportSyntax.OperationBuilder =
+    (apiOperation[List[AcctEventRow]]("getV1TokenList")
+      summary "Queries for the accounting events for a logged in user."
+      description "Queries for the accounting events for a logged in user. You can specify the target identity."
+      tags SwaggerElements.TAG_SERVICE
+      parameters (
+        swaggerTokenAsHeader,
+        pathParam[String]("ownerId").description("The uuid for the owner. It could be the user.").required,
+        queryParam[String]("identity_id").optional.description("The uuid that belongs to the identity or device")
+      ))
+
+  get("/v1/:ownerId", operation(getV1)) {
 
     authenticated() { token =>
 
@@ -64,7 +75,6 @@ class AcctEventsController @Inject() (
             .onErrorHandle(_ => throw InvalidParamException("Invalid OwnerId", "Wrong owner param"))
 
           ownerCheck = token.ownerIdAsUUID.map(_ == ownerId).isSuccess || (token.ownerIdAsUUID.map(_ != ownerId).isSuccess && token.isAdmin)
-
           _ = earlyResponseIf(ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
 
           identityId <- Task(params.get("identity_id"))
@@ -103,6 +113,9 @@ class AcctEventsController @Inject() (
   override protected def createStrategy(app: ScalatraBase): KeycloakBearerAuthStrategy = {
     new KeycloakBearerAuthStrategy(app, tokenVerificationService, publicKeyPoolService)
   }
+
+  def swaggerTokenAsHeader: SwaggerSupportSyntax.ParameterBuilder[String] = headerParam[String]("Authorization")
+    .description("Token of the user. ADD \"bearer \" followed by a space) BEFORE THE TOKEN OTHERWISE IT WON'T WORK")
 
 }
 
