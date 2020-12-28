@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException
 import com.datastax.driver.core.exceptions.{ InvalidQueryException, NoHostAvailableException }
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
-import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths, GenericConfPaths }
+import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
@@ -16,8 +16,7 @@ import com.ubirch.kafka.util.Exceptions.NeedForPauseException
 import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
-import com.ubirch.util.{ DateUtil, ServiceMetrics }
-import io.prometheus.client.Counter
+import com.ubirch.util.DateUtil
 import javax.inject._
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
@@ -32,22 +31,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
   extends ExpressKafka[String, Array[Byte], Unit]
   with WithConsumerShutdownHook
   with WithProducerShutdownHook
-  with ServiceMetrics
   with LazyLogging {
-
-  override val service: String = config.getString(GenericConfPaths.NAME)
-
-  override val successCounter: Counter = Counter.build()
-    .name("acct_mgr_success")
-    .help("Represents the number acct event successes")
-    .labelNames("service", "acct")
-    .register()
-
-  override val errorCounter: Counter = Counter.build()
-    .name("acct_mgr_failures")
-    .help("Represents the number of acct event failures")
-    .labelNames("service", "acct")
-    .register()
 
   override val keyDeserializer: Deserializer[String] = new StringDeserializer
   override val valueDeserializer: Deserializer[Array[Byte]] = new ByteArrayDeserializer
