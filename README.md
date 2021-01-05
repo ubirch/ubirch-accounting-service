@@ -1,6 +1,6 @@
 # Ubirch Accounting Service
 
-This service listens for AcctEvent records and stores them on Cassandra. It exposes a http interface as well.
+This service listens for AcctEvent records and stores them on Cassandra. It exposes a http interface as well that support querying.
 
 ## Http Interface
 
@@ -8,7 +8,7 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 2. [List Your Acct Event](#list-your-acct-events)
 3. [Keycloak and Responses](#keycloak-token-and-responses)
 
-## Steps to prepare a request
+### Steps to prepare a request
 
 1. Get your keycloak token.
 2. Prepare the query params.
@@ -69,15 +69,16 @@ The <response> codes could be:
 5. <500 Internal Server Error> When an internal error happened from which it is not possible to recover.
 ```
 
-## Swagger
+### Swagger
 
 Visit https://accounting.dev.ubirch.com/docs on your browser to see the swagger docs.
 
 # Kafka
 
-The system will be listening to the configured port and will store the account events to cassandra.
+The system will be listening to the configured topic and will store the account events to cassandra. The expected data object that
+is required is as it follows:
 
-## An Account Event
+## An Accounting Event
 
 ```json
 {
@@ -90,3 +91,19 @@ The system will be listening to the configured port and will store the account e
   "occurredAt":"2020-11-06T12:42:34.976Z"
 }
 ```
+
+**Fields**
+
+_id_: it represents the id of the event.
+ 
+_ownerId_: it is the keycloak id of the logged in user.
+
+_identityId_: It represents the identity that generated the an UPP. The device id or app id.
+
+_category_: It represents the kind of event. That's to say, what action originated it.
+
+_description_: It a brief description for what this event accounts for.
+
+_token_: It represents the possible token that might been used to generated the action.
+
+_occurredAt_: It represents the time at which the event took place. 
