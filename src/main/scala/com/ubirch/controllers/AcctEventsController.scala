@@ -67,11 +67,11 @@ class AcctEventsController @Inject() (
 
     authenticated() { token =>
 
-      asyncResult("list_acct_events_owner") { _ =>
+      asyncResult("list_acct_events_owner") { _ => _ =>
         (for {
 
-          ownerId <- Task(params.getOrElse("ownerId", throw InvalidParamException("Invalid OwnerId", "No OwnerId parameter found in path")))
-            .map(UUID.fromString)
+          ownerId <- Task(params.get("ownerId"))
+            .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
             .onErrorHandle(_ => throw InvalidParamException("Invalid OwnerId", "Wrong owner param"))
 
           ownerCheck = token.ownerIdAsUUID.map(_ == ownerId).isSuccess || (token.ownerIdAsUUID.map(_ != ownerId).isSuccess && token.isAdmin)
@@ -102,7 +102,7 @@ class AcctEventsController @Inject() (
   }
 
   notFound {
-    asyncResult("not_found") { _ =>
+    asyncResult("not_found") { _ => _ =>
       Task {
         logger.info("controller=AcctEventsController route_not_found={} query_string={}", requestPath, request.getQueryString)
         NotFound(NOK.noRouteFound(requestPath + " might exist in another universe"))

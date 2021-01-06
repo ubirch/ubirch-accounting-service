@@ -23,6 +23,8 @@ object ConfPaths {
     final val CONSISTENCY_LEVEL = "acctSystem.cassandra.cluster.consistencyLevel"
     final val SERIAL_CONSISTENCY_LEVEL = "acctSystem.cassandra.cluster.serialConsistencyLevel"
     final val WITH_SSL = "acctSystem.cassandra.cluster.withSSL"
+    final val TRUST_STORE = "acctSystem.cassandra.cluster.trustStore"
+    final val TRUST_STORE_PASSWORD = "acctSystem.cassandra.cluster.trustStorePassword"
     final val USERNAME = "acctSystem.cassandra.cluster.username"
     final val PASSWORD = "acctSystem.cassandra.cluster.password"
     final val KEYSPACE = "acctSystem.cassandra.cluster.keyspace"

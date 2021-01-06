@@ -57,6 +57,7 @@ class Binder
     PublicKeyDiscoveryService
     PublicKeyPoolService
     AcctEvents
+    ()
   }
 
 }
