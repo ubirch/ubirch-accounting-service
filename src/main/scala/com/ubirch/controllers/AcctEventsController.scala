@@ -36,13 +36,13 @@ class AcctEventsController @Inject() (
 
   val service: String = config.getString(GenericConfPaths.NAME)
 
-  val successCounter: Counter = Counter.build()
+  override val successCounter: Counter = Counter.build()
     .name("acct_events_success")
     .help("Represents the number of acct events successes")
     .labelNames("service", "method")
     .register()
 
-  val errorCounter: Counter = Counter.build()
+  override val errorCounter: Counter = Counter.build()
     .name("acct_events_failures")
     .help("Represents the number of acct events failures")
     .labelNames("service", "method")
