@@ -33,7 +33,7 @@ curl -s -X GET \
 
 **Fields**
 
-_ownerId_: it is the keycloak id of the logged in user. 
+_ownerId_: it is the keycloak id of the logged-in user. 
 
 _identity_id_: (Optional) It is a device id or identity id. 
 
@@ -96,14 +96,14 @@ is required is as it follows:
 
 _id_: it represents the id of the event.
  
-_ownerId_: it is the keycloak id of the logged in user.
+_ownerId_: it is the keycloak id of the logged-in user.
 
-_identityId_: It represents the identity that generated the an UPP. The device id or app id.
+_identityId_: It represents the identity that generated the UPP. The device id or app id.
 
 _category_: It represents the kind of event. That's to say, what action originated it.
 
-_description_: It a brief description for what this event accounts for.
+_description_: It is a brief description for what this event accounts for.
 
-_token_: It represents the possible token that might been used to generated the action.
+_token_: It represents the possible token that might have been used to generate the action.
 
 _occurredAt_: It represents the time at which the event took place. 

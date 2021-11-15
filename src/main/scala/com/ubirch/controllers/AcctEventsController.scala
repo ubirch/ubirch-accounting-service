@@ -63,14 +63,14 @@ class AcctEventsController @Inject() (
         queryParam[String]("identity_id").optional.description("The uuid that belongs to the identity or device")
       ))
 
-  get("/v1/:ownerId", operation(getV1)) {
+  get("/v1/:owner_id", operation(getV1)) {
 
     authenticated() { token =>
 
       asyncResult("list_acct_events_owner") { _ => _ =>
         (for {
 
-          ownerId <- Task(params.get("ownerId"))
+          ownerId <- Task(params.get("owner_id"))
             .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
             .onErrorHandle(_ => throw InvalidParamException("Invalid OwnerId", "Wrong owner param"))
 
