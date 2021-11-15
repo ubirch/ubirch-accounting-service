@@ -53,6 +53,7 @@ class Binder
     ClusterService
     ConnectionService
     AcctManager
+    TokenCreationService
     TokenVerificationService
     PublicKeyDiscoveryService
     PublicKeyPoolService

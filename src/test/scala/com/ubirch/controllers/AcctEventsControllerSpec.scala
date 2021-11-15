@@ -1,13 +1,15 @@
 package com.ubirch.controllers
 
-import java.util.UUID
-
+import com.ubirch.models.Return
+import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.jwt.PublicKeyPoolService
-import com.ubirch.{ EmbeddedCassandra, _ }
+import com.ubirch.{ Awaits, EmbeddedCassandra, ExecutionContextsTests, FakeTokenCreator, InjectorHelperImpl }
+
 import io.prometheus.client.CollectorRegistry
-import org.scalatest.{ BeforeAndAfterEach, Tag }
+import org.scalatest.BeforeAndAfterEach
 import org.scalatra.test.scalatest.ScalatraWordSpec
 
+import java.util.UUID
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -24,15 +26,30 @@ class AcctEventsControllerSpec
   private val cassandra = new CassandraTest
 
   private lazy val Injector = new InjectorHelperImpl() {}
+  private val jsonConverter = Injector.get[JsonConverterService]
 
   "Acct Events Service" must {
 
-    "fail when no access token provided: get" taggedAs Tag("avocado") in {
+    "create OK" in {
+
+      val token = Injector.get[FakeTokenCreator].user
 
       def uuid = UUID.randomUUID()
+
+      get(s"/v1/$uuid", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        assert(jsonConverter.as[Return](body).right.get.isInstanceOf[Return])
+      }
+
+    }
+
+    "fail when no access token provided: get" in {
+
+      def uuid = UUID.randomUUID()
+
       get(s"/v1/$uuid") {
         status should equal(401)
-        assert(body == """{"version":"1.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Unauthenticated"}""")
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Unauthenticated"}""")
       }
 
     }

@@ -5,7 +5,7 @@ import java.util.UUID
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.controllers.concerns.{ ControllerBase, KeycloakBearerAuthStrategy, KeycloakBearerAuthenticationSupport, SwaggerElements }
-import com.ubirch.models.{ AcctEventRow, Good, NOK }
+import com.ubirch.models.{ AcctEventRow, Return, NOK }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.jwt.{ PublicKeyPoolService, TokenVerificationService }
 import com.ubirch.util.TaskHelpers
@@ -85,7 +85,7 @@ class AcctEventsController @Inject() (
             .toListL
 
         } yield {
-          Ok(Good(evs))
+          Ok(Return(evs))
         }).onErrorHandle {
           case e: InvalidSecurityCheck =>
             logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
