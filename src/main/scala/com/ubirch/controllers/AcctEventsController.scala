@@ -96,11 +96,11 @@ class AcctEventsController @Inject() (
             logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
             BadRequest(NOK.acctEventQueryError(s"Error querying acct event. ${e.getMessage}"))
           case e: IllegalArgumentException =>
-            logger.error("IllegalArgumentException: creating CWT based on X.509 certificate: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+            logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
             BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
           case e: Exception =>
-            logger.error(s"1.2 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
-            InternalServerError(NOK.serverError("1.2 Sorry, something went wrong on our end"))
+            logger.error(s"1.3 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+            InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
         }
       }
     }
