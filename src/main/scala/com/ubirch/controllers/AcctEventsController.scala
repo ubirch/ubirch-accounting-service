@@ -67,22 +67,23 @@ class AcctEventsController @Inject() (
 
     authenticated() { token =>
 
-      asyncResult("list_acct_events_owner") { _ => _ =>
+      asyncResult("list_acct_events_owner") { implicit request => _ =>
         (for {
 
           ownerId <- Task(params.get("owner_id"))
             .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
             .onErrorHandle(_ => throw InvalidParamException("Invalid OwnerId", "Wrong owner param"))
 
-          ownerCheck = token.ownerIdAsUUID.map(_ == ownerId).isSuccess || (token.ownerIdAsUUID.map(_ != ownerId).isSuccess && token.isAdmin)
-          _ = earlyResponseIf(ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
+          ownerIdFromToken <- Task.delay(token.ownerIdAsUUID.getOrElse(throw InvalidParamException("Invalid Token OwnerId", "Wrong token owner")))
+
+          ownerCheck = (ownerIdFromToken == ownerId) || token.isAdmin
+          _ <- earlyResponseIf(!ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
 
           identityId <- Task(params.get("identity_id"))
             .map(_.map(UUID.fromString))
             .onErrorHandle(_ => throw InvalidParamException("Invalid identity_id", "Wrong identity_id param"))
 
-          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId)
-            .toListL
+          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId).toListL
 
         } yield {
           Ok(Return(evs))
@@ -92,7 +93,7 @@ class AcctEventsController @Inject() (
             Forbidden(NOK.authenticationError("Forbidden"))
           case e: ServiceException =>
             logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
-            BadRequest(NOK.acctEventQueryError("Error querying acct event"))
+            BadRequest(NOK.acctEventQueryError(s"Error querying acct event. ${e.getMessage}"))
           case e: Exception =>
             logger.error(s"1.2 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
             InternalServerError(NOK.serverError("1.2 Sorry, something went wrong on our end"))

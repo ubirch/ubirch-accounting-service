@@ -27,18 +27,45 @@ class AcctEventsControllerSpec
 
   private lazy val Injector = new InjectorHelperImpl() {}
   private val jsonConverter = Injector.get[JsonConverterService]
+  private val tokenCreator = Injector.get[FakeTokenCreator]
 
   "Acct Events Service" must {
 
-    "create OK" in {
+    "get OK" in {
 
-      val token = Injector.get[FakeTokenCreator].user
+      val token = tokenCreator.user
 
-      def uuid = UUID.randomUUID()
+      def uuid = "963995ed-ce12-4ea5-89dc-b181701d1d7b"
 
       get(s"/v1/$uuid", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         assert(jsonConverter.as[Return](body).right.get.isInstanceOf[Return])
+      }
+
+    }
+
+    "get OK when admin" in {
+
+      val token = tokenCreator.admin
+
+      def uuid = "963995ed-ce12-4ea5-89dc-b181701d1d7b"
+
+      get(s"/v1/$uuid", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        assert(jsonConverter.as[Return](body).right.get.isInstanceOf[Return])
+      }
+
+    }
+
+    "fail when not authorized" in {
+
+      val token = tokenCreator.user
+
+      def uuid = UUID.randomUUID()
+
+      get(s"/v1/$uuid", headers = Map("authorization" -> token.prepare)) {
+        status should equal(403)
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Forbidden"}""")
       }
 
     }
