@@ -83,6 +83,10 @@ class AcctEventsController @Inject() (
           ownerCheck = (ownerIdFromToken == ownerId) || token.isAdmin
           _ <- earlyResponseIf(!ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
 
+          cat <- Task(params.get("cat"))
+            .map(_.filter(_.nonEmpty))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
+
           identityId <- Task(params.get("identity_id"))
             .map(_.map(UUID.fromString))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity_id param"))
@@ -103,7 +107,7 @@ class AcctEventsController @Inject() (
             } yield s.after(e)
           }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
 
-          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId, start, end).toListL
+          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL
 
         } yield {
           Ok(Return(evs))

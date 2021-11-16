@@ -15,11 +15,6 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events")
 
-  implicit class DateQuotes(left: Date) {
-    def >=(right: Date) = quote(infix"$left >= $right".as[Boolean])
-    def <=(right: Date) = quote(infix"$left <= $right".as[Boolean])
-  }
-
   def insertQ(acctEventRow: AcctEventRow): db.Quoted[db.Insert[AcctEventRow]] = quote {
     query[AcctEventRow].insert(lift(acctEventRow))
   }
