@@ -73,6 +73,10 @@ class AcctEventsController @Inject() (
       asyncResult("list_acct_events_owner") { implicit request => _ =>
         (for {
 
+          onlyCount <- Task(params.get("only_count"))
+            .map(_.exists(_ == "true"))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid onlyCount: wrong onlyCount param"))
+
           rawOwnerId <- Task(params.get("owner_id"))
           ownerId <- Task(rawOwnerId)
             .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
@@ -107,7 +111,11 @@ class AcctEventsController @Inject() (
             } yield s.after(e)
           }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
 
-          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL
+          evs <- if (onlyCount) {
+            acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL
+          } else {
+            acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL
+          }
 
         } yield {
           Ok(Return(evs))

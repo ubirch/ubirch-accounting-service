@@ -15,17 +15,19 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events")
 
-  def insertQ(acctEventRow: AcctEventRow): db.Quoted[db.Insert[AcctEventRow]] = quote {
+  def insertQ(acctEventRow: AcctEventRow) = quote {
     query[AcctEventRow].insert(lift(acctEventRow))
   }
 
-  def selectAllQ: db.Quoted[db.EntityQuery[AcctEventRow]] = quote(query[AcctEventRow])
+  def selectAllQ = quote(query[AcctEventRow])
 
-  def byOwnerIdQ(ownerId: UUID): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
+  def byOwnerIdQ(ownerId: UUID) = quote {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
       .map(x => x)
   }
+
+  def byOwnerIdCountQ(ownerId: UUID) = quote { byOwnerIdQ(ownerId).size }
 
   def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
     query[AcctEventRow]
@@ -33,6 +35,8 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
       .filter(_.identityId == lift(identityId))
       .map(x => x)
   }
+
+  def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, identityId: UUID) = quote { byOwnerIdAndIdentityIdQ(ownerId, identityId).size }
 
   def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID, start: Date, end: Date): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
     query[AcctEventRow]
@@ -43,7 +47,11 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
       .map(x => x)
   }
 
-  def deleteQ(ownerId: UUID, acctEventId: UUID): db.Quoted[db.Delete[AcctEventRow]] = quote {
+  def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, identityId: UUID, start: Date, end: Date) = quote {
+    byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end).size
+  }
+
+  def deleteQ(ownerId: UUID, acctEventId: UUID) = quote {
     query[AcctEventRow].filter(x => x.ownerId == lift(ownerId) && x.id == lift(acctEventId)).delete
   }
 
@@ -60,9 +68,15 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
 
   def byOwnerId(ownerId: UUID): Observable[AcctEventRow] = run(byOwnerIdQ(ownerId))
 
+  def byOwnerIdCount(ownerId: UUID): Observable[Long] = run(byOwnerIdCountQ(ownerId))
+
   def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId))
 
+  def byOwnerIdAndIdentityIdCount(ownerId: UUID, identityId: UUID): Observable[Long] = run(byOwnerIdAndIdentityIdCountQ(ownerId, identityId))
+
   def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID, start: Date, end: Date): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end))
+
+  def byOwnerIdAndIdentityIdCount(ownerId: UUID, identityId: UUID, start: Date, end: Date): Observable[Long] = run(byOwnerIdAndIdentityIdCountQ(ownerId, identityId, start, end))
 
   def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 
