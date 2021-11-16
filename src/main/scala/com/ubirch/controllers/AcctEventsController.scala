@@ -34,7 +34,7 @@ class AcctEventsController @Inject() (
   override protected val applicationDescription = "Acct Events Controller"
   override protected implicit def jsonFormats: Formats = jFormats
 
-  val service: String = config.getString(GenericConfPaths.NAME)
+  override val service: String = config.getString(GenericConfPaths.NAME)
 
   override val successCounter: Counter = Counter.build()
     .name("acct_events_success")

@@ -27,15 +27,15 @@ class InfoController @Inject() (config: Config, val swagger: Swagger, jFormats: 
   override protected val applicationDescription = "Info Controller"
   override protected implicit def jsonFormats: Formats = jFormats
 
-  val service: String = config.getString(GenericConfPaths.NAME)
+  override val service: String = config.getString(GenericConfPaths.NAME)
 
-  val successCounter: Counter = Counter.build()
+  override val successCounter: Counter = Counter.build()
     .name("info_management_success")
     .help("Represents the number of info management successes")
     .labelNames("service", "method")
     .register()
 
-  val errorCounter: Counter = Counter.build()
+  override val errorCounter: Counter = Counter.build()
     .name("info_management_failures")
     .help("Represents the number of info management failures")
     .labelNames("service", "method")
