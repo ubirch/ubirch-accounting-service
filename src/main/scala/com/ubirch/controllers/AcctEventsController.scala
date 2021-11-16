@@ -9,7 +9,7 @@ import com.ubirch.models.{ AcctEventRow, Return, NOK }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.jwt.{ PublicKeyPoolService, TokenVerificationService }
 import com.ubirch.util.TaskHelpers
-import com.ubirch.{ InvalidParamException, InvalidSecurityCheck, ServiceException }
+import com.ubirch.{ InvalidSecurityCheck, ServiceException }
 import io.prometheus.client.Counter
 import javax.inject.{ Inject, Singleton }
 import monix.eval.Task
@@ -70,18 +70,19 @@ class AcctEventsController @Inject() (
       asyncResult("list_acct_events_owner") { implicit request => _ =>
         (for {
 
-          ownerId <- Task(params.get("owner_id"))
+          rawOwnerId <- Task(params.get("owner_id"))
+          ownerId <- Task(rawOwnerId)
             .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
-            .onErrorHandle(_ => throw InvalidParamException("Invalid OwnerId", "Wrong owner param"))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid OwnerId: wrong owner param: " + rawOwnerId.getOrElse("")))
 
-          ownerIdFromToken <- Task.delay(token.ownerIdAsUUID.getOrElse(throw InvalidParamException("Invalid Token OwnerId", "Wrong token owner")))
+          ownerIdFromToken <- Task.delay(token.ownerIdAsUUID.getOrElse(throw new IllegalArgumentException("Invalid Token OwnerI: Wrong token owner")))
 
           ownerCheck = (ownerIdFromToken == ownerId) || token.isAdmin
           _ <- earlyResponseIf(!ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
 
           identityId <- Task(params.get("identity_id"))
             .map(_.map(UUID.fromString))
-            .onErrorHandle(_ => throw InvalidParamException("Invalid identity_id", "Wrong identity_id param"))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity_id param"))
 
           evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId).toListL
 
@@ -89,11 +90,14 @@ class AcctEventsController @Inject() (
           Ok(Return(evs))
         }).onErrorHandle {
           case e: InvalidSecurityCheck =>
-            logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+            logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.reason)
             Forbidden(NOK.authenticationError("Forbidden"))
           case e: ServiceException =>
             logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
             BadRequest(NOK.acctEventQueryError(s"Error querying acct event. ${e.getMessage}"))
+          case e: IllegalArgumentException =>
+            logger.error("IllegalArgumentException: creating CWT based on X.509 certificate: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+            BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
           case e: Exception =>
             logger.error(s"1.2 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
             InternalServerError(NOK.serverError("1.2 Sorry, something went wrong on our end"))

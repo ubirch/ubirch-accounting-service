@@ -11,7 +11,6 @@ case class NoKeyspaceException(message: String) extends ServiceException(message
 case class InvalidConsistencyLevel(message: String) extends ServiceException(message)
 case class InvalidContactPointsException(message: String) extends ServiceException(message)
 case class StoringException(message: String, reason: String) extends ServiceException(message)
-case class InvalidParamException(message: String, reason: String) extends ServiceException(message)
 case class InvalidSecurityCheck(message: String, reason: String) extends ServiceException(message)
 
 case class InvalidOtherClaims(message: String, value: String) extends ServiceException(message)
