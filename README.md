@@ -5,7 +5,7 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 ## Http Interface
 
 1. [Getting Started](#steps-to-prepare-a-request)
-2. [List Your Acct Event](#list-your-acct-events)
+2. [List Your Acct Events](#list-your-acct-events)
 3. [Keycloak and Responses](#keycloak-token-and-responses)
 
 ### Steps to prepare a request
@@ -14,7 +14,7 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 2. Prepare the query params.
 3. Prepare the request and send.
 
-#### List Your Acct Event
+### List Your Acct Events
 
 #### Keycloak Token
 
@@ -25,19 +25,25 @@ token=`curl -s -d "client_id=ubirch-2.0-user-access" -d "username=$TOKEN_USER" -
 #### Get Request
 
 ```shell script
-curl -s -X GET \
-    -H "authorization: bearer ${token}" \
-    -H "content-type: application/json" \
-    "${host}/api/acct_events/v1/${ownerId}" | jq .
+curl -s -X GET -H "authorization: bearer $token" \
+ -H "content-type: application/json" \
+  "${host}/api/acct_events/v1/$owner?identity_id=$identity&start=$start&end=$end" \
+ | jq .
 ```
 
 **Fields**
 
 _ownerId_: it is the keycloak id of the logged-in user. 
 
-_identity_id_: (Optional) It is a device id or identity id. 
+_identity_id_: (Optional)* It is a device id or identity id. 
 
-#### Keycloak Token and Responses
+_start_: (Optional)* It is the start time of the query. The format is "yyyy-M-dd"
+
+_end_: (Optional)* It is the end time of the query. The format is "yyyy-M-dd"
+
+> *if start and end are used, it is necessary to set the identity
+
+### Keycloak Token and Responses
  
 In order for any request be received and executed, the initiator must provide proof it has been granted with the required permissions. 
 In order to do so, its request must contain an Authorization header. 
