@@ -107,7 +107,7 @@ trait BearerAuthenticationSupport extends ScentrySupport[Token] with BearerAuthS
     new ScentryConfig {}.asInstanceOf[ScentryConfiguration]
   }
 
-  override def realm: String = "Ubirch Token Service"
+  override def realm: String = "Ubirch Accounting Service"
 
 }
 
