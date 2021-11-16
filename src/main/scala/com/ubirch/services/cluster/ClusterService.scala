@@ -1,15 +1,16 @@
 package com.ubirch
 package services.cluster
 
-import java.net.InetSocketAddress
-import java.nio.file.{ Files, Paths }
-import java.security.KeyStore
+import com.ubirch.ConfPaths.CassandraClusterConfPaths
+import com.ubirch.util.URLsHelper
 
 import com.datastax.driver.core._
 import com.datastax.driver.core.policies.RoundRobinPolicy
 import com.typesafe.config.Config
-import com.ubirch.ConfPaths.CassandraClusterConfPaths
-import com.ubirch.util.URLsHelper
+
+import java.net.InetSocketAddress
+import java.nio.file.{ Files, Paths }
+import java.security.KeyStore
 import javax.inject._
 import javax.net.ssl.{ SSLContext, TrustManagerFactory }
 

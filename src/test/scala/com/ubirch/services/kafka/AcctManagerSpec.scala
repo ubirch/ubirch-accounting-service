@@ -1,18 +1,18 @@
 package com.ubirch.services.kafka
 
-import java.util.{ Date, UUID }
-
-import com.google.inject.binder.ScopedBindingBuilder
-import com.typesafe.config.{ Config, ConfigValueFactory }
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch._
 import com.ubirch.kafka.util.PortGiver
 import com.ubirch.models.{ AcctEvent, AcctEventDAO }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.formats.JsonConverterService
+
+import com.google.inject.binder.ScopedBindingBuilder
+import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.prometheus.client.CollectorRegistry
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 
+import java.util.{ Date, UUID }
 import scala.concurrent.duration._
 import scala.language.postfixOps
 

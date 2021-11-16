@@ -2,7 +2,6 @@ package com.ubirch
 package util
 
 import java.net.{ InetSocketAddress, URL }
-
 import scala.util.Try
 
 /**

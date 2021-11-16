@@ -1,13 +1,13 @@
 package com.ubirch.services.jwt
 
-import java.security.Key
+import com.ubirch.ConfPaths.TokenVerificationPaths
 
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
-import com.ubirch.ConfPaths.TokenVerificationPaths
-import javax.inject._
 import monix.eval.Task
 
+import java.security.Key
+import javax.inject._
 import scala.collection.concurrent.TrieMap
 
 trait PublicKeyPoolService {

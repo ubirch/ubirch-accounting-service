@@ -1,14 +1,15 @@
 package com.ubirch
 
-import java.util.concurrent.CountDownLatch
-
-import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch.services.kafka.AcctManager
 import com.ubirch.services.rest.RestService
-import javax.inject.{ Inject, Singleton }
+
+import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler
+
+import java.util.concurrent.CountDownLatch
+import javax.inject.{ Inject, Singleton }
 
 /**
   * Represents a bootable service object that starts the system

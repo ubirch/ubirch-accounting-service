@@ -1,9 +1,11 @@
 package com.ubirch.services.rest
 
-import com.google.inject.Provider
 import com.ubirch.controllers.RestApiInfo
-import javax.inject._
+
+import com.google.inject.Provider
 import org.scalatra.swagger.Swagger
+
+import javax.inject._
 
 /**
   * Represents the Swagger Provider for the system

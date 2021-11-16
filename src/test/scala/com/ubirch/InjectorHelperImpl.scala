@@ -1,14 +1,15 @@
 package com.ubirch
 
-import java.security.Key
-
-import com.google.inject.binder.ScopedBindingBuilder
-import com.typesafe.config.Config
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
 import com.ubirch.services.jwt.{ DefaultPublicKeyPoolService, PublicKeyDiscoveryService, PublicKeyPoolService, TokenCreationService }
-import javax.inject.{ Inject, Provider, Singleton }
+
+import com.google.inject.binder.ScopedBindingBuilder
+import com.typesafe.config.Config
 import monix.eval.Task
+
+import java.security.Key
+import javax.inject.{ Inject, Provider, Singleton }
 
 @Singleton
 class FakeDefaultPublicKeyPoolService @Inject() (privKey: PrivKey, config: Config, publicKeyDiscoveryService: PublicKeyDiscoveryService)
