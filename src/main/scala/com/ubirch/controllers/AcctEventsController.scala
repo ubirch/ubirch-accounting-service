@@ -1,23 +1,24 @@
 package com.ubirch.controllers
 
-import java.util.UUID
-
-import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.controllers.concerns.{ ControllerBase, KeycloakBearerAuthStrategy, KeycloakBearerAuthenticationSupport, SwaggerElements }
-import com.ubirch.models.{ AcctEventRow, Return, NOK }
+import com.ubirch.models.{ AcctEventRow, NOK, Return }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.jwt.{ PublicKeyPoolService, TokenVerificationService }
 import com.ubirch.util.TaskHelpers
 import com.ubirch.{ InvalidSecurityCheck, ServiceException }
+
+import com.typesafe.config.Config
 import io.prometheus.client.Counter
-import javax.inject.{ Inject, Singleton }
 import monix.eval.Task
 import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra._
 import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
+import java.text.SimpleDateFormat
+import java.util.UUID
+import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -65,6 +66,8 @@ class AcctEventsController @Inject() (
 
   get("/v1/:owner_id", operation(getV1)) {
 
+    lazy val sdf = new SimpleDateFormat("yyyy-M-dd")
+
     authenticated() { token =>
 
       asyncResult("list_acct_events_owner") { implicit request => _ =>
@@ -84,7 +87,23 @@ class AcctEventsController @Inject() (
             .map(_.map(UUID.fromString))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity_id param"))
 
-          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId).toListL
+          start <- Task(params.get("start"))
+            .map(_.map(sdf.parse))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Start: Use yyyy-M-dd this format"))
+
+          end <- Task(params.get("end"))
+            .map(_.map(sdf.parse))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid End: Use yyyy-M-dd this format"))
+          _ <- earlyResponseIf(start.isDefined && end.isEmpty)(new IllegalArgumentException("Invalid Range Definition: Start requires End"))
+          _ <- earlyResponseIf(start.isEmpty && end.isDefined)(new IllegalArgumentException("Invalid Range Definition: End requires Start"))
+          _ <- earlyResponseIf({
+            for {
+              s <- start
+              e <- end
+            } yield s.after(e)
+          }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
+
+          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId, start, end).toListL
 
         } yield {
           Ok(Return(evs))

@@ -1,19 +1,24 @@
 package com.ubirch.models
 
-import java.util.UUID
-
 import com.ubirch.services.cluster.ConnectionService
+
 import io.getquill.{ CassandraStreamContext, SnakeCase }
-import javax.inject.Inject
 import monix.reactive.Observable
 
-trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
+import java.util.{ Date, UUID }
+import javax.inject.Inject
 
+trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
   import db._
 
   //These represent query descriptions only
 
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events")
+
+  implicit class DateQuotes(left: Date) {
+    def >=(right: Date) = quote(infix"$left >= $right".as[Boolean])
+    def <=(right: Date) = quote(infix"$left <= $right".as[Boolean])
+  }
 
   def insertQ(acctEventRow: AcctEventRow): db.Quoted[db.Insert[AcctEventRow]] = quote {
     query[AcctEventRow].insert(lift(acctEventRow))
@@ -31,6 +36,15 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
       .filter(_.identityId == lift(identityId))
+      .map(x => x)
+  }
+
+  def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID, start: Date, end: Date): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
+    query[AcctEventRow]
+      .filter(_.ownerId == lift(ownerId))
+      .filter(_.identityId == lift(identityId))
+      .filter(_.day >= lift(start))
+      .filter(_.day <= lift(end))
       .map(x => x)
   }
 
@@ -52,6 +66,8 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
   def byOwnerId(ownerId: UUID): Observable[AcctEventRow] = run(byOwnerIdQ(ownerId))
 
   def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId))
+
+  def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID, start: Date, end: Date): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end))
 
   def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 

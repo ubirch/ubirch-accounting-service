@@ -97,7 +97,17 @@ class DefaultAcctManager @Inject() (
       .flatMap { acctEvent =>
 
         //TODO: Can we just not have direct value?
-        val row = AcctEventRow(id = acctEvent.id, ownerId = acctEvent.ownerId, identityId = acctEvent.identityId.orNull, category = acctEvent.category, description = acctEvent.description, tokenValue = acctEvent.token, day = DateUtil.resetTimeInDate(acctEvent.occurredAt), occurredAt = acctEvent.occurredAt, createdAt = new Date())
+        val row = AcctEventRow(
+          id = acctEvent.id,
+          ownerId = acctEvent.ownerId,
+          identityId = acctEvent.identityId.orNull,
+          category = acctEvent.category,
+          description = acctEvent.description,
+          tokenValue = acctEvent.token,
+          day = DateUtil.resetTimeInDate(acctEvent.occurredAt),
+          occurredAt = acctEvent.occurredAt,
+          createdAt = new Date()
+        )
         acctEventDAO
           .insert(row)
           .map(x => (acctEvent, row, x))
