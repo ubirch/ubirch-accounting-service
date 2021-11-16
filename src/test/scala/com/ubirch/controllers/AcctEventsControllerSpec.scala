@@ -43,6 +43,17 @@ class AcctEventsControllerSpec
 
     }
 
+    "fail when wrong uuid: get" in {
+
+      def uuid = "WRONG_UUID"
+
+      get(s"/v1/$uuid") {
+        status should equal(401)
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Unauthenticated"}""")
+      }
+
+    }
+
     "fail when no access token provided: get" in {
 
       def uuid = UUID.randomUUID()
