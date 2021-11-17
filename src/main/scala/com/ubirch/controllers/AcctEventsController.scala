@@ -116,17 +116,17 @@ class AcctEventsController @Inject() (
           }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
 
           evs <- if (onlyCount) {
-            acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL
+            acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
           } else {
             if (bucketed) {
-              acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end)
+              acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end).map(x => Return(x))
             } else {
-              acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL
+              acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
             }
           }
 
         } yield {
-          Ok(Return(evs))
+          Ok(evs)
         }).onErrorHandle {
           case e: InvalidSecurityCheck =>
             logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.reason)
