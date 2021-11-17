@@ -85,7 +85,8 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO, acctEventB
   override def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[String, Int]] = {
     byOwnerIdAndIdentityId(ownerId, category, identityId, start, end)
       .toListL
-      .map(_.groupBy(x => DateUtil.toString_YYYY_MM_dd(new DateTime(x.day)))).map(_.mapValues(_.size))
+      .map(_.groupBy(x => DateUtil.toString_YYYY_MM_dd(new DateTime(x.day))))
+      .map(_.mapValues(_.size))
   }
 
   override def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[Long] = {
