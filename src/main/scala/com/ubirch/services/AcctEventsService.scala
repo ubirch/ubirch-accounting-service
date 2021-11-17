@@ -1,10 +1,12 @@
 package com.ubirch.services
 
 import com.ubirch.models.{ AcctEventByCatDAO, AcctEventDAO, AcctEventRow }
+import com.ubirch.util.DateUtil
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.reactive.Observable
+import org.joda.time.DateTime
 
 import java.util.{ Date, UUID }
 import javax.inject.{ Inject, Singleton }
@@ -12,7 +14,7 @@ import javax.inject.{ Inject, Singleton }
 trait AcctEventsService {
   def byOwnerIdAndIdentityId(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[AcctEventRow]
   def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[Long]
-  def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[Date, Int]]
+  def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[String, Int]]
 }
 
 @Singleton
@@ -80,8 +82,10 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO, acctEventB
 
   }
 
-  override def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[Date, Int]] = {
-    byOwnerIdAndIdentityId(ownerId, category, identityId, start, end).toListL.map(_.groupBy(_.day)).map(_.mapValues(_.size))
+  override def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[String, Int]] = {
+    byOwnerIdAndIdentityId(ownerId, category, identityId, start, end)
+      .toListL
+      .map(_.groupBy(x => DateUtil.toString_YYYY_MM_dd(new DateTime(x.day)))).map(_.mapValues(_.size))
   }
 
   override def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[Long] = {
