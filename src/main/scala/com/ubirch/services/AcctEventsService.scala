@@ -3,6 +3,7 @@ package com.ubirch.services
 import com.ubirch.models.{ AcctEventByCatDAO, AcctEventDAO, AcctEventRow }
 
 import com.typesafe.scalalogging.LazyLogging
+import monix.eval.Task
 import monix.reactive.Observable
 
 import java.util.{ Date, UUID }
@@ -11,7 +12,7 @@ import javax.inject.{ Inject, Singleton }
 trait AcctEventsService {
   def byOwnerIdAndIdentityId(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[AcctEventRow]
   def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[Long]
-
+  def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[Date, Int]]
 }
 
 @Singleton
@@ -77,6 +78,10 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO, acctEventB
         }
     }
 
+  }
+
+  override def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Task[Map[Date, Int]] = {
+    byOwnerIdAndIdentityId(ownerId, category, identityId, start, end).toListL.map(_.groupBy(_.day)).map(_.mapValues(_.size))
   }
 
   override def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[Date], end: Option[Date]): Observable[Long] = {

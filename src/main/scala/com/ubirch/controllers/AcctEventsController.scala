@@ -77,6 +77,10 @@ class AcctEventsController @Inject() (
             .map(_.exists(_ == "true"))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid onlyCount: wrong onlyCount param"))
 
+          bucketed <- Task(params.get("bucketed"))
+            .map(_.exists(_ == "true"))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid bucketed: wrong bucketed param"))
+
           rawOwnerId <- Task(params.get("owner_id"))
           ownerId <- Task(rawOwnerId)
             .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
@@ -114,7 +118,11 @@ class AcctEventsController @Inject() (
           evs <- if (onlyCount) {
             acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL
           } else {
-            acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL
+            if (bucketed) {
+              acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end)
+            } else {
+              acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL
+            }
           }
 
         } yield {
@@ -140,7 +148,7 @@ class AcctEventsController @Inject() (
   notFound {
     asyncResult("not_found") { _ => _ =>
       Task {
-        logger.info("controller=AcctEventsController route_not_found={} query_string={}", requestPath, request.getQueryString)
+        logger.info("controller=AcctEventsController route_not_found={} query_string={}", requestPath, Option(request).map(_.getQueryString).getOrElse(""))
         NotFound(NOK.noRouteFound(requestPath + " might exist in another universe"))
       }
     }
