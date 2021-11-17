@@ -120,6 +120,57 @@ class AcctEventsControllerSpec
 
     }
 
+    "get OK with result with time range" in {
+
+      List(
+        CqlScript.ofClasspath("test_data.cql")
+      ).foreach(_.forEachStatement { x => val _ = cassandra.connection.execute(x) })
+
+      Thread.sleep(500)
+
+      val token = Injector.get[FakeTokenCreator].admin
+
+      def owner = "d63ecc03-f5a7-4d43-91d0-a30d034d8da3"
+      def identity = "03ebd518-8b09-45ec-a039-604fc8a9e687"
+      def start = "2020-01-01"
+      def end = "2021-03-01"
+      var category = "verification"
+      def count = true
+
+      get(s"/v1/$owner?only_count=$count", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        val expected = """{"version":"1.0.0","ok":true,"data":[3893]}""".stripMargin
+        assert(body == expected)
+      }
+
+      get(s"/v1/$owner?identity_id=$identity&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        val expected = """{"version":"1.0.0","ok":true,"data":[544]}""".stripMargin
+        assert(body == expected)
+      }
+
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        val expected = """{"version":"1.0.0","ok":true,"data":[59]}""".stripMargin
+        assert(body == expected)
+      }
+
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&cat=$category&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        val expected = """{"version":"1.0.0","ok":true,"data":[59]}""".stripMargin
+        assert(body == expected)
+      }
+
+      category = "anchoring"
+
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&cat=$category&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+        status should equal(200)
+        val expected = """{"version":"1.0.0","ok":true,"data":[0]}""".stripMargin
+        assert(body == expected)
+      }
+
+    }
+
     "fail when not authorized" in {
 
       val token = tokenCreator.user
