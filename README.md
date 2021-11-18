@@ -25,10 +25,10 @@ token=`curl -s -d "client_id=ubirch-2.0-user-access" -d "username=$TOKEN_USER" -
 #### Get Request
 
 ```shell script
-curl -s -X GET -H "authorization: bearer $token" \
+curl -v -X GET -H "authorization: bearer $token" \
  -H "content-type: application/json" \
-  "${host}/api/acct_events/v1/$owner?identity_id=$identity&start=$start&end=$end" \
- | jq .
+  "http://localhost:8081/api/acct_events/v1/$owner?cat=$category&identity_id=$device&start=$start&end=$end&only_count=$count&bucketed=$bucketed" \
+ | jq . 
 ```
 
 **Fields**
@@ -37,11 +37,19 @@ _ownerId_: it is the keycloak id of the logged-in user.
 
 _identity_id_: (Optional)* It is a device id or identity id. 
 
-_start_: (Optional)* It is the start time of the query. The format is "yyyy-M-dd"
+_category_: (Optional)* It is the category for the stored event.
 
-_end_: (Optional)* It is the end time of the query. The format is "yyyy-M-dd"
+_start_: (Optional) It is the start time of the query. The format is "yyyy-M-dd"
 
-> *if start and end are used, it is necessary to set the identity
+_end_: (Optional) It is the end time of the query. The format is "yyyy-M-dd"
+
+_only_count_: (Optional)* It turns on the count mode only. It will count the events only.
+
+_bucketed_: (Optional)* It will count aggregating by day.
+
+> The following image shows the possible combinations of the principal queries.
+
+![Accounting Params](accouting_params.png)
 
 ### Keycloak Token and Responses
  

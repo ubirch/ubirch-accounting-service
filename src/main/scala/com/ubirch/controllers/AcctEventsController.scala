@@ -118,6 +118,9 @@ class AcctEventsController @Inject() (
             } yield s.isAfter(e)
           }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
 
+          paramsString = s"only_count->$onlyCount, bucketed->$bucketed, owner_id->$ownerId, cat=${cat.getOrElse("")}, identity_id->${identityId.getOrElse("")}, start=${start.getOrElse("")}, end=${end.getOrElse("")}"
+          _ = logger.info(s"query = $paramsString")
+
           evs <- if (onlyCount) {
             acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
           } else if (bucketed) {

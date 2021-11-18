@@ -63,77 +63,51 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO, acctEventB
       f: (UUID) => Observable[T]
   ): Observable[T] = {
 
-    category match {
-      case Some(cat) =>
+    (category, identityId, start, end) match {
+      case (Some(cat), Some(id), Some(s), Some(e)) =>
+        a(ownerId, cat, id, s, e)
+          .onErrorHandle { e =>
+            logger.error("error_cat_a -> ", e)
+            throw e
+          }
+      case (Some(cat), Some(id), None, None) =>
+        b(ownerId, cat, id)
+          .onErrorHandle { e =>
+            logger.error("error_cat_b -> ", e)
+            throw e
+          }
+      case (Some(cat), None, None, None) =>
+        c(ownerId, cat)
+          .onErrorHandle { e =>
+            logger.error("error_cat_c -> ", e)
+            throw e
+          }
+      case (None, Some(id), Some(s), Some(e)) =>
+        d(ownerId, id, s, e)
+          .onErrorHandle { e =>
+            logger.error("error_d -> ", e)
+            throw e
+          }
+      case (None, Some(id), None, None) =>
+        e(ownerId, id)
+          .onErrorHandle { e =>
+            logger.error("error_e -> ", e)
+            throw e
+          }
+      case (None, None, None, None) =>
+        f(ownerId)
+          .onErrorHandle { e =>
+            logger.error("error_f-> ", e)
+            throw e
+          }
 
-        identityId match {
-          case Some(id) =>
-            (start, end) match {
-              case (Some(s), Some(e)) =>
-
-                a(ownerId, cat, id, s, e)
-                  .onErrorHandle { e =>
-                    logger.error("error_cat_a -> ", e)
-                    throw e
-                  }
-
-              case (None, None) =>
-
-                b(ownerId, cat, id)
-                  .onErrorHandle { e =>
-                    logger.error("error_cat_b -> ", e)
-                    throw e
-                  }
-
-              case _ =>
-                Observable.raiseError {
-                  logger.error("error -> ", e)
-                  new IllegalArgumentException("Start and End must be present")
-                }
-            }
-
-          case None =>
-            c(ownerId, cat)
-              .onErrorHandle { e =>
-                logger.error("error_cat_c -> ", e)
-                throw e
-              }
+      case _ =>
+        Observable.raiseError {
+          val e = new IllegalArgumentException(s"owner_id->$ownerId, cat=${category.getOrElse("")}, identity_id->${identityId.getOrElse("")}, start=${start.getOrElse("")}, end=${end.getOrElse("")}")
+          logger.error("error -> ", e)
+          e
         }
 
-      case None =>
-        identityId match {
-          case Some(id) =>
-            (start, end) match {
-              case (Some(s), Some(e)) =>
-
-                d(ownerId, id, s, e)
-                  .onErrorHandle { e =>
-                    logger.error("error_d -> ", e)
-                    throw e
-                  }
-
-              case (None, None) =>
-
-                e(ownerId, id)
-                  .onErrorHandle { e =>
-                    logger.error("error_e -> ", e)
-                    throw e
-                  }
-
-              case _ =>
-                Observable.raiseError {
-                  logger.error("error -> ", e)
-                  new IllegalArgumentException("Start and End must be present")
-                }
-            }
-
-          case None =>
-            f(ownerId)
-              .onErrorHandle { e =>
-                logger.error("error_f-> ", e)
-                throw e
-              }
-        }
     }
 
   }
