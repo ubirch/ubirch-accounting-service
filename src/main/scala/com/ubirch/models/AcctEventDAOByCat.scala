@@ -14,7 +14,7 @@ trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
 
   //These represent query descriptions only
 
-  implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events_by_cat2")
+  implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events_by_cat")
 
   def selectAllQ: db.Quoted[db.EntityQuery[AcctEventRow]] = quote(query[AcctEventRow])
 
