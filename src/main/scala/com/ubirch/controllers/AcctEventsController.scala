@@ -120,12 +120,10 @@ class AcctEventsController @Inject() (
 
           evs <- if (onlyCount) {
             acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
+          } else if (bucketed) {
+            acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end).map(x => Return(x))
           } else {
-            if (bucketed) {
-              acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end).map(x => Return(x))
-            } else {
-              acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
-            }
+            acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
           }
 
         } yield {

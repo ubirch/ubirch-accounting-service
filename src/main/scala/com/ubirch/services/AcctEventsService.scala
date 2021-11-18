@@ -13,7 +13,12 @@ import javax.inject.{ Inject, Singleton }
 trait AcctEventsService {
   def byOwnerIdAndIdentityId(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Observable[AcctEventRow]
   def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Observable[Long]
-  def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Task[Map[String, Int]]
+  def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Task[Map[String, Int]] = {
+    byOwnerIdAndIdentityId(ownerId, category, identityId, start, end)
+      .toListL
+      .map(_.groupBy(x => x.day.toString))
+      .map(_.mapValues(_.size))
+  }
 }
 
 @Singleton
@@ -79,13 +84,6 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO, acctEventB
         }
     }
 
-  }
-
-  override def byOwnerIdAndIdentityIdBucketed(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Task[Map[String, Int]] = {
-    byOwnerIdAndIdentityId(ownerId, category, identityId, start, end)
-      .toListL
-      .map(_.groupBy(x => x.day.toString))
-      .map(_.mapValues(_.size))
   }
 
   override def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Observable[Long] = {
