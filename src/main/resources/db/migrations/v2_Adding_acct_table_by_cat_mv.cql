@@ -3,7 +3,7 @@
 
    Adding acct table by cat mv */
 
-create materialized view acct_system.acct_events_by_cat
+create materialized view acct_system.acct_events_by_cat2
 as
 select category,
        owner_id,

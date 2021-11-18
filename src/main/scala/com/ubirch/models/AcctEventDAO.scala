@@ -5,7 +5,8 @@ import com.ubirch.services.cluster.ConnectionService
 import io.getquill.{ CassandraStreamContext, SnakeCase }
 import monix.reactive.Observable
 
-import java.util.{ Date, UUID }
+import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 
 trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
@@ -38,7 +39,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, identityId: UUID) = quote { byOwnerIdAndIdentityIdQ(ownerId, identityId).size }
 
-  def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID, start: Date, end: Date): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
+  def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID, start: LocalDate, end: LocalDate) = quote {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
       .filter(_.identityId == lift(identityId))
@@ -47,7 +48,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
       .map(x => x)
   }
 
-  def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, identityId: UUID, start: Date, end: Date) = quote {
+  def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, identityId: UUID, start: LocalDate, end: LocalDate) = quote {
     byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end).size
   }
 
@@ -74,9 +75,9 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
 
   def byOwnerIdAndIdentityIdCount(ownerId: UUID, identityId: UUID): Observable[Long] = run(byOwnerIdAndIdentityIdCountQ(ownerId, identityId))
 
-  def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID, start: Date, end: Date): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end))
+  def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID, start: LocalDate, end: LocalDate): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end))
 
-  def byOwnerIdAndIdentityIdCount(ownerId: UUID, identityId: UUID, start: Date, end: Date): Observable[Long] = run(byOwnerIdAndIdentityIdCountQ(ownerId, identityId, start, end))
+  def byOwnerIdAndIdentityIdCount(ownerId: UUID, identityId: UUID, start: LocalDate, end: LocalDate): Observable[Long] = run(byOwnerIdAndIdentityIdCountQ(ownerId, identityId, start, end))
 
   def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 

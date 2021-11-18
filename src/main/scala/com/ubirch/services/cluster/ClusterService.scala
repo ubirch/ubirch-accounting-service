@@ -108,7 +108,7 @@ class DefaultClusterService @Inject() (config: Config) extends ClusterService wi
       .withPoolingOptions(poolingOptions)
       .withCredentials(username, password)
       .withQueryOptions(queryOptions)
-      .withProtocolVersion(ProtocolVersion.V3)
+      .withProtocolVersion(ProtocolVersion.V4)
       .withClusterName("event-log")
 
     if (withSSL) {

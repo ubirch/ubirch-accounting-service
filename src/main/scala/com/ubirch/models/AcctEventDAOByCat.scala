@@ -5,7 +5,8 @@ import com.ubirch.services.cluster.ConnectionService
 import io.getquill.{ CassandraStreamContext, SnakeCase }
 import monix.reactive.Observable
 
-import java.util.{ Date, UUID }
+import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 
 trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
@@ -13,13 +14,14 @@ trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
 
   //These represent query descriptions only
 
-  implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events_by_cat")
+  implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events_by_cat2")
 
   def selectAllQ: db.Quoted[db.EntityQuery[AcctEventRow]] = quote(query[AcctEventRow])
 
   def byOwnerIdQ(ownerId: UUID, category: String) = quote {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
+      .filter(_.category == lift(category))
       .map(x => x)
   }
 
@@ -37,7 +39,7 @@ trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
     byOwnerIdAndIdentityIdQ(ownerId, category, identityId).size
   }
 
-  def byOwnerIdAndIdentityIdQ(ownerId: UUID, category: String, identityId: UUID, start: Date, end: Date) = quote {
+  def byOwnerIdAndIdentityIdQ(ownerId: UUID, category: String, identityId: UUID, start: LocalDate, end: LocalDate) = quote {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
       .filter(_.category == lift(category))
@@ -47,7 +49,7 @@ trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
       .map(x => x)
   }
 
-  def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, category: String, identityId: UUID, start: Date, end: Date) = quote {
+  def byOwnerIdAndIdentityIdCountQ(ownerId: UUID, category: String, identityId: UUID, start: LocalDate, end: LocalDate) = quote {
     byOwnerIdAndIdentityIdQ(ownerId, category, identityId, start, end).size
   }
 
@@ -70,10 +72,10 @@ class AcctEventByCatDAO @Inject() (val connectionService: ConnectionService) ext
   def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: String, identityId: UUID): Observable[Long] =
     run(byOwnerIdAndIdentityIdCountQ(ownerId, category, identityId))
 
-  def byOwnerIdAndIdentityId(ownerId: UUID, category: String, identityId: UUID, start: Date, end: Date): Observable[AcctEventRow] =
+  def byOwnerIdAndIdentityId(ownerId: UUID, category: String, identityId: UUID, start: LocalDate, end: LocalDate): Observable[AcctEventRow] =
     run(byOwnerIdAndIdentityIdQ(ownerId, category, identityId, start, end))
 
-  def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: String, identityId: UUID, start: Date, end: Date): Observable[Long] =
+  def byOwnerIdAndIdentityIdCount(ownerId: UUID, category: String, identityId: UUID, start: LocalDate, end: LocalDate): Observable[Long] =
     run(byOwnerIdAndIdentityIdCountQ(ownerId, category, identityId, start, end))
 
 }

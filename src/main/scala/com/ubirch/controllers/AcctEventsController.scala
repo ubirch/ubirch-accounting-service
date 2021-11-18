@@ -5,7 +5,7 @@ import com.ubirch.controllers.concerns.{ ControllerBase, KeycloakBearerAuthStrat
 import com.ubirch.models.{ AcctEventRow, NOK, Return }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.jwt.{ PublicKeyPoolService, TokenVerificationService }
-import com.ubirch.util.TaskHelpers
+import com.ubirch.util.{ DateUtil, TaskHelpers }
 import com.ubirch.{ InvalidSecurityCheck, ServiceException }
 
 import com.typesafe.config.Config
@@ -101,18 +101,21 @@ class AcctEventsController @Inject() (
 
           start <- Task(params.get("start"))
             .map(_.map(sdf.parse))
+            .map(_.map(x => DateUtil.dateToLocalTime(x)))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Start: Use yyyy-M-dd this format"))
 
           end <- Task(params.get("end"))
             .map(_.map(sdf.parse))
+            .map(_.map(x => DateUtil.dateToLocalTime(x)))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid End: Use yyyy-M-dd this format"))
+
           _ <- earlyResponseIf(start.isDefined && end.isEmpty)(new IllegalArgumentException("Invalid Range Definition: Start requires End"))
           _ <- earlyResponseIf(start.isEmpty && end.isDefined)(new IllegalArgumentException("Invalid Range Definition: End requires Start"))
           _ <- earlyResponseIf({
             for {
               s <- start
               e <- end
-            } yield s.after(e)
+            } yield s.isAfter(e)
           }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
 
           evs <- if (onlyCount) {

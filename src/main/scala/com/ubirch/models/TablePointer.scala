@@ -3,7 +3,7 @@ package com.ubirch.models
 import io.getquill.context.cassandra.CassandraContext
 import io.getquill.context.cassandra.encoding.{ Decoders, Encoders }
 
-import java.util.Date
+import java.time.LocalDate
 
 /**
   * Cassandra Context DB value.
@@ -26,9 +26,9 @@ trait TablePointer[T] extends CassandraBase {
 
   implicit val pointingAt: SchemaMeta[T]
 
-  implicit class DateQuotes(left: Date) {
-    def >=(right: Date) = quote(infix"$left >= $right".as[Boolean])
-    def <=(right: Date) = quote(infix"$left <= $right".as[Boolean])
+  implicit class DateQuotes(left: LocalDate) {
+    def >=(right: LocalDate) = quote(infix"$left >= $right".as[Boolean])
+    def <=(right: LocalDate) = quote(infix"$left <= $right".as[Boolean])
   }
 
 }
