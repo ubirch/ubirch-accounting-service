@@ -51,9 +51,9 @@ _identity_id_: (Optional) It is a device id or identity id.
 
 _category_: (Optional) It is the category for the stored event. Use 'anchoring' or 'verification'.
 
-_start_: (Optional) It is the start time of the query. The format is "yyyy-M-dd"
+_start_: (Optional) It is the start time of the query. The format is "yyyy-MM-dd"
 
-_end_: (Optional) It is the end time of the query. The format is "yyyy-M-dd"
+_end_: (Optional) It is the end time of the query. The format is "yyyy-MM-dd"
 
 _only_count_: (Optional) It turns on the count mode only. It will count the events only.
 

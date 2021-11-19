@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 class LocalDateSerializer extends CustomSerializer[LocalDate](_ => ({
   case JString(s) =>
-    val sdf = new SimpleDateFormat("yyyy-M-dd")
+    val sdf = new SimpleDateFormat("yyyy-MM-dd")
     DateUtil.dateToLocalTime(sdf.parse(s))
 },
   {
