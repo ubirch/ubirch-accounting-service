@@ -93,6 +93,7 @@ class AcctEventsController @Inject() (
 
           cat <- Task(params.get("cat"))
             .map(_.filter(_.nonEmpty))
+            .map(_.map(_.toLowerCase()))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
 
           identityId <- Task(params.get("identity_id"))

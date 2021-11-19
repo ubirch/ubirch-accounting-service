@@ -2,6 +2,18 @@
 
 This service listens for AcctEvent records and stores them on Cassandra. It exposes a http interface as well that support querying.
 
+1. Categories supported
+2. [Query through http Interface](#http-interface)
+3. [Ingestion through Kafka Interface](#kafka-interface)
+
+## Categories
+
+The system has two principal categories. Anchoring and Verification.
+
+All UPPs that pass by Niomon are registered against the Accounting Service by the Event Log.
+
+All UPPs/Hashes that are verified with the version 2 of the verification service are registered against the Accounting Service
+
 ## Http Interface
 
 1. [Getting Started](#steps-to-prepare-a-request)
@@ -37,7 +49,7 @@ _ownerId_: it is the keycloak id of the logged-in user.
 
 _identity_id_: (Optional) It is a device id or identity id. 
 
-_category_: (Optional) It is the category for the stored event.
+_category_: (Optional) It is the category for the stored event. Use 'anchoring' or 'verification'.
 
 _start_: (Optional) It is the start time of the query. The format is "yyyy-M-dd"
 
@@ -87,7 +99,7 @@ The <response> codes could be:
 
 Visit https://accounting.dev.ubirch.com/docs on your browser to see the swagger docs.
 
-# Kafka
+# Kafka Interface
 
 The system will be listening to the configured topic and will store the account events to cassandra. The expected data object that
 is required is as it follows:
