@@ -135,28 +135,27 @@ class AcctEventsControllerSpec
       def start = "2020-01-01"
       def end = "2021-03-01"
       var category = "verification"
-      def count = true
-      def bucketed = true
+      var mode = "count"
 
-      get(s"/v1/$owner?only_count=$count", headers = Map("authorization" -> token.prepare)) {
+      get(s"/v1/$owner?mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         val expected = """{"version":"1.0.0","ok":true,"data":[3893]}""".stripMargin
         assert(body == expected)
       }
 
-      get(s"/v1/$owner?identity_id=$identity&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+      get(s"/v1/$owner?identity_id=$identity&mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         val expected = """{"version":"1.0.0","ok":true,"data":[544]}""".stripMargin
         assert(body == expected)
       }
 
-      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         val expected = """{"version":"1.0.0","ok":true,"data":[60]}""".stripMargin
         assert(body == expected)
       }
 
-      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&cat=$category&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&cat=$category&mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         val expected = """{"version":"1.0.0","ok":true,"data":[60]}""".stripMargin
         assert(body == expected)
@@ -164,15 +163,26 @@ class AcctEventsControllerSpec
 
       category = "anchoring"
 
-      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&cat=$category&only_count=$count", headers = Map("authorization" -> token.prepare)) {
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&cat=$category&mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         val expected = """{"version":"1.0.0","ok":true,"data":[0]}""".stripMargin
         assert(body == expected)
       }
 
-      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&bucketed=$bucketed", headers = Map("authorization" -> token.prepare)) {
+      mode = "bucketed"
+
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
         val expected = """{"version":"1.0.0","ok":true,"data":{"2021-02-27":6,"2021-02-23":3,"2021-02-24":12,"2021-02-25":6,"2021-02-18":3,"2021-02-21":1,"2021-02-26":18,"2021-02-28":1,"2021-02-22":6,"2021-03-01":2,"2021-02-16":2}}""".stripMargin
+        assert(body == expected)
+      }
+
+      mode = "other"
+
+      get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&mode=$mode", headers = Map("authorization" -> token.prepare)) {
+        status should equal(400)
+        println(body)
+        val expected = """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid mode: wrong mode param -> other"}""".stripMargin
         assert(body == expected)
       }
 

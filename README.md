@@ -37,10 +37,10 @@ token=`curl -s -d "client_id=ubirch-2.0-user-access" -d "username=$TOKEN_USER" -
 #### Get Request
 
 ```shell script
-curl -v -X GET -H "authorization: bearer $token" \
+curl -s -X GET -H "authorization: bearer $token" \
  -H "content-type: application/json" \
-  "http://localhost:8081/api/acct_events/v1/$owner?cat=$category&identity_id=$device&start=$start&end=$end&only_count=$count&bucketed=$bucketed" \
- | jq . 
+  "http://localhost:8081/api/acct_events/v1/$owner?cat=$category&identity_id=$device&start=$start&end=$end&mode=$mode" \
+ | jq .
 ```
 
 **Fields**
@@ -49,15 +49,13 @@ _ownerId_: it is the keycloak id of the logged-in user.
 
 _identity_id_: (Optional) It is a device id or identity id. 
 
-_category_: (Optional) It is the category for the stored event. Use 'anchoring' or 'verification'.
+_category_: (Optional) It is the category for the stored event. Use `anchoring` or `verification`.
 
 _start_: (Optional) It is the start time of the query. The format is "yyyy-MM-dd"
 
 _end_: (Optional) It is the end time of the query. The format is "yyyy-MM-dd"
 
-_only_count_: (Optional) It turns on the count mode only. It will count the events only.
-
-_bucketed_: (Optional) It will count aggregating by day.
+_mode_: (Optional) It defines the search mode. There are three types, 1. `count`, 2.`bucketed`, and 3. `events`. If no values is provided or no header, the mode events is used by default. The mode count means that the query will return a number of the matched values. The mode bucketed means that the result will be a counted aggregation per day. The default mode events means that the actual event's record is part of the response.
 
 > The following image shows the possible combinations of the principal queries.
 

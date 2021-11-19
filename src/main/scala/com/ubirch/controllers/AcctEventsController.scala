@@ -73,14 +73,6 @@ class AcctEventsController @Inject() (
       asyncResult("list_acct_events_owner") { implicit request => _ =>
         (for {
 
-          onlyCount <- Task(params.get("only_count"))
-            .map(_.exists(_ == "true"))
-            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid onlyCount: wrong onlyCount param"))
-
-          bucketed <- Task(params.get("bucketed"))
-            .map(_.exists(_ == "true"))
-            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid bucketed: wrong bucketed param"))
-
           rawOwnerId <- Task(params.get("owner_id"))
           ownerId <- Task(rawOwnerId)
             .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
@@ -119,16 +111,15 @@ class AcctEventsController @Inject() (
             } yield s.isAfter(e)
           }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: Start must be before End"))
 
-          paramsString = s"only_count->$onlyCount, bucketed->$bucketed, owner_id->$ownerId, cat=${cat.getOrElse("")}, identity_id->${identityId.getOrElse("")}, start=${start.getOrElse("")}, end=${end.getOrElse("")}"
-          _ = logger.info(s"query = $paramsString")
-
-          evs <- if (onlyCount) {
-            acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
-          } else if (bucketed) {
-            acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end).map(x => Return(x))
-          } else {
-            acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
+          mode <- Task(params.get("mode")).map(_.map(_.trim).orElse(Some("events")))
+          evs <- mode match {
+            case Some("count") => acctEvents.byOwnerIdAndIdentityIdCount(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
+            case Some("bucketed") => acctEvents.byOwnerIdAndIdentityIdBucketed(ownerId, cat, identityId, start, end).map(x => Return(x))
+            case Some("events") => acctEvents.byOwnerIdAndIdentityId(ownerId, cat, identityId, start, end).toListL.map(x => Return(x))
+            case other => throw new IllegalArgumentException(s"Invalid mode: wrong mode param -> ${other.getOrElse("")}")
           }
+
+          _ = logger.info(s"query: mode->${mode.getOrElse("")}, , owner_id->$ownerId, cat=${cat.getOrElse("")}, identity_id->${identityId.getOrElse("")}, start=${start.getOrElse("")}, end=${end.getOrElse("")}")
 
         } yield {
           Ok(evs)
