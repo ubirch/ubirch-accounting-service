@@ -2,7 +2,7 @@
 
 This service listens for AcctEvent records and stores them on Cassandra. It exposes a http interface as well that support querying.
 
-1. Categories supported
+1. [Categories supported](#categories)
 2. [Query through http Interface](#http-interface)
 3. [Ingestion through Kafka Interface](#kafka-interface)
 
