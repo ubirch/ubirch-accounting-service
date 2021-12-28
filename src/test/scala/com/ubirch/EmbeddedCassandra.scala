@@ -59,6 +59,7 @@ object EmbeddedCassandra {
     CqlScript.ofString("CREATE KEYSPACE acct_system WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};"),
     CqlScript.ofString("USE acct_system;"),
     CqlScript.ofClasspath("db/migrations/v1_Adding_basic_acct_table.cql"),
-    CqlScript.ofClasspath("db/migrations/v2_Adding_acct_table_by_cat_mv.cql")
+    CqlScript.ofClasspath("db/migrations/v2_Adding_acct_table_by_cat_mv.cql"),
+    CqlScript.ofClasspath("db/migrations/v3_add_counter_table.cql")
   )
 }

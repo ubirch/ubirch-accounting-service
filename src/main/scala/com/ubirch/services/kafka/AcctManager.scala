@@ -6,7 +6,7 @@ import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
-import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
+import com.ubirch.models.{ AcctEvent, AcctEventCountDAO, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.DateUtil
@@ -62,6 +62,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 @Singleton
 class DefaultAcctManager @Inject() (
     acctEventDAO: AcctEventDAO,
+    acctEventCounterDAO: AcctEventCountDAO,
     jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle
@@ -96,7 +97,6 @@ class DefaultAcctManager @Inject() (
       }
       .flatMap { acctEvent =>
 
-        //TODO: Can we just not have direct value?
         val row = AcctEventRow(
           id = acctEvent.id,
           ownerId = acctEvent.ownerId,
@@ -108,9 +108,13 @@ class DefaultAcctManager @Inject() (
           occurredAt = acctEvent.occurredAt,
           createdAt = new Date()
         )
-        acctEventDAO
-          .insert(row)
-          .map(x => (acctEvent, row, x))
+
+        for {
+          _ <- acctEventCounterDAO.add(row.identityId, row.category, row.day)
+          res <- acctEventDAO
+            .insert(row)
+            .map(x => (acctEvent, row, x))
+        } yield res
 
       }
       .flatMap { case (_, row, _) =>
