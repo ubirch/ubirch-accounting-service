@@ -27,6 +27,12 @@ trait AcctEventCountRowsQueries extends TablePointer[AcctEventCountRow] {
 
   }
 
+  def byIdentityIdAndCategoryQ(identityId: UUID, category: String) = quote {
+    query[AcctEventCountRow]
+      .filter(_.identityId == lift(identityId))
+      .filter(_.category == lift(category))
+  }
+
 }
 
 class AcctEventCountDAO @Inject() (val connectionService: ConnectionService) extends AcctEventCountRowsQueries {
@@ -35,6 +41,9 @@ class AcctEventCountDAO @Inject() (val connectionService: ConnectionService) ext
   import db._
 
   def selectAll: Observable[AcctEventCountRow] = run(selectAllQ)
+
+  def byIdentityIdAndCategory(identityId: UUID, category: String): Observable[AcctEventCountRow] =
+    run(byIdentityIdAndCategoryQ(identityId, category))
 
   def add(identityId: UUID, category: String, day: LocalDate): Observable[Unit] =
     run(addQ(identityId, category, day))

@@ -181,7 +181,6 @@ class AcctEventsControllerSpec
 
       get(s"/v1/$owner?identity_id=$identity&start=$start&end=$end&mode=$mode", headers = Map("authorization" -> token.prepare)) {
         status should equal(400)
-        println(body)
         val expected = """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid mode: wrong mode param -> other"}""".stripMargin
         assert(body == expected)
       }

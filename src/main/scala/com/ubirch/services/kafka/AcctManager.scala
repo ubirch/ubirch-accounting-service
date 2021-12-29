@@ -118,7 +118,7 @@ class DefaultAcctManager @Inject() (
 
       }
       .flatMap { case (_, row, _) =>
-        logger.info("acct_evt_inserted={}", row.toString)
+        logger.debug("acct_evt_inserted={}", row.toString)
         Observable.unit
       }
       .onErrorHandle {

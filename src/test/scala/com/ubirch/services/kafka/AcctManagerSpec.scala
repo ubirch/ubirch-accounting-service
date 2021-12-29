@@ -152,9 +152,10 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     def id = UUID.randomUUID()
     val ownerId = UUID.randomUUID()
     val identityId = UUID.randomUUID()
+    val category = "verification"
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), Some("this is a token"), new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), Some("this is a token"), new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
@@ -178,7 +179,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
       assert(presentAcctEvents.nonEmpty)
       assert(presentAcctEvents.size == validAcctEvents.size)
 
-      val presentAcctEventsCounts = await(acctEventCountDAO.selectAll, 5 seconds)
+      val presentAcctEventsCounts = await(acctEventCountDAO.byIdentityIdAndCategory(identityId, category), 5 seconds)
 
       assert(presentAcctEventsCounts.nonEmpty)
       assert(presentAcctEventsCounts.size == 1)
