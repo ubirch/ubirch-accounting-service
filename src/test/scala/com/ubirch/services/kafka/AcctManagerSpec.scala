@@ -12,7 +12,7 @@ import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.prometheus.client.CollectorRegistry
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 
-import java.util.{ Date, UUID }
+import java.util.{ Calendar, Date, UUID }
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -154,14 +154,33 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     val identityId = UUID.randomUUID()
     val category = "verification"
 
-    val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), Some("this is a token"), new Date())
+    val validAcctEvents1 = (1 to batch).map { i =>
+
+      val date = new Date()
+
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), Some("this is a token" + i), date)
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
-    val totalAcctEvents = validAcctEvents
+    val validAcctEvents2 = (1 to batch).map { i =>
+
+      val date = {
+        val dt = new Date()
+        val c = Calendar.getInstance
+        c.setTime(dt)
+        c.add(Calendar.DATE, 1)
+        c.getTime
+      }
+
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), Some("this is a token" + i), date)
+      val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+      val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
+      (acctEvent, acctEventAsString)
+    }
+
+    val totalAcctEvents = validAcctEvents1 ++ validAcctEvents2
 
     withRunningKafka {
 
@@ -177,13 +196,22 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
       val presentAcctEvents = await(acctEventDAO.selectAll, 5 seconds)
 
       assert(presentAcctEvents.nonEmpty)
-      assert(presentAcctEvents.size == validAcctEvents.size)
+      assert(presentAcctEvents.size == totalAcctEvents.size)
 
       val presentAcctEventsCounts = await(acctEventCountDAO.byIdentityIdAndCategory(identityId, category), 5 seconds)
 
       assert(presentAcctEventsCounts.nonEmpty)
-      assert(presentAcctEventsCounts.size == 1)
-      assert(presentAcctEventsCounts.headOption.getOrElse(throw new Exception("empty counts")).countEvents == 50)
+      assert(presentAcctEventsCounts.size == 2)
+
+      presentAcctEventsCounts match {
+        case Nil => throw new Exception("empty counts")
+        case List(a, b) =>
+          assert(a.identityId == identityId)
+          assert(b.identityId == identityId)
+          assert(a.category == category)
+          assert(a.countEvents == 50)
+          assert(b.countEvents == 50)
+      }
 
     }
 
