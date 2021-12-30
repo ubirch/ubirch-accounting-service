@@ -25,7 +25,6 @@ trait AcctEventsService {
 class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO, acctEventByCatDAO: AcctEventByCatDAO) extends AcctEventsService with LazyLogging {
 
   override def byOwnerIdAndIdentityId(ownerId: UUID, category: Option[String], identityId: Option[UUID], start: Option[LocalDate], end: Option[LocalDate]): Observable[AcctEventRow] = {
-
     byOwnerIdAndIdentityIdBase(ownerId, category, identityId, start, end)(
       a = (ownerId, cat, id, s, e) => acctEventByCatDAO.byOwnerIdAndIdentityId(ownerId, cat, id, s, e),
       b = (ownerId, cat, id) => acctEventByCatDAO.byOwnerIdAndIdentityId(ownerId, cat, id),
