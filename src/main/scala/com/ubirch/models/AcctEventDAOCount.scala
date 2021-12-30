@@ -16,8 +16,6 @@ trait AcctEventCountRowsQueries extends TablePointer[AcctEventCountRow] {
 
   implicit val pointingAt = schemaMeta[AcctEventCountRow]("acct_events_counts")
 
-  def selectAllQ = quote(query[AcctEventCountRow])
-
   def addQ(identityId: UUID, category: String, day: LocalDate) = quote {
     query[AcctEventCountRow]
       .filter(_.identityId == lift(identityId))
@@ -39,8 +37,6 @@ class AcctEventCountDAO @Inject() (val connectionService: ConnectionService) ext
   val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
 
   import db._
-
-  def selectAll: Observable[AcctEventCountRow] = run(selectAllQ)
 
   def byIdentityIdAndCategory(identityId: UUID, category: String): Observable[AcctEventCountRow] =
     run(byIdentityIdAndCategoryQ(identityId, category))

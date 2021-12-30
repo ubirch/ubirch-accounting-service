@@ -52,10 +52,6 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
     byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end).size
   }
 
-  def deleteQ(ownerId: UUID, acctEventId: UUID) = quote {
-    query[AcctEventRow].filter(x => x.ownerId == lift(ownerId) && x.id == lift(acctEventId)).delete
-  }
-
 }
 
 class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends AcctEventRowsQueries {
@@ -78,7 +74,5 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
   def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID, start: LocalDate, end: LocalDate): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId, start, end))
 
   def byOwnerIdAndIdentityIdCount(ownerId: UUID, identityId: UUID, start: LocalDate, end: LocalDate): Observable[Long] = run(byOwnerIdAndIdentityIdCountQ(ownerId, identityId, start, end))
-
-  def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 
 }

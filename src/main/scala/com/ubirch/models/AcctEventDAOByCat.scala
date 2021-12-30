@@ -16,8 +16,6 @@ trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
 
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events_by_cat")
 
-  def selectAllQ: db.Quoted[db.EntityQuery[AcctEventRow]] = quote(query[AcctEventRow])
-
   def byOwnerIdQ(ownerId: UUID, category: String) = quote {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
@@ -59,8 +57,6 @@ class AcctEventByCatDAO @Inject() (val connectionService: ConnectionService) ext
   val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
 
   import db._
-
-  def selectAll: Observable[AcctEventRow] = run(selectAllQ)
 
   def byOwnerId(ownerId: UUID, category: String): Observable[AcctEventRow] = run(byOwnerIdQ(ownerId, category))
 
