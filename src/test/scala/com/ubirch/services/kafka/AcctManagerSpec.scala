@@ -47,14 +47,14 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     def identityId = UUID.randomUUID()
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), Some("this is a token"), new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, None, new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
@@ -100,14 +100,14 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     val identityId = UUID.randomUUID()
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), Some("this is a token"), new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, None, new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
@@ -154,17 +154,17 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     val identityId = UUID.randomUUID()
     val category = "verification"
 
-    val validAcctEvents1 = (1 to batch).map { i =>
+    val validAcctEvents1 = (1 to batch).map { _ =>
 
       val date = new Date()
 
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), Some("this is a token" + i), date)
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), date)
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
-    val validAcctEvents2 = (1 to batch).map { i =>
+    val validAcctEvents2 = (1 to batch).map { _ =>
 
       val date = {
         val dt = new Date()
@@ -174,7 +174,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
         c.getTime
       }
 
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), Some("this is a token" + i), date)
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), category, Some("Lana de rey concert"), date)
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)

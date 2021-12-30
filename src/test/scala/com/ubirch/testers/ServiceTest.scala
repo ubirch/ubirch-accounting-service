@@ -50,8 +50,8 @@ object ServiceTest extends Boot(Binder.modules) {
       val latch = new CountDownLatch(1)
 
       Future.sequence {
-        (1 to batch).map { index =>
-          val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), Some("this is a token" + index), new Date())
+        (1 to batch).map { _ =>
+          val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), new Date())
           val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
           val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
 

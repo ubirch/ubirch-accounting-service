@@ -103,7 +103,6 @@ class DefaultAcctManager @Inject() (
           identityId = acctEvent.identityId.orNull,
           category = acctEvent.category,
           description = acctEvent.description,
-          tokenValue = acctEvent.token,
           day = DateUtil.dateToLocalTime(acctEvent.occurredAt),
           occurredAt = acctEvent.occurredAt,
           createdAt = new Date()

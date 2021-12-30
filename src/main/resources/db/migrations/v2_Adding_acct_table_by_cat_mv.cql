@@ -11,7 +11,6 @@ select category,
        id,
        category,
        description,
-       token_value,
        day,
        occurred_at,
        created_at

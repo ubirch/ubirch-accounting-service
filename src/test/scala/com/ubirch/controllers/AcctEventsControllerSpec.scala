@@ -70,8 +70,7 @@ class AcctEventsControllerSpec
             "category, " +
             "created_at, " +
             "description, " +
-            "occurred_at, " +
-            "token_value) " +
+            "occurred_at) " +
             "VALUES (" +
             "963995ed-ce12-4ea5-89dc-b181701d1d7b, " +
             "7549acd8-91e1-4230-833a-2f386e09b96f, " +
@@ -80,8 +79,7 @@ class AcctEventsControllerSpec
             "'verification'," +
             "'2020-12-03 19:44:44.261'," +
             "'Lana Del Rey - Bogota Concert'," +
-            "'2020-12-03 19:44:43.243'," +
-            "'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuLmRldi51YmlyY2guY29tIiwic3ViIjoiOTYzOTk1ZWQtY2UxMi00ZWE1LTg5ZGMtYjE4MTcwMWQxZDdiIiwiYXVkIjoiaHR0cHM6Ly92ZXJpZnkuZGV2LnViaXJjaC5jb20iLCJleHAiOjc5MTg0MTI0MjYsImlhdCI6MTYwNzAyMjAyNiwianRpIjoiNDhkOGE5ZjUtMjY4Mi00YzU5LThjMDctM2NiN2VjMzVkMmE1IiwicHVycG9zZSI6IkxhbmEgRGVsIFJleSAtIEJvZ290YSBDb25jZXJ0IiwidGFyZ2V0X2lkZW50aXRpZXMiOiIqIiwicm9sZSI6InZlcmlmaWVyIn0.asqbiVNGesd6-S-tE0M7uJs6Kw2xEVMASo9M6XpSrJhXdj4qrnW-9EcgdvV2FGowrTeEFqS0zrt7LxphkQh-Wg');").stripMargin
+            "'2020-12-03 19:44:43.243');").stripMargin
         ),
         CqlScript.ofString(
           (s"INSERT INTO acct_system.acct_events (" +
@@ -92,8 +90,7 @@ class AcctEventsControllerSpec
             "category, " +
             "created_at, " +
             "description, " +
-            "occurred_at, " +
-            "token_value) " +
+            "occurred_at) " +
             "VALUES (" +
             "963995ed-ce12-4ea5-89dc-b181701d1d7b, " +
             "7549acd8-91e1-4230-833a-2f386e09b96c, " +
@@ -102,8 +99,7 @@ class AcctEventsControllerSpec
             "'verification'," +
             "'2020-12-03 19:44:44.261'," +
             "'Lana Del Rey - Bogota Concert'," +
-            "'2020-12-03 19:44:43.243'," +
-            "'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuLmRldi51YmlyY2guY29tIiwic3ViIjoiOTYzOTk1ZWQtY2UxMi00ZWE1LTg5ZGMtYjE4MTcwMWQxZDdiIiwiYXVkIjoiaHR0cHM6Ly92ZXJpZnkuZGV2LnViaXJjaC5jb20iLCJleHAiOjc5MTg0MTI0MjYsImlhdCI6MTYwNzAyMjAyNiwianRpIjoiNDhkOGE5ZjUtMjY4Mi00YzU5LThjMDctM2NiN2VjMzVkMmE1IiwicHVycG9zZSI6IkxhbmEgRGVsIFJleSAtIEJvZ290YSBDb25jZXJ0IiwidGFyZ2V0X2lkZW50aXRpZXMiOiIqIiwicm9sZSI6InZlcmlmaWVyIn0.asqbiVNGesd6-S-tE0M7uJs6Kw2xEVMASo9M6XpSrJhXdj4qrnW-9EcgdvV2FGowrTeEFqS0zrt7LxphkQh-Wg');").stripMargin
+            "'2020-12-03 19:44:43.243');").stripMargin
         )
       ).foreach(x => x.forEachStatement { x => val _ = cassandra.connection.execute(x) })
 
@@ -114,7 +110,7 @@ class AcctEventsControllerSpec
 
       get(s"/v1/$uuid?identity_id=$identity", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
-        val expected = """{"version":"1.0.0","ok":true,"data":[{"id":"15f0c427-5dfb-4e15-853c-0770dd400763","ownerId":"963995ed-ce12-4ea5-89dc-b181701d1d7b","identityId":"7549acd8-91e1-4230-833a-2f386e09b96f","category":"verification","description":"Lana Del Rey - Bogota Concert","tokenValue":"eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuLmRldi51YmlyY2guY29tIiwic3ViIjoiOTYzOTk1ZWQtY2UxMi00ZWE1LTg5ZGMtYjE4MTcwMWQxZDdiIiwiYXVkIjoiaHR0cHM6Ly92ZXJpZnkuZGV2LnViaXJjaC5jb20iLCJleHAiOjc5MTg0MTI0MjYsImlhdCI6MTYwNzAyMjAyNiwianRpIjoiNDhkOGE5ZjUtMjY4Mi00YzU5LThjMDctM2NiN2VjMzVkMmE1IiwicHVycG9zZSI6IkxhbmEgRGVsIFJleSAtIEJvZ290YSBDb25jZXJ0IiwidGFyZ2V0X2lkZW50aXRpZXMiOiIqIiwicm9sZSI6InZlcmlmaWVyIn0.asqbiVNGesd6-S-tE0M7uJs6Kw2xEVMASo9M6XpSrJhXdj4qrnW-9EcgdvV2FGowrTeEFqS0zrt7LxphkQh-Wg","day":"2020-12-03","occurredAt":"2020-12-03T18:44:43.243Z","createdAt":"2020-12-03T18:44:44.261Z"}]}""".stripMargin
+        val expected = """{"version":"1.0.0","ok":true,"data":[{"id":"15f0c427-5dfb-4e15-853c-0770dd400763","ownerId":"963995ed-ce12-4ea5-89dc-b181701d1d7b","identityId":"7549acd8-91e1-4230-833a-2f386e09b96f","category":"verification","description":"Lana Del Rey - Bogota Concert","day":"2020-12-03","occurredAt":"2020-12-03T18:44:43.243Z","createdAt":"2020-12-03T18:44:44.261Z"}]}""".stripMargin
         assert(body == expected)
       }
 
