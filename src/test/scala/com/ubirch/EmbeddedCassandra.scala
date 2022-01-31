@@ -60,6 +60,7 @@ object EmbeddedCassandra {
     CqlScript.ofString("USE acct_system;"),
     CqlScript.ofClasspath("db/migrations/v1_Adding_basic_acct_table.cql"),
     CqlScript.ofClasspath("db/migrations/v2_Adding_acct_table_by_cat_mv.cql"),
-    CqlScript.ofClasspath("db/migrations/v3_Add_counter_table.cql")
+    CqlScript.ofClasspath("db/migrations/v3_Add_events_by_day_counter_table.cql"),
+    CqlScript.ofClasspath("db/migrations/v4_Add_events_by_hour_counter_table.cql")
   )
 }

@@ -1,11 +1,11 @@
 /* Cassandra migration for keyspace acct_system.
    Version 3 - 2021-12-28T15:36:56.000190+00:00
 
-   add_counter_table */
+   acct_events_counts_by_day */
 
-drop table if exists acct_system.acct_events_counts;
+drop table if exists acct_system.acct_events_counts_by_day;
 
-create table if not exists acct_system.acct_events_counts (
+create table if not exists acct_system.acct_events_counts_by_day (
                                                     identity_id UUID,
                                                     category text,
                                                     day date,

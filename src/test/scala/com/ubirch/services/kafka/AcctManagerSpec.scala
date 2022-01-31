@@ -3,7 +3,7 @@ package com.ubirch.services.kafka
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch._
 import com.ubirch.kafka.util.PortGiver
-import com.ubirch.models.{ AcctEvent, AcctEventCountDAO, AcctEventDAO }
+import com.ubirch.models.{ AcctEvent, AcctEventCountByDayDAO, AcctEventDAO }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.formats.JsonConverterService
 
@@ -145,7 +145,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
 
     val jsonConverter = Injector.get[JsonConverterService]
     val acctEventDAO = Injector.get[AcctEventDAO]
-    val acctEventCountDAO = Injector.get[AcctEventCountDAO]
+    val acctEventCountDAO = Injector.get[AcctEventCountByDayDAO]
 
     val batch = 50
 

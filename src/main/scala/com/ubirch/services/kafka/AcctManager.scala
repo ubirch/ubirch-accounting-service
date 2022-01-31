@@ -6,7 +6,7 @@ import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
-import com.ubirch.models.{ AcctEvent, AcctEventCountDAO, AcctEventDAO, AcctEventRow }
+import com.ubirch.models.{ AcctEvent, AcctEventCountByDayDAO, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.DateUtil
@@ -62,7 +62,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 @Singleton
 class DefaultAcctManager @Inject() (
     acctEventDAO: AcctEventDAO,
-    acctEventCounterDAO: AcctEventCountDAO,
+    acctEventCounterDAO: AcctEventCountByDayDAO,
     jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle

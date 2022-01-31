@@ -9,15 +9,15 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
-trait AcctEventCountRowsQueries extends TablePointer[AcctEventCountRow] {
+trait AcctEventCountByDayRowQueries extends TablePointer[AcctEventCountByDayRow] {
   import db._
 
   //These represent query descriptions only
 
-  implicit val pointingAt = schemaMeta[AcctEventCountRow]("acct_events_counts")
+  implicit val pointingAt = schemaMeta[AcctEventCountByDayRow]("acct_events_counts_by_day")
 
   def addQ(identityId: UUID, category: String, day: LocalDate) = quote {
-    query[AcctEventCountRow]
+    query[AcctEventCountByDayRow]
       .filter(_.identityId == lift(identityId))
       .filter(_.day == lift(day))
       .filter(_.category == lift(category))
@@ -26,19 +26,19 @@ trait AcctEventCountRowsQueries extends TablePointer[AcctEventCountRow] {
   }
 
   def byIdentityIdAndCategoryQ(identityId: UUID, category: String) = quote {
-    query[AcctEventCountRow]
+    query[AcctEventCountByDayRow]
       .filter(_.identityId == lift(identityId))
       .filter(_.category == lift(category))
   }
 
 }
 
-class AcctEventCountDAO @Inject() (val connectionService: ConnectionService) extends AcctEventCountRowsQueries {
+class AcctEventCountByDayDAO @Inject() (val connectionService: ConnectionService) extends AcctEventCountByDayRowQueries {
   val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
 
   import db._
 
-  def byIdentityIdAndCategory(identityId: UUID, category: String): Observable[AcctEventCountRow] =
+  def byIdentityIdAndCategory(identityId: UUID, category: String): Observable[AcctEventCountByDayRow] =
     run(byIdentityIdAndCategoryQ(identityId, category))
 
   def add(identityId: UUID, category: String, day: LocalDate): Observable[Unit] =
