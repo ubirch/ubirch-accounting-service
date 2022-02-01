@@ -9,7 +9,7 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
-trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
+trait AcctEventRowsByCatQueries extends CassandraBase[AcctEventRow] {
   import db._
 
   //These represent query descriptions only
@@ -54,7 +54,7 @@ trait AcctEventRowsByCatQueries extends TablePointer[AcctEventRow] {
 }
 
 class AcctEventByCatDAO @Inject() (val connectionService: ConnectionService) extends AcctEventRowsByCatQueries {
-  val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
+  val db: CassandraStreamContext[SnakeCase] = connectionService.context
 
   import db._
 

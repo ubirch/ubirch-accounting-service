@@ -13,11 +13,11 @@ import com.typesafe.config.Config
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 
-import scala.concurrent.duration._
-import scala.language.postfixOps
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.UUID
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 object ServiceKafkaCSVImport extends Boot(Binder.modules) {
 

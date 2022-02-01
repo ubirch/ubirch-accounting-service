@@ -1,18 +1,10 @@
 package com.ubirch.models
 
+import io.getquill.SnakeCase
 import io.getquill.context.cassandra.CassandraContext
 import io.getquill.context.cassandra.encoding.{ Decoders, Encoders }
 
 import java.time.LocalDate
-
-/**
-  * Cassandra Context DB value.
-  */
-trait CassandraBase {
-
-  val db: CassandraContext[_] with Encoders with Decoders
-
-}
 
 /**
   * Value that represents a pointer to a Cassandra Table.
@@ -20,7 +12,9 @@ trait CassandraBase {
   * @tparam T represents the scala value that represent the database table.
   */
 
-trait TablePointer[T] extends CassandraBase {
+trait CassandraBase[T] {
+
+  val db: CassandraContext[SnakeCase] with Encoders with Decoders
 
   import db._
 

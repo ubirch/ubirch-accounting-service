@@ -9,15 +9,16 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
-trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
+trait AcctEventRowsQueries extends CassandraBase[AcctEventRow] {
   import db._
 
   //These represent query descriptions only
 
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events")
+  implicit val identityRowInsertMeta = insertMeta[AcctEventRow]()
 
   def insertQ(acctEventRow: AcctEventRow) = quote {
-    query[AcctEventRow].insert(lift(acctEventRow))
+    query[AcctEventRow].insertValue(lift(acctEventRow))
   }
 
   def selectAllQ = quote(query[AcctEventRow])
@@ -30,7 +31,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   def byOwnerIdCountQ(ownerId: UUID) = quote { byOwnerIdQ(ownerId).size }
 
-  def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
+  def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID) = quote {
     query[AcctEventRow]
       .filter(_.ownerId == lift(ownerId))
       .filter(_.identityId == lift(identityId))
@@ -55,7 +56,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 }
 
 class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends AcctEventRowsQueries {
-  val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
+  val db: CassandraStreamContext[SnakeCase] = connectionService.context
 
   import db._
 

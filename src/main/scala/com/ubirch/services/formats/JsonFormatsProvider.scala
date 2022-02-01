@@ -14,6 +14,7 @@ class JsonFormatsProvider extends Provider[Formats] {
   private val formats: Formats = DefaultFormats.lossless ++
     JavaTypesSerializers.all ++
     JodaTimeSerializers.all ++
+    JavaTimeSerializers.all ++
     List(new LocalDateSerializer)
   override def get(): Formats = formats
 

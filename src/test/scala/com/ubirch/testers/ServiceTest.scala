@@ -13,8 +13,8 @@ import org.apache.kafka.common.serialization.StringSerializer
 
 import java.util.concurrent.CountDownLatch
 import java.util.{ Date, UUID }
-import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.language.postfixOps
 import scala.util.{ Failure, Success }
 
@@ -37,9 +37,9 @@ object ServiceTest extends Boot(Binder.modules) {
 
       logger.info("Sending to " + topic)
 
-      val batch = 5
+      val batch = 1000000
 
-      val id = UUID.randomUUID()
+      def id = UUID.randomUUID()
       val ownerId = UUID.randomUUID()
       val identityId = UUID.randomUUID()
 

@@ -3,7 +3,7 @@ package com.ubirch.util
 import org.joda.time.format.{ DateTimeFormatter, ISODateTimeFormat }
 import org.joda.time.{ DateTime, DateTimeZone, LocalTime, Period }
 
-import java.time.{ LocalDate, ZoneId }
+import java.time.{ LocalDate, LocalDateTime, ZoneId }
 import java.util.{ Calendar, Date }
 
 /**
@@ -58,10 +58,16 @@ object DateUtil {
     calendar.getTime
   }
 
-  def dateToLocalTime(dateToConvert: Date): LocalDate = {
+  def dateToLocalDate(dateToConvert: Date, zoneId: ZoneId = ZoneId.systemDefault()): LocalDate = {
     dateToConvert.toInstant
-      .atZone(ZoneId.systemDefault())
+      .atZone(zoneId)
       .toLocalDate
+  }
+
+  def dateToLocalDateTime(dateToConvert: Date, zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime = {
+    dateToConvert.toInstant
+      .atZone(zoneId)
+      .toLocalDateTime
   }
 
 }

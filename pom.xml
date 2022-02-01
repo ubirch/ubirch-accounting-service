@@ -68,11 +68,11 @@
         <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
         <embedded-kafka>2.3.0</embedded-kafka>
 
-        <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
+        <ubirch-crypto.version>2.1.2</ubirch-crypto.version>
         <quill.cassandra.version>3.4.1</quill.cassandra.version>
         <embedded-cassandra>3.0.3</embedded-cassandra>
 
-        <guice.version>4.1.0</guice.version>
+        <guice.version>5.1.0</guice.version>
 
         <slf4j.api.version>1.7.15</slf4j.api.version>
         <logback-classic.version>1.2.3</logback-classic.version>
@@ -151,7 +151,7 @@
         <dependency>
             <groupId>io.monix</groupId>
             <artifactId>monix_${scala.compat.version}</artifactId>
-            <version>3.1.0</version>
+            <version>3.4.0</version>
             <type>pom</type>
         </dependency>
 
@@ -159,20 +159,20 @@
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra-monix_${scala.compat.version}</artifactId>
-            <version>3.4.10</version>
+            <version>3.13.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra_${scala.compat.version}</artifactId>
-            <version>3.4.10</version>
+            <version>3.13.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
         <dependency>
             <groupId>org.lz4</groupId>
             <artifactId>lz4-java</artifactId>
-            <version>1.6.0</version>
+            <version>1.8.0</version>
         </dependency>
 
         <dependency>

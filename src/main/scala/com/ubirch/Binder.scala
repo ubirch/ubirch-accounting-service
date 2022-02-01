@@ -33,7 +33,7 @@ class Binder
   def Lifecycle: ScopedBindingBuilder = bind(classOf[Lifecycle]).to(classOf[DefaultLifecycle])
   def JVMHook: ScopedBindingBuilder = bind(classOf[JVMHook]).to(classOf[DefaultJVMHook])
   def JsonConverterService: ScopedBindingBuilder = bind(classOf[JsonConverterService]).to(classOf[DefaultJsonConverterService])
-  def ClusterService: ScopedBindingBuilder = bind(classOf[ClusterService]).to(classOf[DefaultClusterService])
+  def ClusterService: ScopedBindingBuilder = bind(classOf[CQLSessionService]).to(classOf[DefaultSQLSessionService])
   def ConnectionService: ScopedBindingBuilder = bind(classOf[ConnectionService]).to(classOf[DefaultConnectionService])
   def AcctManager: ScopedBindingBuilder = bind(classOf[AcctManager]).to(classOf[DefaultAcctManager])
   def TokenCreationService: ScopedBindingBuilder = bind(classOf[TokenCreationService]).to(classOf[DefaultTokenCreationService])
@@ -42,7 +42,7 @@ class Binder
   def PublicKeyPoolService: ScopedBindingBuilder = bind(classOf[PublicKeyPoolService]).to(classOf[DefaultPublicKeyPoolService])
   def AcctEvents: ScopedBindingBuilder = bind(classOf[AcctEventsService]).to(classOf[DefaultAcctEventsService])
 
-  def configure(): Unit = {
+  override def configure(): Unit = {
     Config
     ExecutionContext
     Scheduler

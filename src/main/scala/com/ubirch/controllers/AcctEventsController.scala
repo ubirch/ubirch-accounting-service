@@ -94,12 +94,12 @@ class AcctEventsController @Inject() (
 
           start <- Task(params.get("start"))
             .map(_.map(sdf.parse))
-            .map(_.map(x => DateUtil.dateToLocalTime(x)))
+            .map(_.map(x => DateUtil.dateToLocalDate(x)))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Start: Use yyyy-MM-dd this format"))
 
           end <- Task(params.get("end"))
             .map(_.map(sdf.parse))
-            .map(_.map(x => DateUtil.dateToLocalTime(x)))
+            .map(_.map(x => DateUtil.dateToLocalDate(x)))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid End: Use yyyy-MM-dd this format"))
 
           _ <- earlyResponseIf(start.isDefined && end.isEmpty)(new IllegalArgumentException("Invalid Range Definition: Start requires End"))

@@ -6,12 +6,12 @@ import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
-import com.ubirch.models.{ AcctEvent, AcctEventCountByDayDAO, AcctEventDAO, AcctEventRow }
+import com.ubirch.models.{ AcctEvent, AcctEventCountDAO, AcctEventDAO, AcctEventRow }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
-import com.ubirch.util.DateUtil
 
-import com.datastax.driver.core.exceptions.{ InvalidQueryException, NoHostAvailableException }
+import com.datastax.oss.driver.api.core.{ DriverTimeoutException, NoNodeAvailableException }
+import com.datastax.oss.driver.api.core.servererrors.InvalidQueryException
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
@@ -22,7 +22,6 @@ import org.apache.kafka.common.serialization._
 import org.json4s.Formats
 
 import java.io.ByteArrayInputStream
-import java.util.Date
 import java.util.concurrent.ExecutionException
 import javax.inject._
 import scala.concurrent.{ ExecutionContext, Promise }
@@ -62,7 +61,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 @Singleton
 class DefaultAcctManager @Inject() (
     acctEventDAO: AcctEventDAO,
-    acctEventCounterDAO: AcctEventCountByDayDAO,
+    acctEventCounterDAO: AcctEventCountDAO,
     jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle
@@ -103,13 +102,12 @@ class DefaultAcctManager @Inject() (
           identityId = acctEvent.identityId.orNull,
           category = acctEvent.category,
           description = acctEvent.description,
-          day = DateUtil.dateToLocalTime(acctEvent.occurredAt),
-          occurredAt = acctEvent.occurredAt,
-          createdAt = new Date()
+          occurredAt = acctEvent.occurredAt.toInstant
         )
 
         for {
-          _ <- acctEventCounterDAO.add(row.identityId, row.category, row.day)
+          _ <- acctEventCounterDAO.byDay.add(row.identityId, row.category, row.day)
+          _ <- acctEventCounterDAO.byHour.add(row.identityId, row.category, row.day, row.hour)
           res <- acctEventDAO
             .insert(row)
             .map(x => (acctEvent, row, x))
@@ -123,13 +121,22 @@ class DefaultAcctManager @Inject() (
       .onErrorHandle {
         case e: ExecutionException =>
           e.getCause match {
-            case e: NoHostAvailableException =>
+            case e: NoNodeAvailableException =>
               logger.error("Error connecting to host: " + e)
               p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))
             case e: InvalidQueryException =>
               logger.error("Error storing data (invalid query): " + e)
               p.failure(StoringException("Invalid Query ", e.getMessage))
           }
+        case e: NoNodeAvailableException =>
+          logger.error("Error connecting to host: " + e)
+          p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))
+        case e: InvalidQueryException =>
+          logger.error("Error storing data (invalid query): " + e)
+          p.failure(StoringException("Invalid Query ", e.getMessage))
+        case e: DriverTimeoutException =>
+          logger.error("Error storing data (timeout): " + e)
+          p.failure(NeedForPauseException("Error storing", e.getLocalizedMessage))
         case e: Exception =>
           logger.error("Error storing data (other): " + e)
           p.failure(StoringException("Error storing data (other)", e.getMessage))

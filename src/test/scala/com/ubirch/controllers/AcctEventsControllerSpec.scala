@@ -110,6 +110,7 @@ class AcctEventsControllerSpec
 
       get(s"/v1/$uuid?identity_id=$identity", headers = Map("authorization" -> token.prepare)) {
         status should equal(200)
+        println("--- " + body)
         val expected = """{"version":"1.0.0","ok":true,"data":[{"id":"15f0c427-5dfb-4e15-853c-0770dd400763","ownerId":"963995ed-ce12-4ea5-89dc-b181701d1d7b","identityId":"7549acd8-91e1-4230-833a-2f386e09b96f","category":"verification","description":"Lana Del Rey - Bogota Concert","day":"2020-12-03","occurredAt":"2020-12-03T18:44:43.243Z","createdAt":"2020-12-03T18:44:44.261Z"}]}""".stripMargin
         assert(body == expected)
       }

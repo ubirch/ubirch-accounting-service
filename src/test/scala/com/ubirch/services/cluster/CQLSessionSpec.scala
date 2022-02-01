@@ -4,11 +4,12 @@ import com.ubirch.{ Binder, EmbeddedCassandra, TestBase }
 
 import com.github.nosan.embedded.cassandra.api.cql.CqlScript
 import com.google.inject.Guice
+import io.getquill.Query
 
 /**
   * Test for the cassandra cluster
   */
-class ClusterSpec extends TestBase with EmbeddedCassandra {
+class CQLSessionSpec extends TestBase with EmbeddedCassandra {
 
   val cassandra = new CassandraTest
 
@@ -22,7 +23,9 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
 
       val db = connectionService.context
 
-      val t = db.executeQuery("SELECT * FROM acct_events").headOptionL.runToFuture
+      import db._
+
+      val t = db.run(quote { infix"SELECT category FROM acct_events".as[Query[String]] }).headOptionL.runToFuture
       assert(await(t).nonEmpty)
     }
 
@@ -32,8 +35,11 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
 
       val db = connectionService.context
 
-      val t = db.executeQuery("SELECT * FROM acct_events").headOptionL.runToFuture
+      import db._
+
+      val t = db.run(quote { infix"SELECT category FROM acct_events".as[Query[String]] }).headOptionL.runToFuture
       assert(await(t).nonEmpty)
+
     }
 
   }
