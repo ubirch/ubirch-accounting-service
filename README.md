@@ -2,10 +2,22 @@
 
 This service listens for AcctEvent records and stores them on Cassandra. It exposes a http interface as well that support querying.
 
+1. [Categories supported](#categories)
+2. [Query through http Interface](#http-interface)
+3. [Ingestion through Kafka Interface](#kafka-interface)
+
+## Categories
+
+The system has two principal categories. Anchoring and Verification.
+
+All UPPs that pass by Niomon are registered against the Accounting Service by the Event Log.
+
+All UPPs/Hashes that are verified with the version 2 of the verification service are registered against the Accounting Service
+
 ## Http Interface
 
 1. [Getting Started](#steps-to-prepare-a-request)
-2. [List Your Acct Event](#list-your-acct-events)
+2. [List Your Acct Events](#list-your-acct-events)
 3. [Keycloak and Responses](#keycloak-token-and-responses)
 
 ### Steps to prepare a request
@@ -14,7 +26,7 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 2. Prepare the query params.
 3. Prepare the request and send.
 
-#### List Your Acct Event
+### List Your Acct Events
 
 #### Keycloak Token
 
@@ -33,7 +45,7 @@ curl -s -X GET \
 
 **Fields**
 
-_ownerId_: it is the keycloak id of the logged in user. 
+_ownerId_: it is the keycloak id of the logged-in user. 
 
 _identity_id_: (Optional) It is a device id or identity id. 
 
@@ -73,7 +85,7 @@ The <response> codes could be:
 
 Visit https://accounting.dev.ubirch.com/docs on your browser to see the swagger docs.
 
-# Kafka
+# Kafka Interface
 
 The system will be listening to the configured topic and will store the account events to cassandra. The expected data object that
 is required is as it follows:
@@ -86,8 +98,7 @@ is required is as it follows:
   "ownerId":"6cb65b4e-4121-47cd-845a-63f4005fe6b3",
   "identityId":"39092dd9-0e72-41b3-b6b0-cd414e6d55a2",
   "category":"verification",
-  "description":"Lana de rey concert",
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuLmRldi51YmlyY2guY29tIiwic3ViIjoiOTYzOTk1ZWQtY2UxMi00ZWE1LTg5ZGMtYjE4MTcwMWQxZDdiIiwiYXVkIjoiaHR0cHM6Ly92ZXJpZnkuZGV2LnViaXJjaC5jb20iLCJleHAiOjc5MTgxMTgxMDcsImlhdCI6MTYwNjcyNzcwNywianRpIjoiNDFiMDFkNzMtYTdkZi00N2ZhLWFkMDAtNzEwMWJjZTBmZmVhIiwicHVycG9zZSI6IlhtYXMgQWR2ZW50cyIsInRhcmdldF9pZGVudGl0aWVzIjpbIjc1NDlhY2Q4LTkxZTEtNDIzMC04MzNhLTJmMzg2ZTA5Yjk2ZiJdLCJyb2xlIjoidmVyaWZpZXIifQ.bRV1DmKwFZXdB5XD99xxEA8MhcBuE9N5UkThuyIajw4VvECvsq6PHShjReSmhcX_fqK-Bs-FioOC0Eh0odrYzQ",
+  "sub_category": "entry_a",
   "occurredAt":"2020-11-06T12:42:34.976Z"
 }
 ```
@@ -96,14 +107,10 @@ is required is as it follows:
 
 _id_: it represents the id of the event.
  
-_ownerId_: it is the keycloak id of the logged in user.
+_ownerId_: it is the keycloak id of the logged-in user.
 
-_identityId_: It represents the identity that generated the an UPP. The device id or app id.
+_identityId_: It represents the identity that generated the UPP or event. The device id or app id.
 
 _category_: It represents the kind of event. That's to say, what action originated it.
-
-_description_: It a brief description for what this event accounts for.
-
-_token_: It represents the possible token that might been used to generated the action.
 
 _occurredAt_: It represents the time at which the event took place. 

@@ -1,14 +1,14 @@
 package com.ubirch.controllers.concerns
 
-import java.util.{ Locale, UUID }
-
 import com.ubirch.models.NOK
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+
 import org.json4s.JNothing
 import org.json4s.JsonAST.JValue
 import org.scalatra.ScalatraBase
 import org.scalatra.auth.{ ScentryConfig, ScentryStrategy, ScentrySupport }
 
+import java.util.{ Locale, UUID }
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import scala.language.implicitConversions
 import scala.util.Try
 
@@ -107,7 +107,7 @@ trait BearerAuthenticationSupport extends ScentrySupport[Token] with BearerAuthS
     new ScentryConfig {}.asInstanceOf[ScentryConfiguration]
   }
 
-  override def realm: String = "Ubirch Token Service"
+  override def realm: String = "Ubirch Accounting Service"
 
 }
 

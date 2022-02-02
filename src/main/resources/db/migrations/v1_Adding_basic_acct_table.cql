@@ -5,14 +5,16 @@
 
 drop table if exists acct_system.acct_events;
 
-create table if not exists acct_system.acct_events (id UUID,
-                                        owner_id UUID,
-                                        identity_id UUID,
-                                        category text,
-                                        description text,
-                                        token_value text,
-                                        day timestamp,
-                                        occurred_at timestamp,
-                                        created_at timestamp,
-                                        PRIMARY KEY ((owner_id), identity_id, day, id));
+create table if not exists acct_system.acct_events (
+                                                       id UUID,
+                                                       owner_id UUID,
+                                                       identity_id UUID,
+                                                       category text,
+                                                       sub_category text,
+                                                       year int,
+                                                       month int,
+                                                       day int,
+                                                       hour int,
+                                                       occurred_at timestamp,
+                                                       PRIMARY KEY ((identity_id, category, year, month, day, hour), sub_category, owner_id, id));
 

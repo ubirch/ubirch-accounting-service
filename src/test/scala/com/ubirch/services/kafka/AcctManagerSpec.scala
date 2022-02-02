@@ -1,18 +1,18 @@
 package com.ubirch.services.kafka
 
-import java.util.{ Date, UUID }
-
-import com.google.inject.binder.ScopedBindingBuilder
-import com.typesafe.config.{ Config, ConfigValueFactory }
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch._
 import com.ubirch.kafka.util.PortGiver
 import com.ubirch.models.{ AcctEvent, AcctEventDAO }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.formats.JsonConverterService
+
+import com.google.inject.binder.ScopedBindingBuilder
+import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.prometheus.client.CollectorRegistry
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 
+import java.util.{ Date, UUID }
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -47,14 +47,21 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     def identityId = UUID.randomUUID()
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), Some("this is a token"), new Date())
+      val acctEvent: AcctEvent = AcctEvent(
+        id,
+        ownerId,
+        identityId,
+        "verification",
+        "default",
+        new Date()
+      )
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, None, new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "", "default", new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
@@ -100,14 +107,14 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     val identityId = UUID.randomUUID()
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, Some(identityId), "verification", Some("Lana de rey concert"), Some("this is a token"), new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "verification", "default", new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, None, "verification", None, None, new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "", "default", new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
@@ -137,7 +144,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
 
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
-    EmbeddedCassandra.truncateScript.forEachStatement(cassandra.connection.execute _)
+    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.connection.execute(x) }
   }
 
   protected override def afterAll(): Unit = {

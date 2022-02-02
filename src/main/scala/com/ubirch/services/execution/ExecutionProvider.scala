@@ -1,12 +1,12 @@
 package com.ubirch.services.execution
 
-import java.util.concurrent.Executors
+import com.ubirch.ConfPaths.ExecutionContextConfPaths
 
 import com.typesafe.config.Config
-import com.ubirch.ConfPaths.ExecutionContextConfPaths
-import javax.inject._
 import monix.execution.Scheduler
 
+import java.util.concurrent.Executors
+import javax.inject._
 import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor }
 
 /**
@@ -49,7 +49,7 @@ class SchedulerProvider @Inject() (ec: ExecutionContext) extends Provider[Schedu
 
   override implicit val scheduler: Scheduler = monix.execution.Scheduler(ec)
 
-  override def get(): Scheduler = monix.execution.Scheduler(ec)
+  override def get(): Scheduler = scheduler
 
 }
 

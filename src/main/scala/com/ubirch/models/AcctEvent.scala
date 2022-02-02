@@ -5,11 +5,11 @@ import java.util.{ Date, UUID }
 case class AcctEvent(
     id: UUID,
     ownerId: UUID,
-    identityId: Option[UUID],
+    identityId: UUID,
     category: String,
-    description: Option[String],
-    token: Option[String],
+    subCategory: String,
     occurredAt: Date
 ) {
-  def validate: Boolean = identityId.isDefined && description.isDefined
+  //TODO: CHECK WHAT IS VALID
+  def validate: Boolean = category.nonEmpty
 }

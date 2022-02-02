@@ -1,13 +1,14 @@
 package com.ubirch
 package services.cluster
 
-import com.typesafe.config.Config
-import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.ConfPaths.CassandraClusterConfPaths
 import com.ubirch.services.lifeCycle.Lifecycle
-import io.getquill.{ CassandraStreamContext, NamingStrategy, SnakeCase }
-import javax.inject._
 
+import com.typesafe.config.Config
+import com.typesafe.scalalogging.LazyLogging
+import io.getquill.{ CassandraStreamContext, NamingStrategy, SnakeCase }
+
+import javax.inject._
 import scala.concurrent.Future
 
 /**

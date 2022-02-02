@@ -1,10 +1,11 @@
 package com.ubirch.services
 
-import java.util.UUID
-
 import com.ubirch.models.{ AcctEventDAO, AcctEventRow }
-import javax.inject.{ Inject, Singleton }
+
 import monix.reactive.Observable
+
+import java.util.UUID
+import javax.inject.{ Inject, Singleton }
 
 trait AcctEventsService {
   def byOwnerIdAndIdentityId(ownerId: UUID, identityId: Option[UUID]): Observable[AcctEventRow]

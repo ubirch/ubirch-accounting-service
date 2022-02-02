@@ -1,20 +1,20 @@
 package com.ubirch.services.jwt
 
-import java.net.URL
-import java.security.Key
-
-import cats.effect.{ ExitCode, Resource }
-import com.typesafe.config.Config
 import com.ubirch.ConfPaths.TokenVerificationPaths
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
-import javax.inject._
+
+import cats.effect.{ ExitCode, Resource }
+import com.typesafe.config.Config
 import monix.eval.{ Task, TaskApp }
 import monix.reactive.Observable
 import org.jose4j.jwk.PublicJsonWebKey
 import org.json4s.JsonAST.JArray
 import org.json4s.{ Formats, JString, JValue, JsonAST }
 
+import java.net.URL
+import java.security.Key
+import javax.inject._
 import scala.io.{ BufferedSource, Source }
 
 trait PublicKeyDiscoveryService {

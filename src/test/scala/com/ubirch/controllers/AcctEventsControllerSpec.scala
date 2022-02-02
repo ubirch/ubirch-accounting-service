@@ -1,13 +1,13 @@
 package com.ubirch.controllers
 
-import java.util.UUID
-
 import com.ubirch.services.jwt.PublicKeyPoolService
-import com.ubirch.{ EmbeddedCassandra, _ }
+import com.ubirch._
+
 import io.prometheus.client.CollectorRegistry
 import org.scalatest.{ BeforeAndAfterEach, Tag }
 import org.scalatra.test.scalatest.ScalatraWordSpec
 
+import java.util.UUID
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -32,7 +32,7 @@ class AcctEventsControllerSpec
       def uuid = UUID.randomUUID()
       get(s"/v1/$uuid") {
         status should equal(401)
-        assert(body == """{"version":"1.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Unauthenticated"}""")
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Unauthenticated"}""")
       }
 
     }
@@ -41,7 +41,7 @@ class AcctEventsControllerSpec
 
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
-    EmbeddedCassandra.truncateScript.forEachStatement(cassandra.connection.execute _)
+    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.connection.execute(x) }
   }
 
   protected override def afterAll(): Unit = {

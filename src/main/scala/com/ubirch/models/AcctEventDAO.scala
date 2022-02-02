@@ -1,11 +1,12 @@
 package com.ubirch.models
 
-import java.util.UUID
-
 import com.ubirch.services.cluster.ConnectionService
+
 import io.getquill.{ CassandraStreamContext, SnakeCase }
-import javax.inject.Inject
 import monix.reactive.Observable
+
+import java.util.UUID
+import javax.inject.Inject
 
 trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
