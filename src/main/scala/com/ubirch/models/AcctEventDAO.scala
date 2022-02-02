@@ -16,23 +16,47 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events")
 
-  def insertQ(acctEventRow: AcctEventRow): db.Quoted[db.Insert[AcctEventRow]] = quote {
+  def insertQ(acctEventRow: AcctEventRow) = quote {
     query[AcctEventRow].insert(lift(acctEventRow))
   }
 
-  def selectAllQ: db.Quoted[db.EntityQuery[AcctEventRow]] = quote(query[AcctEventRow])
+  def selectAllQ = quote(query[AcctEventRow])
 
-  def byOwnerIdQ(ownerId: UUID): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
-    query[AcctEventRow]
-      .filter(_.ownerId == lift(ownerId))
-      .map(x => x)
+  def byQ(
+      identityId: UUID,
+      category: String,
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      subCategory: Option[String]
+  ) = {
+
+    val q0 = quote {
+      query[AcctEventRow]
+        .filter(_.identityId == lift(identityId))
+        .filter(_.category == lift(category))
+        .filter(_.year == lift(year))
+        .filter(_.month == lift(month))
+        .filter(_.day == lift(day))
+        .filter(_.hour == lift(hour))
+    }
+    subCategory match {
+      case Some(subCategory) => quote { q0.filter(_.subCategory == lift(subCategory)).map(x => x) }
+      case None => quote { q0.map(x => x) }
+    }
   }
 
-  def byOwnerIdAndIdentityIdQ(ownerId: UUID, identityId: UUID): db.Quoted[db.EntityQuery[AcctEventRow]] = quote {
-    query[AcctEventRow]
-      .filter(_.ownerId == lift(ownerId))
-      .filter(_.identityId == lift(identityId))
-      .map(x => x)
+  def countQ(
+      identityId: UUID,
+      category: String,
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      subCategory: Option[String]
+  ) = {
+    quote { byQ(identityId, category, year, month, day, hour, subCategory).size }
   }
 
   def deleteQ(ownerId: UUID, acctEventId: UUID): db.Quoted[db.Delete[AcctEventRow]] = quote {
@@ -50,9 +74,25 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
 
   def insert(acctEventRow: AcctEventRow): Observable[Unit] = run(insertQ(acctEventRow))
 
-  def byOwnerId(ownerId: UUID): Observable[AcctEventRow] = run(byOwnerIdQ(ownerId))
+  def count(
+      identityId: UUID,
+      category: String,
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      subCategory: Option[String]
+  ): Observable[Long] = run(countQ(identityId, category, year, month, day, hour, subCategory))
 
-  def byOwnerIdAndIdentityId(ownerId: UUID, identityId: UUID): Observable[AcctEventRow] = run(byOwnerIdAndIdentityIdQ(ownerId, identityId))
+  def byOwnerIdAndIdentityId(
+      identityId: UUID,
+      category: String,
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      subCategory: Option[String]
+  ): Observable[AcctEventRow] = run(byQ(identityId, category, year, month, day, hour, subCategory))
 
   def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 

@@ -5,7 +5,7 @@ import com.ubirch.controllers.concerns.{ ControllerBase, KeycloakBearerAuthStrat
 import com.ubirch.models.{ AcctEventRow, NOK, Return }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.jwt.{ PublicKeyPoolService, TokenVerificationService }
-import com.ubirch.util.TaskHelpers
+import com.ubirch.util.{ DateUtil, TaskHelpers }
 import com.ubirch.{ InvalidSecurityCheck, ServiceException }
 
 import com.typesafe.config.Config
@@ -16,6 +16,7 @@ import org.json4s.Formats
 import org.scalatra._
 import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
+import java.text.SimpleDateFormat
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
@@ -65,32 +66,57 @@ class AcctEventsController @Inject() (
 
   get("/v1/:owner_id", operation(getV1)) {
 
+    lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
+
     authenticated() { token =>
 
       asyncResult("list_acct_events_owner") { implicit request => _ =>
         (for {
 
-          rawOwnerId <- Task(params.get("owner_id"))
-          ownerId <- Task(rawOwnerId)
-            .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
-            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid OwnerId: wrong owner param: " + rawOwnerId.getOrElse("")))
+          //mandatory -start
+          identityId <- Task(params.get("identity_id"))
+            .map(_.map(UUID.fromString).getOrElse(throw new IllegalArgumentException("Invalid Identity Id")))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity_id param"))
 
-          ownerIdFromToken <- Task.delay(token.ownerIdAsUUID.getOrElse(throw new IllegalArgumentException("Invalid Token OwnerI: Wrong token owner")))
+          cat <- Task(params.get("cat"))
+            .map(_.filter(_.nonEmpty))
+            .map(_.map(_.toLowerCase()).getOrElse(throw new IllegalArgumentException("Invalid category Definition: End requires category")))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
 
-          ownerCheck = (ownerIdFromToken == ownerId) || token.isAdmin
-          _ <- earlyResponseIf(!ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
+          date <- Task(params.get("date"))
+            .map(_.map(sdf.parse))
+            .map(_.map(x => DateUtil.dateToLocalDate(x)).getOrElse(throw new IllegalArgumentException("Invalid Date Definition: End requires Date")))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Date: Use yyyy-MM-dd this format"))
 
-          _ <- Task(params.get("cat"))
+          hour <- Task(params.get("hour"))
+            .map(_.map(_.toInt).getOrElse(throw new IllegalArgumentException("Invalid Hour Definition: 0-23 format")))
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Hour: Use h this format"))
+
+          //mandatory -end
+
+          //optional -start
+          subCat <- Task(params.get("sub_cat"))
             .map(_.filter(_.nonEmpty))
             .map(_.map(_.toLowerCase()))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
 
-          identityId <- Task(params.get("identity_id"))
-            .map(_.map(UUID.fromString))
-            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity_id param"))
+          rawOwnerId <- Task(params.get("owner_id"))
+          ownerId <- Task(rawOwnerId)
+            .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
+            .onErrorHandle(_ => throw new IllegalArgumentException("Invalid OwnerId: wrong owner param: " + rawOwnerId.getOrElse("")))
+          ownerIdFromToken <- Task.delay(token.ownerIdAsUUID.getOrElse(throw new IllegalArgumentException("Invalid Token OwnerI: Wrong token owner")))
+          ownerCheck = (ownerIdFromToken == ownerId) || token.isAdmin
+          _ <- earlyResponseIf(!ownerCheck)(InvalidSecurityCheck("Invalid Owner Relation", "You can't access somebody else's data"))
+          //optional -end
 
-          evs <- acctEvents.byOwnerIdAndIdentityId(ownerId, identityId)
-            .toListL
+          mode <- Task(params.get("mode")).map(_.map(_.trim).orElse(Some("events")))
+          evs <- mode match {
+            case Some("count") => acctEvents.count(identityId, cat, date, hour, subCat).toListL
+            case Some("events") => acctEvents.byOwnerIdAndIdentityId(identityId, cat, date, hour, subCat).toListL
+            case other => throw new IllegalArgumentException(s"Invalid mode: wrong mode param -> ${other.getOrElse("")}")
+          }
+
+          _ = logger.info(s"query: mode->${mode.getOrElse("")}, , owner_id->$ownerId, cat=$cat, identity_id->$identityId, date=$date, hour=$hour, sub_cat=$subCat")
 
         } yield {
           Ok(Return(evs))

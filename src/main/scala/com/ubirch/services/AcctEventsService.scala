@@ -4,23 +4,59 @@ import com.ubirch.models.{ AcctEventDAO, AcctEventRow }
 
 import monix.reactive.Observable
 
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 
 trait AcctEventsService {
-  def byOwnerIdAndIdentityId(ownerId: UUID, identityId: Option[UUID]): Observable[AcctEventRow]
+  def byOwnerIdAndIdentityId(
+      identityId: UUID,
+      category: String,
+      date: LocalDate,
+      hour: Int,
+      subCategory: Option[String]
+  ): Observable[AcctEventRow]
+
+  def count(
+      identityId: UUID,
+      category: String,
+      date: LocalDate,
+      hour: Int,
+      subCategory: Option[String]
+  ): Observable[Long]
 }
 
 @Singleton
 class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends AcctEventsService {
-  override def byOwnerIdAndIdentityId(ownerId: UUID, identityId: Option[UUID]): Observable[AcctEventRow] = identityId match {
-    case Some(id) =>
-      acctEventDAO.byOwnerIdAndIdentityId(ownerId, id)
-        .onErrorHandle { x =>
-          x.printStackTrace()
-          throw x
-        }
 
-    case None => acctEventDAO.byOwnerId(ownerId)
+  override def byOwnerIdAndIdentityId(
+      identityId: UUID,
+      category: String,
+      date: LocalDate,
+      hour: Int,
+      subCategory: Option[String]
+  ): Observable[AcctEventRow] = {
+    acctEventDAO.byOwnerIdAndIdentityId(
+      identityId,
+      category,
+      date.getYear,
+      date.getMonthValue,
+      date.getDayOfMonth,
+      hour,
+      subCategory
+    )
   }
+
+  override def count(identityId: UUID, category: String, date: LocalDate, hour: Int, subCategory: Option[String]): Observable[Long] = {
+    acctEventDAO.count(
+      identityId,
+      category,
+      date.getYear,
+      date.getMonthValue,
+      date.getDayOfMonth,
+      hour,
+      subCategory
+    )
+  }
+
 }

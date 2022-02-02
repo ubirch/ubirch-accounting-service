@@ -37,9 +37,9 @@ object ServiceTest extends Boot(Binder.modules) {
 
       logger.info("Sending to " + topic)
 
-      val batch = 5
+      val batch = 1000
 
-      val id = UUID.randomUUID()
+      def id = UUID.randomUUID()
       val ownerId = UUID.randomUUID()
       val identityId = UUID.randomUUID()
 
