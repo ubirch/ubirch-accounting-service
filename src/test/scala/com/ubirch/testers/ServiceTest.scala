@@ -12,7 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 
 import java.util.concurrent.CountDownLatch
-import java.util.{ Date, UUID }
+import java.util.{ Calendar, Date, UUID }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -45,13 +45,39 @@ object ServiceTest extends Boot(Binder.modules) {
 
       println("id= " + id)
       println("ownerId= " + ownerId)
-      println("identityId= " + ownerId)
+      println("identityId= " + identityId)
 
       val latch = new CountDownLatch(1)
 
       Future.sequence {
         (1 to batch).map { _ =>
-          val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "verification", "default", new Date())
+          val acctEvent: AcctEvent = AcctEvent(
+            id,
+            ownerId,
+            identityId,
+            "verification",
+            "entry-b",
+            new Date()
+          )
+          val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
+          val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
+
+          producer.send(new ProducerRecord[String, String](topic, acctEventAsString))
+
+        }.toList ++ (1 to batch).map { _ =>
+
+          val c = Calendar.getInstance()
+          c.setTime(new Date)
+          c.add(Calendar.DATE, 1)
+
+          val acctEvent: AcctEvent = AcctEvent(
+            id,
+            ownerId,
+            identityId,
+            "verification",
+            "entry-a",
+            c.getTime
+          )
           val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
           val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
 

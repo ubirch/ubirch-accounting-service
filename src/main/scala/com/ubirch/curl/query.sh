@@ -15,13 +15,14 @@ token=`curl -s -d "client_id=ubirch-2.0-user-access" -d "username=$TOKEN_USER" -
 echo "=> host: $host"
 
 owner=d63ecc03-f5a7-4d43-91d0-a30d034d8da3
-identity_id=32c07ed9-c107-4e75-b28f-a750b15d2196
+identity_id=fce88cda-0311-49a7-8bab-745dbd0f3c7e
 category=verification
-date=2022-02-02
-hour=22
+date=2022-02-03
+hour=0
+sub_category=entry-b
 mode=count
 
 curl -s -X GET -H "authorization: bearer $token" \
  -H "content-type: application/json" \
-  "http://localhost:8081/api/acct_events/v1/$owner?cat=$category&identity_id=$identity_id&date=$date&hour=$hour&mode=$mode" \
+  "http://localhost:8081/api/acct_events/v1/$owner?cat=$category&identity_id=$identity_id&date=$date&hour=$hour&sub_cat=$sub_category&mod=$mode" \
  | jq '.'

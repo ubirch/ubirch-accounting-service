@@ -58,15 +58,15 @@ object DateUtil {
     calendar.getTime
   }
 
-  def dateToLocalTime(dateToConvert: Date): LocalDateTime = {
+  def dateToLocalTime(dateToConvert: Date, zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime = {
     dateToConvert.toInstant
-      .atZone(ZoneId.systemDefault())
+      .atZone(zoneId)
       .toLocalDateTime
   }
 
-  def dateToLocalDate(dateToConvert: Date): LocalDate = {
+  def dateToLocalDate(dateToConvert: Date, zoneId: ZoneId = ZoneId.systemDefault()): LocalDate = {
     dateToConvert.toInstant
-      .atZone(ZoneId.systemDefault())
+      .atZone(zoneId)
       .toLocalDate
   }
 

@@ -17,6 +17,7 @@ import org.scalatra._
 import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
 import java.text.SimpleDateFormat
+import java.time.ZoneId
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
@@ -85,7 +86,7 @@ class AcctEventsController @Inject() (
 
           date <- Task(params.get("date"))
             .map(_.map(sdf.parse))
-            .map(_.map(x => DateUtil.dateToLocalDate(x)).getOrElse(throw new IllegalArgumentException("Invalid Date Definition: End requires Date")))
+            .map(_.map(x => DateUtil.dateToLocalDate(x, ZoneId.systemDefault())).getOrElse(throw new IllegalArgumentException("Invalid Date Definition: End requires Date")))
             .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Date: Use yyyy-MM-dd this format"))
 
           hour <- Task(params.get("hour"))

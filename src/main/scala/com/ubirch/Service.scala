@@ -8,6 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
 
+import java.util.TimeZone
 import javax.inject.{ Inject, Singleton }
 
 /**
@@ -15,6 +16,8 @@ import javax.inject.{ Inject, Singleton }
   */
 @Singleton
 class Service @Inject() (restService: RestService, acctManager: AcctManager, publicKeyPoolService: PublicKeyPoolService)(implicit scheduler: Scheduler) extends LazyLogging {
+
+  TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
   val home: String = System.getProperty("user.home")
 

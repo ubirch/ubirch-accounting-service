@@ -22,6 +22,7 @@ import org.apache.kafka.common.serialization._
 import org.json4s.Formats
 
 import java.io.ByteArrayInputStream
+import java.time.ZoneId
 import java.util.concurrent.ExecutionException
 import javax.inject._
 import scala.concurrent.{ ExecutionContext, Promise }
@@ -95,16 +96,18 @@ class DefaultAcctManager @Inject() (
       }
       .flatMap { acctEvent =>
 
+        val day = DateUtil.dateToLocalTime(acctEvent.occurredAt, ZoneId.systemDefault())
+
         val row = AcctEventRow(
           id = acctEvent.id,
           ownerId = acctEvent.ownerId,
           identityId = acctEvent.identityId,
           category = acctEvent.category,
           subCategory = acctEvent.subCategory,
-          year = DateUtil.dateToLocalTime(acctEvent.occurredAt).getYear,
-          month = DateUtil.dateToLocalTime(acctEvent.occurredAt).getMonthValue,
-          day = DateUtil.dateToLocalTime(acctEvent.occurredAt).getDayOfMonth,
-          hour = DateUtil.dateToLocalTime(acctEvent.occurredAt).getHour,
+          year = day.getYear,
+          month = day.getMonthValue,
+          day = day.getDayOfMonth,
+          hour = day.getHour,
           occurredAt = acctEvent.occurredAt
         )
         acctEventDAO
