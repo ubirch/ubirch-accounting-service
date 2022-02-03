@@ -3,11 +3,11 @@ package com.ubirch.controllers
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.ServiceException
 import com.ubirch.api.InvalidClaimException
-import com.ubirch.controllers.concerns.{BearerAuthStrategy, ControllerBase, SwaggerElements}
+import com.ubirch.controllers.concerns.{ BearerAuthStrategy, ControllerBase, SwaggerElements }
 import com.ubirch.defaults.TokenApi
-import com.ubirch.models.{AcctEventRow, NOK, Return}
+import com.ubirch.models.{ AcctEventRow, NOK, Return }
 import com.ubirch.services.AcctEventsService
-import com.ubirch.util.{DateUtil, TaskHelpers}
+import com.ubirch.util.{ DateUtil, TaskHelpers }
 
 import com.typesafe.config.Config
 import io.prometheus.client.Counter
@@ -15,12 +15,12 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra._
-import org.scalatra.swagger.{Swagger, SwaggerSupportSyntax}
+import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
 import java.text.SimpleDateFormat
-import java.time.{LocalDate, ZoneId}
+import java.time.{ LocalDate, ZoneId }
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -113,7 +113,7 @@ class AcctEventsController @Inject() (
         mode <- Task(params.get("mode")).map(_.map(_.trim).orElse(Some("events")))
         evs <- mode match {
           case Some("count") => acctEvents.count(identityId, cat, date, hour, subCat).toListL
-          case Some("events") => acctEvents.byOwnerIdAndIdentityId(identityId, cat, date, hour, subCat).toListL
+          case Some("events") => acctEvents.by(identityId, cat, date, hour, subCat).toListL
           case other => throw new IllegalArgumentException(s"Invalid mode: wrong mode param -> ${other.getOrElse("")}")
         }
 

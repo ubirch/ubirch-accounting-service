@@ -84,7 +84,7 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
       subCategory: Option[String]
   ): Observable[Long] = run(countQ(identityId, category, year, month, day, hour, subCategory))
 
-  def byOwnerIdAndIdentityId(
+  def by(
       identityId: UUID,
       category: String,
       year: Int,
