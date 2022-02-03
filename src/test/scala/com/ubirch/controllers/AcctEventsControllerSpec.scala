@@ -1,10 +1,10 @@
 package com.ubirch.controllers
 
-import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch._
+import com.ubirch.services.jwt.PublicKeyPoolService
 
 import io.prometheus.client.CollectorRegistry
-import org.scalatest.{ BeforeAndAfterEach, Tag }
+import org.scalatest.BeforeAndAfterEach
 import org.scalatra.test.scalatest.ScalatraWordSpec
 
 import java.util.UUID
@@ -27,12 +27,12 @@ class AcctEventsControllerSpec
 
   "Acct Events Service" must {
 
-    "fail when no access token provided: get" taggedAs Tag("avocado") in {
+    "fail when no access token provided: get" in {
 
       def uuid = UUID.randomUUID()
       get(s"/v1/$uuid") {
-        status should equal(401)
-        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Unauthenticated"}""")
+        status should equal(403)
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Forbidden"}""")
       }
 
     }

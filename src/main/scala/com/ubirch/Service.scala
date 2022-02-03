@@ -1,6 +1,5 @@
 package com.ubirch
 
-import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch.services.kafka.AcctManager
 import com.ubirch.services.rest.RestService
 
@@ -15,7 +14,7 @@ import javax.inject.{ Inject, Singleton }
   * Represents a bootable service object that starts the system
   */
 @Singleton
-class Service @Inject() (restService: RestService, acctManager: AcctManager, publicKeyPoolService: PublicKeyPoolService)(implicit scheduler: Scheduler) extends LazyLogging {
+class Service @Inject() (restService: RestService, acctManager: AcctManager)(implicit scheduler: Scheduler) extends LazyLogging {
 
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
@@ -26,7 +25,6 @@ class Service @Inject() (restService: RestService, acctManager: AcctManager, pub
   def start(): CancelableFuture[Unit] = {
 
     (for {
-      _ <- publicKeyPoolService.init
       _ <- Task.delay(acctManager.start())
       _ <- Task.delay(restService.start())
     } yield ()).onErrorRecover {
