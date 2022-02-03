@@ -1,6 +1,6 @@
 package com.ubirch.services
 
-import com.ubirch.models.{ AcctEventDAO, AcctEventRow }
+import com.ubirch.models.AcctEventDAO
 
 import monix.reactive.Observable
 
@@ -9,14 +9,6 @@ import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 
 trait AcctEventsService {
-  def by(
-      identityId: UUID,
-      category: String,
-      date: LocalDate,
-      hour: Int,
-      subCategory: Option[String]
-  ): Observable[AcctEventRow]
-
   def count(
       identityId: UUID,
       category: String,
@@ -37,41 +29,6 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends Ac
 
   final lazy val invalidHourException =
     new IllegalArgumentException("Hour is not valid. Hour value should be one of these values (" + normalHours.mkString(",") + ") or " + allHours.mkString(",") + " to indicate all hours")
-
-  override def by(
-      identityId: UUID,
-      category: String,
-      date: LocalDate,
-      hour: Int,
-      subCategory: Option[String]
-  ): Observable[AcctEventRow] = {
-
-    if (validHours.contains(hour)) {
-      hour match {
-        case -1 =>
-
-          val currentHour = Instant.now().atZone(ZoneId.systemDefault()).toLocalTime.getHour
-
-          (0 to currentHour)
-            .map(hour => by(identityId, category, date, hour, subCategory))
-            .fold(Observable.empty[AcctEventRow])((a, b) => a ++ b)
-
-        case hour =>
-          acctEventDAO.by(
-            identityId,
-            category,
-            date.getYear,
-            date.getMonthValue,
-            date.getDayOfMonth,
-            hour,
-            subCategory
-          )
-      }
-    } else {
-      Observable.raiseError(invalidHourException)
-    }
-
-  }
 
   override def count(identityId: UUID, category: String, date: LocalDate, hour: Int, subCategory: Option[String]): Observable[HourCountResult] = {
 

@@ -22,31 +22,6 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   def selectAllQ = quote(query[AcctEventRow])
 
-  def byQ(
-      identityId: UUID,
-      category: String,
-      year: Int,
-      month: Int,
-      day: Int,
-      hour: Int,
-      subCategory: Option[String]
-  ) = {
-
-    val q0 = quote {
-      query[AcctEventRow]
-        .filter(_.identityId == lift(identityId))
-        .filter(_.category == lift(category))
-        .filter(_.year == lift(year))
-        .filter(_.month == lift(month))
-        .filter(_.day == lift(day))
-        .filter(_.hour == lift(hour))
-    }
-    subCategory match {
-      case Some(subCategory) => quote { q0.filter(_.subCategory == lift(subCategory)).map(x => x) }
-      case None => quote { q0.map(x => x) }
-    }
-  }
-
   def countQ(
       identityId: UUID,
       category: String,
@@ -56,7 +31,21 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
       hour: Int,
       subCategory: Option[String]
   ) = {
-    quote { byQ(identityId, category, year, month, day, hour, subCategory).size }
+    {
+      val q0 = quote {
+        query[AcctEventRow]
+          .filter(_.identityId == lift(identityId))
+          .filter(_.category == lift(category))
+          .filter(_.year == lift(year))
+          .filter(_.month == lift(month))
+          .filter(_.day == lift(day))
+          .filter(_.hour == lift(hour))
+      }
+      subCategory match {
+        case Some(subCategory) => quote { q0.filter(_.subCategory == lift(subCategory)).map(x => x).size }
+        case None => quote { q0.map(x => x).size }
+      }
+    }
   }
 
   def deleteQ(ownerId: UUID, acctEventId: UUID): db.Quoted[db.Delete[AcctEventRow]] = quote {
@@ -83,16 +72,6 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
       hour: Int,
       subCategory: Option[String]
   ): Observable[Long] = run(countQ(identityId, category, year, month, day, hour, subCategory))
-
-  def by(
-      identityId: UUID,
-      category: String,
-      year: Int,
-      month: Int,
-      day: Int,
-      hour: Int,
-      subCategory: Option[String]
-  ): Observable[AcctEventRow] = run(byQ(identityId, category, year, month, day, hour, subCategory))
 
   def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 

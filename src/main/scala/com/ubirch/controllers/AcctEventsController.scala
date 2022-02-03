@@ -64,8 +64,7 @@ class AcctEventsController @Inject() (
         queryParam[String]("cat").optional.description("Principal category"),
         queryParam[LocalDate]("date").optional.description("Date for the query. Use yyyy-MM-dd this format"),
         queryParam[Int]("hour").optional.description("Date for the query. Hour Definition: 0-23 format"),
-        queryParam[Int]("sub_cat").optional.description("Subcategory for query").optional,
-        queryParam[String]("mode").optional.description("Query result. 'count' or 'events'").optional
+        queryParam[Int]("sub_cat").optional.description("Subcategory for query").optional
       ))
 
   get("/v1/:identity_id", operation(getV1)) {
@@ -110,14 +109,9 @@ class AcctEventsController @Inject() (
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
         //optional -end
 
-        mode <- Task(params.get("mode")).map(_.map(_.trim).orElse(Some("events")))
-        evs <- mode match {
-          case Some("count") => acctEvents.count(identityId, cat, date, hour, subCat).toListL
-          case Some("events") => acctEvents.by(identityId, cat, date, hour, subCat).toListL
-          case other => throw new IllegalArgumentException(s"Invalid mode: wrong mode param -> ${other.getOrElse("")}")
-        }
+        evs <- acctEvents.count(identityId, cat, date, hour, subCat).toListL
 
-        _ = logger.info(s"query: mode->${mode.getOrElse("")}, cat=$cat, identity_id->$identityId, date=$date, hour=$hour, sub_cat=$subCat")
+        _ = logger.info(s"query: cat=$cat, identity_id->$identityId, date=$date, hour=$hour, sub_cat=$subCat")
 
       } yield {
         Ok(Return(evs))

@@ -113,4 +113,6 @@ _identityId_: It represents the identity that generated the UPP or event. The de
 
 _category_: It represents the kind of event. That's to say, what action originated it.
 
+_sub_category_: It represents a subkind of event. Useful for partitioning data by another element.
+
 _occurredAt_: It represents the time at which the event took place. 
