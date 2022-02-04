@@ -251,5 +251,13 @@
         <tspan x="422.523" y="642.007">a note</tspan>
       </text>
     </g>
+    <g>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="571.417,455.271 655.617,455.271 667.617,467.271 667.617,487.382 571.417,487.382 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="655.617,455.271 655.617,467.271 667.617,467.271 "/>
+      <text font-size="5.64444" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="578.417" y="473.511">
+        <tspan x="578.417" y="473.511">Through an Ubirch</tspan>
+        <tspan x="578.417" y="480.566">Token (thing:storedata)</tspan>
+      </text>
+    </g>
   </g>
 </svg>
