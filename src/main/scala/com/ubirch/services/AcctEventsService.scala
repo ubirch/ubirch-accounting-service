@@ -23,7 +23,7 @@ case class HourCountResult(year: Int, month: Int, day: Int, hour: Int, count: Lo
 @Singleton
 class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends AcctEventsService {
 
-  final val normalHours = (0 to 23).toList
+  final val normalHours = 0 to 23
   final val allHoursUntilNow = List(-1)
   final val allHours = List(-2)
   final val validHours = allHours ++ allHoursUntilNow ++ normalHours
@@ -35,22 +35,19 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends Ac
 
   override def count(identityId: UUID, category: String, date: LocalDate, hour: Int, subCategory: Option[String]): Observable[HourCountResult] = {
 
+    def  doRange(range: Range) = {
+      range
+        .map(hour => count(identityId, category, date, hour, subCategory))
+        .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)
+    }
+
     if (validHours.contains(hour)) {
       hour match {
         case -1 =>
-
           val currentHour = Instant.now().atZone(ZoneId.systemDefault()).toLocalTime.getHour
-          val range = (0 to currentHour)
-
-          range
-            .map(hour => count(identityId, category, date, hour, subCategory))
-            .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)
-
+          doRange(0 to currentHour)
         case -2 =>
-          normalHours
-            .map(hour => count(identityId, category, date, hour, subCategory))
-            .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)
-
+          doRange(normalHours)
         case hour =>
           acctEventDAO.count(
             identityId,
