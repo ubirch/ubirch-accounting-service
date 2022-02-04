@@ -1,12 +1,14 @@
 package com.ubirch.services
 
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
-import com.ubirch.kafka.producer.{ Configs, ProducerRunner }
+import com.ubirch.kafka.producer.{ Configs, ProducerRunner, WithProducerShutdownHook }
 import com.ubirch.models.AcctEvent
 import com.ubirch.services.formats.JsonConverterService
+import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.URLsHelper
 
 import com.typesafe.config.Config
+import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.reactive.Observable
 import org.apache.kafka.clients.producer.{ ProducerRecord, RecordMetadata }
@@ -19,7 +21,10 @@ trait AcctEventsStoreService {
 }
 
 @Singleton
-class DefaultAcctEventsStoreService @Inject() (config: Config, jsonConverter: JsonConverterService) extends AcctEventsStoreService {
+class DefaultAcctEventsStoreService @Inject() (config: Config, jsonConverter: JsonConverterService, lifecycle: Lifecycle)
+  extends AcctEventsStoreService
+  with WithProducerShutdownHook
+  with LazyLogging {
 
   val bootstrapServers: String = URLsHelper.passThruWithCheck(config.getString(AcctConsumerConfPaths.BOOTSTRAP_SERVERS))
   val lingerMs: Int = config.getInt(AcctProducerConfPaths.LINGER_MS)
@@ -39,5 +44,7 @@ class DefaultAcctEventsStoreService @Inject() (config: Config, jsonConverter: Js
       .mapEval(publish)
       .toListL
   }
+
+  lifecycle.addStopHook { hookFunc(producer) }
 
 }
