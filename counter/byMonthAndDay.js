@@ -81,10 +81,13 @@ const request = new Request(
 byDayAndHour(request)
   .then(function (response) {
     const data = [['Year', 'Month', 'Day', 'Hour', 'Count']]
+
     for (const i of response) {
       data.push([i.year, i.month, i.day, i.hour, i.count])
     }
+
     data.push(['Year', 'Month', 'Day', 'Hour', 'Count'])
+
     const config = {
       columnDefault: {
         width: 10
