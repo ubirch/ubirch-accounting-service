@@ -24,11 +24,14 @@ case class HourCountResult(year: Int, month: Int, day: Int, hour: Int, count: Lo
 class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends AcctEventsService {
 
   final val normalHours = (0 to 23).toList
-  final val allHours = List(-1)
-  final val validHours = allHours ++ normalHours
+  final val allHoursUntilNow = List(-1)
+  final val allHours = List(-2)
+  final val validHours = allHours ++ allHoursUntilNow ++ normalHours
 
   final lazy val invalidHourException =
-    new IllegalArgumentException("Hour is not valid. Hour value should be one of these values (" + normalHours.mkString(",") + ") or " + allHours.mkString(",") + " to indicate all hours")
+    new IllegalArgumentException("Hour is not valid. Hour value should be one of these values (" + normalHours.mkString(",") + ") or "
+      + allHoursUntilNow.mkString(",") + " to indicate all hours until now or "
+      + allHours.mkString(",") + " to indicate all hours")
 
   override def count(identityId: UUID, category: String, date: LocalDate, hour: Int, subCategory: Option[String]): Observable[HourCountResult] = {
 
@@ -40,6 +43,11 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends Ac
           val range = (0 to currentHour)
 
           range
+            .map(hour => count(identityId, category, date, hour, subCategory))
+            .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)
+
+        case -2 =>
+          normalHours
             .map(hour => count(identityId, category, date, hour, subCategory))
             .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)
 
