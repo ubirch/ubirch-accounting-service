@@ -80,6 +80,8 @@ class AcctEventsController @Inject() (
         claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
           .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
 
+        _ <- Task.fromTry(claims.validateScope("thing:getinfo"))
+
         //mandatory -start
         rawIdentityId <- Task(params.get("identity_id"))
         identityId <- Task(rawIdentityId)
@@ -118,7 +120,7 @@ class AcctEventsController @Inject() (
         Ok(Return(evs))
       }).onErrorHandle {
         case e: InvalidClaimException =>
-          logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
           logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
@@ -143,6 +145,8 @@ class AcctEventsController @Inject() (
         claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
           .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
 
+        _ <- Task.fromTry(claims.validateScope("thing:storedata"))
+
         data <- Task.delay(ReadBody.readJson[List[AcctEvent]](x => x.camelizeKeys))
           .onErrorRecoverWith {
             case e: Exception => Task.raiseError(new IllegalArgumentException(s"error parsing body. " + e.getMessage))
@@ -158,7 +162,7 @@ class AcctEventsController @Inject() (
         Ok(Return(res))
       }).onErrorHandle {
         case e: InvalidClaimException =>
-          logger.error("1.0 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.0 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
           logger.error("1.2 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
