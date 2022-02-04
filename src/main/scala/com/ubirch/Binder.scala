@@ -8,7 +8,7 @@ import com.ubirch.services.jwt._
 import com.ubirch.services.kafka.{ AcctManager, DefaultAcctManager }
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.rest.SwaggerProvider
-import com.ubirch.services.{ AcctEventsService, DefaultAcctEventsService }
+import com.ubirch.services.{ AcctEventsService, AcctEventsStoreService, DefaultAcctEventsService, DefaultAcctEventsStoreService }
 
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.{ AbstractModule, Module }
@@ -40,9 +40,10 @@ class Binder
   def TokenVerificationService: ScopedBindingBuilder = bind(classOf[TokenVerificationService]).to(classOf[DefaultTokenVerificationService])
   def PublicKeyDiscoveryService: ScopedBindingBuilder = bind(classOf[PublicKeyDiscoveryService]).to(classOf[DefaultPublicKeyDiscoveryService])
   def PublicKeyPoolService: ScopedBindingBuilder = bind(classOf[PublicKeyPoolService]).to(classOf[DefaultPublicKeyPoolService])
-  def AcctEvents: ScopedBindingBuilder = bind(classOf[AcctEventsService]).to(classOf[DefaultAcctEventsService])
+  def AcctEventsService: ScopedBindingBuilder = bind(classOf[AcctEventsService]).to(classOf[DefaultAcctEventsService])
+  def AcctEventsStoreService: ScopedBindingBuilder = bind(classOf[AcctEventsStoreService]).to(classOf[DefaultAcctEventsStoreService])
 
-  def configure(): Unit = {
+  override def configure(): Unit = {
     Config
     ExecutionContext
     Scheduler
@@ -57,7 +58,8 @@ class Binder
     TokenVerificationService
     PublicKeyDiscoveryService
     PublicKeyPoolService
-    AcctEvents
+    AcctEventsService
+    AcctEventsStoreService
     ()
   }
 

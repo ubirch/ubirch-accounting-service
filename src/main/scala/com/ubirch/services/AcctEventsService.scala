@@ -35,7 +35,7 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends Ac
 
   override def count(identityId: UUID, category: String, date: LocalDate, hour: Int, subCategory: Option[String]): Observable[HourCountResult] = {
 
-    def  doRange(range: Range) = {
+    def doRange(range: Range) = {
       range
         .map(hour => count(identityId, category, date, hour, subCategory))
         .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)

@@ -5,8 +5,8 @@ import com.ubirch.ServiceException
 import com.ubirch.api.InvalidClaimException
 import com.ubirch.controllers.concerns.{ BearerAuthStrategy, ControllerBase, SwaggerElements }
 import com.ubirch.defaults.TokenApi
-import com.ubirch.models.{ AcctEventRow, NOK, Return }
-import com.ubirch.services.AcctEventsService
+import com.ubirch.models.{ AcctEvent, AcctEventRow, NOK, Return }
+import com.ubirch.services.{ AcctEventsService, AcctEventsStoreService }
 import com.ubirch.util.{ DateUtil, TaskHelpers }
 
 import com.typesafe.config.Config
@@ -28,7 +28,8 @@ class AcctEventsController @Inject() (
     config: Config,
     val swagger: Swagger,
     jFormats: Formats,
-    acctEvents: AcctEventsService
+    acctEvents: AcctEventsService,
+    acctEventsStore: AcctEventsStoreService
 )(implicit val executor: ExecutionContext, scheduler: Scheduler)
   extends ControllerBase with TaskHelpers {
 
@@ -127,6 +128,46 @@ class AcctEventsController @Inject() (
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
           logger.error(s"1.4 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
+      }
+    }
+  }
+
+  post("/v1/record") {
+
+    asyncResult("acct_events_store") { implicit request => _ =>
+      (for {
+
+        _ <- Task.unit
+
+        claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
+          .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
+
+        data <- Task.delay(ReadBody.readJson[List[AcctEvent]](x => x.camelizeKeys))
+          .onErrorRecoverWith {
+            case e: Exception => Task.raiseError(new IllegalArgumentException(s"error parsing body. " + e.getMessage))
+          }
+
+        _ <- Task.delay(data.extracted).map { xs =>
+          xs.map(x => claims.validateIdentity(x.identityId).get)
+        }
+
+        res <- acctEventsStore.store(data.extracted)
+
+      } yield {
+        Ok(Return(res))
+      }).onErrorHandle {
+        case e: InvalidClaimException =>
+          logger.error("1.0 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          Forbidden(NOK.authenticationError("Forbidden"))
+        case e: ServiceException =>
+          logger.error("1.2 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          BadRequest(NOK.acctEventQueryError(s"Error storing acct event. ${e.getMessage}"))
+        case e: IllegalArgumentException =>
+          logger.error("1.3 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
+        case e: Exception =>
+          logger.error(s"1.4 Error storing acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }
