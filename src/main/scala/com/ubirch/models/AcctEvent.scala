@@ -4,12 +4,11 @@ import java.util.{ Date, UUID }
 
 case class AcctEvent(
     id: UUID,
-    ownerId: UUID,
+    ownerId: Option[UUID],
     identityId: UUID,
     category: String,
-    subCategory: String,
+    subCategory: Option[String],
     occurredAt: Date
 ) {
-  //TODO: CHECK WHAT IS VALID
-  def validate: Boolean = category.nonEmpty
+  def validate: Boolean = category.nonEmpty && subCategory.forall(_.nonEmpty)
 }

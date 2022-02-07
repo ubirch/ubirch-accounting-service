@@ -4,7 +4,6 @@ import java.util.{ Date, UUID }
 
 case class AcctEventRow(
     id: UUID,
-    ownerId: UUID,
     identityId: UUID,
     category: String,
     subCategory: String,

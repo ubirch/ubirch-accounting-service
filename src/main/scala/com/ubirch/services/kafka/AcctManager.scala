@@ -6,7 +6,7 @@ import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
-import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
+import com.ubirch.models.{ AcctEvent, AcctEventOwnerRow, AcctEventRow, AcctStoreDAO }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.DateUtil
@@ -61,7 +61,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 
 @Singleton
 class DefaultAcctManager @Inject() (
-    acctEventDAO: AcctEventDAO,
+    acctStoreDAO: AcctStoreDAO,
     jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle
@@ -98,22 +98,28 @@ class DefaultAcctManager @Inject() (
 
         val day = DateUtil.dateToLocalTime(acctEvent.occurredAt, ZoneId.systemDefault())
 
-        val row = AcctEventRow(
+        val eventsRow = AcctEventRow(
           id = acctEvent.id,
-          ownerId = acctEvent.ownerId,
           identityId = acctEvent.identityId,
           category = acctEvent.category,
-          subCategory = acctEvent.subCategory,
+          subCategory = acctEvent.subCategory.getOrElse("default"),
           year = day.getYear,
           month = day.getMonthValue,
           day = day.getDayOfMonth,
           hour = day.getHour,
           occurredAt = acctEvent.occurredAt
         )
-        acctEventDAO
-          .insert(row)
-          .map(x => (acctEvent, row, x))
+        val eventsOwnerRow = acctEvent.ownerId.map { o =>
+          AcctEventOwnerRow(o, acctEvent.identityId, acctEvent.occurredAt)
+        }
+        for {
+          res <- acctStoreDAO
+            .events
+            .insert(eventsRow)
+            .map(x => (acctEvent, eventsRow, x))
 
+          _ <- eventsOwnerRow.map(eo => acctStoreDAO.owner.insert(eo)).getOrElse(Observable.unit)
+        } yield res
       }
       .flatMap { case (_, row, _) =>
         logger.debug("acct_evt_inserted={}", row.toString)

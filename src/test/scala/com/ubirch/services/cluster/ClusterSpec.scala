@@ -56,7 +56,6 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
       CqlScript.ofString(
         ("INSERT INTO acct_system.acct_events (" +
           "id, " +
-          "owner_id, " +
           "identity_id, " +
           "category, " +
           "sub_category, " +
@@ -65,8 +64,8 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
           "day, " +
           "hour, " +
           "occurred_at) " +
-          "VALUES (963995ed-ce12-4ea5-89dc-b181701d1d7b, " +
-          "7549acd8-91e1-4230-833a-2f386e09b96f, " +
+          "VALUES (" +
+          "963995ed-ce12-4ea5-89dc-b181701d1d7b, " +
           "15f0c427-5dfb-4e15-853c-0770dd400763, " +
           "'verification', " +
           "'default'," +

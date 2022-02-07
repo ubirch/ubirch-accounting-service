@@ -57,10 +57,10 @@ object ServiceKafkaCSVImport extends Boot(Binder.modules) {
           val current = iterator.next()
           val acctEvent: AcctEvent = AcctEvent(
             id = current.get("id").map(UUID.fromString).getOrElse(throw new Exception("error with id")),
-            ownerId = current.get("owner_id").map(UUID.fromString).getOrElse(throw new Exception("error with owner_id")),
+            ownerId = current.get("owner_id").map(UUID.fromString),
             identityId = current.get("identity_id").map(UUID.fromString).getOrElse(throw new Exception("error with identity_id")),
             category = current.getOrElse("category", throw new Exception("error with category")),
-            subCategory = current.getOrElse("sub_category", "default"),
+            subCategory = current.get("sub_category"),
             occurredAt = current.get("occurred_at").map(sdf.parse).getOrElse(throw new Exception("error with occurred_at"))
           )
           val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))

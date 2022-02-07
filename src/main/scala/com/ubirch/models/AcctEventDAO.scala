@@ -48,10 +48,6 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
     }
   }
 
-  def deleteQ(ownerId: UUID, acctEventId: UUID): db.Quoted[db.Delete[AcctEventRow]] = quote {
-    query[AcctEventRow].filter(x => x.ownerId == lift(ownerId) && x.id == lift(acctEventId)).delete
-  }
-
 }
 
 class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends AcctEventRowsQueries {
@@ -72,7 +68,5 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
       hour: Int,
       subCategory: Option[String]
   ): Observable[Long] = run(countQ(identityId, category, year, month, day, hour, subCategory))
-
-  def delete(ownerId: UUID, acctEventId: UUID): Observable[Unit] = run(deleteQ(ownerId, acctEventId))
 
 }

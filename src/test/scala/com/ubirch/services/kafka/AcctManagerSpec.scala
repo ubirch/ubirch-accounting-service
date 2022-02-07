@@ -47,21 +47,14 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     def identityId = UUID.randomUUID()
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(
-        id,
-        ownerId,
-        identityId,
-        "verification",
-        "default",
-        new Date()
-      )
+      val acctEvent: AcctEvent = AcctEvent(id, Option(ownerId), identityId, "verification", None, new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "", "default", new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, Option(ownerId), identityId, "", None, new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
@@ -107,14 +100,14 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
     val identityId = UUID.randomUUID()
 
     val validAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "verification", "default", new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, Option(ownerId), identityId, "verification", None, new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
     }
 
     val invalidAcctEvents = (1 to batch).map { _ =>
-      val acctEvent: AcctEvent = AcctEvent(id, ownerId, identityId, "", "default", new Date())
+      val acctEvent: AcctEvent = AcctEvent(id, Option(ownerId), identityId, "", None, new Date())
       val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
       val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
       (acctEvent, acctEventAsString)
