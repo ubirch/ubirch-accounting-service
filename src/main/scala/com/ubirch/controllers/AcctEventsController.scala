@@ -135,7 +135,19 @@ class AcctEventsController @Inject() (
     }
   }
 
-  post("/v1/record") {
+  val postStoreV1: SwaggerSupportSyntax.OperationBuilder =
+    (apiOperation[Return]("getPostStoreV1")
+      consumes "application/json"
+      produces "application/json"
+      summary "Stores a list of events."
+      description "Stores a list of events for accounting purposes"
+      tags SwaggerElements.TAG_SERVICE
+      parameters (
+        swaggerTokenAsHeader,
+        bodyParam[List[AcctEvent]]("AcctEvent")
+      ))
+
+  post("/v1/record", operation(postStoreV1)) {
 
     asyncResult("acct_events_store") { implicit request => _ =>
       (for {
@@ -156,7 +168,7 @@ class AcctEventsController @Inject() (
           xs.map(x => claims.validateIdentity(x.identityId).get)
         }
 
-        res <- acctEventsStore.store(data.extracted)
+        res <- acctEventsStore.store(data.extracted).map(_.map(_.timestamp()))
 
       } yield {
         Ok(Return(res))
