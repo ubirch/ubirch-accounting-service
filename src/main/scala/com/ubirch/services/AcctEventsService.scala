@@ -1,6 +1,6 @@
 package com.ubirch.services
 
-import com.ubirch.models.AcctEventDAO
+import com.ubirch.models.{ AcctEventOwnerRow, AcctStoreDAO }
 
 import monix.reactive.Observable
 
@@ -16,12 +16,14 @@ trait AcctEventsService {
       hour: Int,
       subCategory: Option[String]
   ): Observable[HourCountResult]
+
+  def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow]
 }
 
 case class HourCountResult(year: Int, month: Int, day: Int, hour: Int, count: Long)
 
 @Singleton
-class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends AcctEventsService {
+class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends AcctEventsService {
 
   final val normalHours = 0 to 23
   final val allHoursUntilNow = List(-1)
@@ -49,7 +51,7 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends Ac
         case -2 =>
           doRange(normalHours)
         case hour =>
-          acctEventDAO.count(
+          acctStoreDAO.events.count(
             identityId,
             category,
             date.getYear,
@@ -63,6 +65,10 @@ class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends Ac
       Observable.raiseError(invalidHourException)
     }
 
+  }
+
+  override def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow] = {
+    acctStoreDAO.owner.byOwnerId(ownerId)
   }
 
 }

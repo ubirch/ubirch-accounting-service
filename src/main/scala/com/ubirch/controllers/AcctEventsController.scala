@@ -189,6 +189,59 @@ class AcctEventsController @Inject() (
     }
   }
 
+  val getKnownOwnersV1: SwaggerSupportSyntax.OperationBuilder =
+    (apiOperation[Return]("getPostStoreV1")
+      consumes "application/json"
+      produces "application/json"
+      summary "Gets the known identities for an owner."
+      description "Gets the known identities for an owner. Note that owners are optional in the registration of events. That's to say, that it is possible that " +
+      "some owners be not found."
+      tags SwaggerElements.TAG_SERVICE
+      parameters swaggerTokenAsHeader)
+
+  get("/v1/:owner_id/identities", operation(getKnownOwnersV1)) {
+
+    asyncResult("acct_events_owner_store") { implicit request => _ =>
+      (for {
+
+        _ <- Task.unit
+
+        claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
+          .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
+
+        _ <- Task.fromTry(claims.validateScope("thing:getinfo"))
+
+        rawOwnerId <- Task(params.get("owner_id"))
+        ownerId <- Task(rawOwnerId)
+          .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid OwnerId: wrong owner param: " + rawOwnerId.getOrElse("")))
+
+        ownerIdFromToken <- Task.delay(claims.isSubjectUUID.getOrElse(throw new IllegalArgumentException("Invalid Token OwnerI: Wrong token owner")))
+
+        ownerCheck = ownerIdFromToken == ownerId
+        _ <- earlyResponseIf(!ownerCheck)(InvalidClaimException("Invalid Owner Relation", "You can't access somebody else's data"))
+
+        res <- acctEvents.getKnownIdentitiesByOwner(ownerId).toListL
+
+      } yield {
+        Ok(Return(res))
+      }).onErrorHandle {
+        case e: InvalidClaimException =>
+          logger.error("1.0 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.value)
+          Forbidden(NOK.authenticationError("Forbidden"))
+        case e: ServiceException =>
+          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          BadRequest(NOK.acctEventQueryError(s"Error acct identity by owner. ${e.getMessage}"))
+        case e: IllegalArgumentException =>
+          logger.error("1.3 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
+        case e: Exception =>
+          logger.error(s"1.4 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
+      }
+    }
+  }
+
   notFound {
     asyncResult("not_found") { _ => _ =>
       Task {

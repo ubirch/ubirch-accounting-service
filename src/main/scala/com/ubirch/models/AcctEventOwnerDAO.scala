@@ -5,6 +5,7 @@ import com.ubirch.services.cluster.ConnectionService
 import io.getquill.{ CassandraStreamContext, SnakeCase }
 import monix.reactive.Observable
 
+import java.util.UUID
 import javax.inject.Inject
 
 trait AcctEventOwnerRowsQueries extends TablePointer[AcctEventOwnerRow] {
@@ -20,6 +21,10 @@ trait AcctEventOwnerRowsQueries extends TablePointer[AcctEventOwnerRow] {
     query[AcctEventOwnerRow].insert(lift(acctEventOwnerRow))
   }
 
+  def byOwnerIdQ(ownerId: UUID) = quote {
+    query[AcctEventOwnerRow].filter(_.ownerId == lift(ownerId))
+  }
+
 }
 
 class AcctEventOwnerDAO @Inject() (val connectionService: ConnectionService) extends AcctEventOwnerRowsQueries {
@@ -28,5 +33,9 @@ class AcctEventOwnerDAO @Inject() (val connectionService: ConnectionService) ext
   import db._
 
   def insert(acctEventOwnerRow: AcctEventOwnerRow): Observable[Unit] = run(insertQ(acctEventOwnerRow))
+
+  def byOwnerId(ownerId: UUID): Observable[AcctEventOwnerRow] = {
+    run(byOwnerIdQ(ownerId))
+  }
 
 }
