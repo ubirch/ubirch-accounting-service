@@ -24,16 +24,26 @@ case class MonthlyCountResult(year: Int, month: Int, count: Long)
 @Singleton
 class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends AcctEventsService {
 
+  final val hoursObservable = Observable.fromIterable(0 to 23)
+
   override def count(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Observable[MonthlyCountResult] = {
-    acctStoreDAO.events.count(
-      identityId = identityId,
-      category = category,
-      year = date.getYear,
-      month = date.getMonthValue,
-      day = (1 to date.lengthOfMonth).toList,
-      hour = (0 to 23).toList,
-      subCategory = subCategory
-    ).map(count => MonthlyCountResult(date.getYear, date.getMonthValue, count))
+    Observable
+      .fromIterable(1 to date.lengthOfMonth)
+      .flatMap { day =>
+        hoursObservable.flatMap { hour =>
+          acctStoreDAO.events.count(
+            identityId = identityId,
+            category = category,
+            year = date.getYear,
+            month = date.getMonthValue,
+            day = day,
+            hour = hour,
+            subCategory = subCategory
+          )
+        }
+      }
+      .sum
+      .map(count => MonthlyCountResult(date.getYear, date.getMonthValue, count))
   }
 
   override def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow] = {
