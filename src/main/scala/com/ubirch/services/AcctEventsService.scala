@@ -10,7 +10,7 @@ import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 
 trait AcctEventsService {
-  def count(
+  def monthCount(
       identityId: UUID,
       category: String,
       date: LocalDate,
@@ -31,7 +31,7 @@ class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends Ac
     }
   }
 
-  override def count(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[MonthlyCountResult] = {
+  override def monthCount(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[MonthlyCountResult] = {
 
     val tasks = monthRange(date).par.map { case (day, hour) =>
       acctStoreDAO.events.count(
