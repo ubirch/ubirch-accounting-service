@@ -107,7 +107,7 @@ class AcctEventsController @Inject() (
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
         //optional -end
 
-        evs <- acctEvents.count(identityId, cat, date, subCat).toListL
+        evs <- acctEvents.count(identityId, cat, date, subCat).map(x => List(x))
 
         _ = logger.info(s"query: cat=$cat, identity_id->$identityId, date=$date, sub_cat=$subCat")
 
