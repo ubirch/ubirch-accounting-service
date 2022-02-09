@@ -27,8 +27,8 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
       category: String,
       year: Int,
       month: Int,
-      day: Int,
-      hour: Int,
+      day: List[Int],
+      hour: List[Int],
       subCategory: Option[String]
   ) = {
     {
@@ -38,8 +38,8 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
           .filter(_.category == lift(category))
           .filter(_.year == lift(year))
           .filter(_.month == lift(month))
-          .filter(_.day == lift(day))
-          .filter(_.hour == lift(hour))
+          .filter(row => liftQuery(day).contains(row.day))
+          .filter(row => liftQuery(hour).contains(row.hour))
       }
       subCategory match {
         case Some(subCategory) => quote { q0.filter(_.subCategory == lift(subCategory)).map(x => x).size }
@@ -64,8 +64,8 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
       category: String,
       year: Int,
       month: Int,
-      day: Int,
-      hour: Int,
+      day: List[Int],
+      hour: List[Int],
       subCategory: Option[String]
   ): Observable[Long] = run(countQ(identityId, category, year, month, day, hour, subCategory))
 

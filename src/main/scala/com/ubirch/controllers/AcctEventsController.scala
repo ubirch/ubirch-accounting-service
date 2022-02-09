@@ -70,7 +70,7 @@ class AcctEventsController @Inject() (
 
   get("/v1/:identity_id", operation(getV1)) {
 
-    lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
+    lazy val sdf = new SimpleDateFormat("yyyy-MM")
 
     asyncResult("list_acct_events_identity") { implicit request => _ =>
       (for {
@@ -97,12 +97,7 @@ class AcctEventsController @Inject() (
         date <- Task(params.get("date"))
           .map(_.map(sdf.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x, ZoneId.systemDefault())).getOrElse(throw new IllegalArgumentException("Invalid Date Definition: End requires Date")))
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Date: Use yyyy-MM-dd this format"))
-
-        hour <- Task(params.get("hour"))
-          .map(_.map(_.toInt).getOrElse(throw new IllegalArgumentException("Invalid Hour Definition: 0-23 format")))
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Hour: Use 0-23 this format"))
-
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Date: Use yyyy-MM this format"))
         //mandatory -end
 
         //optional -start
@@ -112,9 +107,9 @@ class AcctEventsController @Inject() (
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
         //optional -end
 
-        evs <- acctEvents.count(identityId, cat, date, hour, subCat).toListL
+        evs <- acctEvents.count(identityId, cat, date, subCat).toListL
 
-        _ = logger.info(s"query: cat=$cat, identity_id->$identityId, date=$date, hour=$hour, sub_cat=$subCat")
+        _ = logger.info(s"query: cat=$cat, identity_id->$identityId, date=$date, sub_cat=$subCat")
 
       } yield {
         Ok(Return(evs))

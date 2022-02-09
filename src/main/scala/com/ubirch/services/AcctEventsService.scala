@@ -4,7 +4,7 @@ import com.ubirch.models.{ AcctEventOwnerRow, AcctStoreDAO }
 
 import monix.reactive.Observable
 
-import java.time.{ Instant, LocalDate, ZoneId }
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 
@@ -13,57 +13,28 @@ trait AcctEventsService {
       identityId: UUID,
       category: String,
       date: LocalDate,
-      hour: Int,
       subCategory: Option[String]
-  ): Observable[HourCountResult]
+  ): Observable[MonthlyCountResult]
 
   def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow]
 }
 
-case class HourCountResult(year: Int, month: Int, day: Int, hour: Int, count: Long)
+case class MonthlyCountResult(year: Int, month: Int, count: Long)
 
 @Singleton
 class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends AcctEventsService {
 
-  final val normalHours = 0 to 23
-  final val allHoursUntilNow = List(-1)
-  final val allHours = List(-2)
-  final val validHours = allHours ++ allHoursUntilNow ++ normalHours
+  override def count(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Observable[MonthlyCountResult] = {
 
-  final lazy val invalidHourException =
-    new IllegalArgumentException("Hour is not valid. Hour value should be one of these values (" + normalHours.mkString(",") + ") or "
-      + allHoursUntilNow.mkString(",") + " to indicate all hours until now or "
-      + allHours.mkString(",") + " to indicate all hours")
-
-  override def count(identityId: UUID, category: String, date: LocalDate, hour: Int, subCategory: Option[String]): Observable[HourCountResult] = {
-
-    def doRange(range: Range) = {
-      range
-        .map(hour => count(identityId, category, date, hour, subCategory))
-        .fold(Observable.empty[HourCountResult])((a, b) => a ++ b)
-    }
-
-    if (validHours.contains(hour)) {
-      hour match {
-        case -1 =>
-          val currentHour = Instant.now().atZone(ZoneId.systemDefault()).toLocalTime.getHour
-          doRange(0 to currentHour)
-        case -2 =>
-          doRange(normalHours)
-        case hour =>
-          acctStoreDAO.events.count(
-            identityId,
-            category,
-            date.getYear,
-            date.getMonthValue,
-            date.getDayOfMonth,
-            hour,
-            subCategory
-          ).map(count => HourCountResult(date.getYear, date.getMonthValue, date.getDayOfMonth, hour, count))
-      }
-    } else {
-      Observable.raiseError(invalidHourException)
-    }
+    acctStoreDAO.events.count(
+      identityId,
+      category,
+      date.getYear,
+      date.getMonthValue,
+      (1 to date.lengthOfMonth).toList,
+      (0 to 23).toList,
+      subCategory
+    ).map(count => MonthlyCountResult(date.getYear, date.getMonthValue, count))
 
   }
 
