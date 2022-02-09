@@ -2,7 +2,7 @@
   "name": "counter",
   "version": "1.0.0",
   "description": "",
-  "main": "byMonth.js",
+  "main": "monthlyReport.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,8 +11,7 @@
   "dependencies": {
     "@js-joda/core": "^5.2.0",
     "axios": "^0.25.0",
-    "table": "^6.8.0",
-    "uniq": "^1.0.1"
+    "table": "^6.8.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

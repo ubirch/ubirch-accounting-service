@@ -87,7 +87,7 @@ class AcctEventsController @Inject() (
         identityId <- Task(rawIdentityId)
           .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
           .flatMap(x => Task.fromTry(claims.validateIdentity(x)))
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong owner param: " + rawIdentityId.getOrElse("")))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity param: " + rawIdentityId.getOrElse("")))
 
         cat <- Task(params.get("cat"))
           .map(_.filter(_.nonEmpty))

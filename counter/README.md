@@ -11,3 +11,6 @@ Create a "config.json" file in the root folder with the following info.
 "token": "UBIRCH JWT TOKEN with get:info scope and the target id as the identity id"
 }
 ```
+
+`node monthlyReport.js`
+

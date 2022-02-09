@@ -25,17 +25,15 @@ case class MonthlyCountResult(year: Int, month: Int, count: Long)
 class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends AcctEventsService {
 
   override def count(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Observable[MonthlyCountResult] = {
-
     acctStoreDAO.events.count(
-      identityId,
-      category,
-      date.getYear,
-      date.getMonthValue,
-      (1 to date.lengthOfMonth).toList,
-      (0 to 23).toList,
-      subCategory
+      identityId = identityId,
+      category = category,
+      year = date.getYear,
+      month = date.getMonthValue,
+      day = (1 to date.lengthOfMonth).toList,
+      hour = (0 to 23).toList,
+      subCategory = subCategory
     ).map(count => MonthlyCountResult(date.getYear, date.getMonthValue, count))
-
   }
 
   override def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow] = {
