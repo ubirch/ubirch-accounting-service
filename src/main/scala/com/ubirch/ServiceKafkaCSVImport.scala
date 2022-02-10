@@ -1,4 +1,4 @@
-package com.ubirch.testers
+package com.ubirch
 
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch.kafka.producer.{ Configs, ProducerRunner }
