@@ -3,30 +3,31 @@ package com.ubirch.testers
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch.kafka.producer.{ Configs, ProducerRunner }
 import com.ubirch.models.AcctEvent
-import com.ubirch.services.formats.JsonConverterService
+import com.ubirch.services.config.ConfigProvider
+import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonFormatsProvider }
 import com.ubirch.util.URLsHelper
-import com.ubirch.{ Binder, Boot }
 
 import com.github.tototoshi.csv
 import com.github.tototoshi.csv.CSVReader
-import com.typesafe.config.Config
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 
-import scala.concurrent.duration._
-import scala.language.postfixOps
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.UUID
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
-object ServiceKafkaCSVImport extends Boot(Binder.modules) {
+object ServiceKafkaCSVImport extends LazyLogging {
 
-  val config: Config = get[Config]
-  val jsonConverter = get[JsonConverterService]
+  val config = new ConfigProvider get ()
+  implicit val formats = new JsonFormatsProvider get ()
+  lazy val jsonConverter = new DefaultJsonConverterService()
 
-  val bootstrapServers: String = URLsHelper.passThruWithCheck(config.getString(AcctConsumerConfPaths.BOOTSTRAP_SERVERS))
-  val lingerMs: Int = config.getInt(AcctProducerConfPaths.LINGER_MS)
-  val topic: String = config.getString(AcctConsumerConfPaths.ACCT_EVT_TOPIC_PATH)
+  lazy val bootstrapServers: String = URLsHelper.passThruWithCheck(config.getString(AcctConsumerConfPaths.BOOTSTRAP_SERVERS))
+  lazy val lingerMs: Int = config.getInt(AcctProducerConfPaths.LINGER_MS)
+  lazy val topic: String = config.getString(AcctConsumerConfPaths.ACCT_EVT_TOPIC_PATH)
 
   def main(args: Array[String]): Unit = {
 
