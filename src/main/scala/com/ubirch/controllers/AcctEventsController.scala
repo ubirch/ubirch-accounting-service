@@ -163,10 +163,10 @@ class AcctEventsController @Inject() (
           xs.map(x => claims.validateIdentity(x.identityId).get)
         }
 
-        res <- acctEventsStore.store(data.extracted).map(_.map(_.timestamp()))
+        res <- acctEventsStore.store(data.extracted).map(_ => "accepted")
 
       } yield {
-        Ok(Return(res))
+        Accepted(Return(res))
       }).onErrorHandle {
         case e: InvalidClaimException =>
           logger.error("1.0 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)

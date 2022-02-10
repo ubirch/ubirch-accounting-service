@@ -10,7 +10,6 @@ import com.ubirch.util.URLsHelper
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import monix.reactive.Observable
 import org.apache.kafka.clients.producer.{ ProducerRecord, RecordMetadata }
 import org.apache.kafka.common.serialization.StringSerializer
 
@@ -39,10 +38,8 @@ class DefaultAcctEventsStoreService @Inject() (config: Config, jsonConverter: Js
   }
 
   override def store(acctEvents: List[AcctEvent]): Task[List[RecordMetadata]] = {
-    Observable
-      .fromIterable(acctEvents)
-      .mapEval(publish)
-      .toListL
+    val tasks = acctEvents.map(publish)
+    Task.parSequenceUnordered(tasks)
   }
 
   lifecycle.addStopHook { hookFunc(producer) }
