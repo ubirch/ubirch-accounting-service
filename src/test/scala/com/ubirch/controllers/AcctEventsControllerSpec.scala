@@ -82,6 +82,30 @@ class AcctEventsControllerSpec
 
     }
 
+    "fail when required params not provided: get" in {
+      val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuLmRldi51YmlyY2guY29tIiwic3ViIjoiOTYzOTk1ZWQtY2UxMi00ZWE1LTg5ZGMtYjE4MTcwMWQxZDdiIiwiYXVkIjpbImh0dHBzOi8vYXBpLmNvbnNvbGUuZGV2LnViaXJjaC5jb20iLCJodHRwczovL2RhdGEuZGV2LnViaXJjaC5jb20iXSwiaWF0IjoxNjQ0NDg1OTA5LCJqdGkiOiI0NmZkYzczNi0zOWJjLTQ1NDUtYWVhNi1kZTgzNjBhYjJmNWYiLCJzY3AiOlsidGhpbmc6Z2V0aW5mbyIsInRoaW5nOnN0b3JlZGF0YSJdLCJwdXIiOiJBY2NvdW50aW5nIFNlcnZpY2UiLCJ0Z3AiOltdLCJ0aWQiOlsiMTI1MzlmNzYtYzdlOS00N2Q2LWIzN2ItNGI1OTM4MDcyMWFjIl0sIm9yZCI6W119.AE1mMNKiq9j9P-_U0kan7Vi3hW7dRVs-aQ-nFRMqNEheTOdQ4RDKx7CmpsbdoBoo8koN2TrRVkEXQLr7X1zgLg"
+      def identity = "12539f76-c7e9-47d6-b37b-4b59380721ac"
+
+      info("identity_id")
+      get(s"/v1/123", headers = Map("authorization" -> s"bearer $token")) {
+        status should equal(400)
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid identity_id: wrong identity param: 123"}""")
+      }
+
+      info("category")
+      get(s"/v1/$identity", headers = Map("authorization" -> s"bearer $token")) {
+        status should equal(400)
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid cat: wrong cat param"}""")
+      }
+
+      info("date")
+      get(s"/v1/$identity?cat=default", headers = Map("authorization" -> s"bearer $token")) {
+        status should equal(400)
+        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid Date: Use yyyy-MM this format"}""")
+      }
+
+    }
+
   }
 
   override protected def beforeEach(): Unit = {
