@@ -4,9 +4,11 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 
 1. [Categories supported](#categories)
 2. [Query through http Interface](#http-interface)
-3. [Ingestion through Kafka Interface](#kafka-interface)
-4. [Ingestion through HTTP Interface](#kafka-in****terface)
+3. [Ingestion through Kafka Interface](#kafka-interface-ingestion)
+4. [Ingestion through HTTP Interface](#http-interface-ingestion)
 5. [Swagger](#swagger)
+
+![General System](./acct_events_v3.svg)
 
 ## Categories
 
@@ -22,11 +24,10 @@ All UVS verifications are registered against this service in batches of 100
 
 1. [Getting Started](#steps-to-prepare-a-request)
 2. [List Your Acct Events](#list-your-acct-events)
-3. [Keycloak and Responses](#keycloak-token-and-responses)
 
 ### Steps to prepare a request
 
-1. Get your keycloak token.
+1. Get your ubirch token.
 2. Prepare the query params.
 3. Prepare the request and send.
 
@@ -55,7 +56,7 @@ _category_: It is the category for the stored event. Use `anchoring` or `verific
 
 _date_: It is the date of the query. The format is "yyyy-MM". Only the year and moth are taken into account.
 
-_subCategory_: (Mandatory) It is the subcategory for the stored event.
+_subCategory_: (Optional) It is the subcategory for the stored event.
 
 
 # An Accounting Event
@@ -85,11 +86,11 @@ _subCategory_: (Optional) It represents a subkind of event. Useful for partition
 
 _occurredAt_: It represents the time at which the event took place.
 
-# Kafka Interface
+# Kafka Interface Ingestion
 
 The system will be listening to the configured topic and will store the account events to cassandra. 
 
-# Http Interface
+# Http Interface Ingestion
 
 The system provides a http endpoint that allows to register events through http. 
 
