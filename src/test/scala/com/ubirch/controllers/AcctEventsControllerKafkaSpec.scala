@@ -63,7 +63,7 @@ class AcctEventsControllerKafkaSpec
       val date = new Date()
 
       val acctEvents = (1 to batch).map { _ =>
-        AcctEvent(id, Option(ownerId), identityId, "verification", None, date)
+        AcctEvent(id, Option(ownerId), identityId, "verification", Some("entry-a"), date)
       }.toList
 
       val acctEventAsJValue = jsonConverter.toJValue[List[AcctEvent]](acctEvents).getOrElse(throw new Exception("Not able to parse to string"))
