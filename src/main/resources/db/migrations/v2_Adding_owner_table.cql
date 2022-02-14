@@ -9,6 +9,6 @@ create table if not exists acct_system.acct_event_owners
 (
     owner_id    UUID,
     identity_id UUID,
-    created_at   timestamp,
+    created_at  timestamp,
     PRIMARY KEY (owner_id, identity_id)
 );

@@ -37,9 +37,10 @@ object ServiceTest extends Boot(Binder.modules) {
 
       logger.info("Sending to " + topic)
 
-      val batch = 5
+      val batch = 1000000
 
       def id = UUID.randomUUID()
+      def externalId = Option(id.toString)
       val ownerId = UUID.fromString("15124619-f7b6-44ca-bce5-8ee1b2b159f3")
       val identityId = UUID.fromString("12539f76-c7e9-47d6-b37b-4b59380721ac")
 
@@ -51,7 +52,15 @@ object ServiceTest extends Boot(Binder.modules) {
 
       Future.sequence {
         (1 to batch).map { _ =>
-          val acctEvent: AcctEvent = AcctEvent(id, Option(ownerId), identityId, "verification", Some("entry-b"), new Date())
+          val acctEvent: AcctEvent = AcctEvent(
+            id,
+            Option(ownerId),
+            identityId,
+            "verification",
+            Some("entry-b"),
+            externalId,
+            new Date()
+          )
           val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
           val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
 
@@ -63,7 +72,15 @@ object ServiceTest extends Boot(Binder.modules) {
           c.setTime(new Date)
           c.add(Calendar.DATE, 1)
 
-          val acctEvent: AcctEvent = AcctEvent(id, Option(ownerId), identityId, "verification", Some("entry-a"), c.getTime)
+          val acctEvent: AcctEvent = AcctEvent(
+            id,
+            Option(ownerId),
+            identityId,
+            "verification",
+            Some("entry-a"),
+            externalId,
+            c.getTime
+          )
           val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))
           val acctEventAsString = jsonConverter.toString(acctEventAsJValue)
 

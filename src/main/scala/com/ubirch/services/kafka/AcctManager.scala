@@ -107,7 +107,8 @@ class DefaultAcctManager @Inject() (
           month = day.getMonthValue,
           day = day.getDayOfMonth,
           hour = day.getHour,
-          occurredAt = acctEvent.occurredAt
+          occurredAt = acctEvent.occurredAt,
+          externalId = acctEvent.externalId
         )
         val eventsOwnerRow = acctEvent.ownerId.map { o =>
           AcctEventOwnerRow(o, acctEvent.identityId, acctEvent.occurredAt)

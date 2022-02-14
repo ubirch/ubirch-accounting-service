@@ -11,5 +11,6 @@ case class AcctEventRow(
     month: Int,
     day: Int,
     hour: Int,
-    occurredAt: Date
+    occurredAt: Date,
+    externalId: Option[String]
 )

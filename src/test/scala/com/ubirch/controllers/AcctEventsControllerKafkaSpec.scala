@@ -58,12 +58,13 @@ class AcctEventsControllerKafkaSpec
       val batch = 50
 
       def id = UUID.randomUUID()
+      def externalId = Option.empty[String]
       val ownerId = UUID.randomUUID()
       val identityId = UUID.fromString("12539f76-c7e9-47d6-b37b-4b59380721ac")
       val date = new Date()
 
       val acctEvents = (1 to batch).map { _ =>
-        AcctEvent(id, Option(ownerId), identityId, "verification", Some("entry-a"), date)
+        AcctEvent(id, Option(ownerId), identityId, "verification", Some("entry-a"), externalId, date)
       }.toList
 
       val acctEventAsJValue = jsonConverter.toJValue[List[AcctEvent]](acctEvents).getOrElse(throw new Exception("Not able to parse to string"))

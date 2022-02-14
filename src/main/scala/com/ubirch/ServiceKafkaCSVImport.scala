@@ -62,6 +62,7 @@ object ServiceKafkaCSVImport extends LazyLogging {
             identityId = current.get("identity_id").map(UUID.fromString).getOrElse(throw new Exception("error with identity_id")),
             category = current.getOrElse("category", throw new Exception("error with category")),
             subCategory = current.get("sub_category"),
+            externalId = current.get("external_id"),
             occurredAt = current.get("occurred_at").map(sdf.parse).getOrElse(throw new Exception("error with occurred_at"))
           )
           val acctEventAsJValue = jsonConverter.toJValue[AcctEvent](acctEvent).getOrElse(throw new Exception("Not able to parse to string"))

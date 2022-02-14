@@ -16,6 +16,7 @@ create table if not exists acct_system.acct_events
     day          int,
     hour         int,
     occurred_at  timestamp,
+    external_id   text,
     PRIMARY KEY ((identity_id, category, year, month, day, hour), sub_category, id)
 );
 
