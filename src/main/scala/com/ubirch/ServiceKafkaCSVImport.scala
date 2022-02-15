@@ -56,12 +56,16 @@ object ServiceKafkaCSVImport extends LazyLogging {
         val iterator = reader.iteratorWithHeaders
         while (iterator.hasNext) {
           val current = iterator.next()
+          val category = {
+            val cat = current.getOrElse("category", throw new Exception("error with category"))
+            if (cat == "verification") "upp_verification" else cat
+          }
           val acctEvent: AcctEvent = AcctEvent(
             id = current.get("id").map(UUID.fromString).getOrElse(throw new Exception("error with id")),
             ownerId = current.get("owner_id").map(UUID.fromString),
             identityId = current.get("identity_id").map(UUID.fromString).getOrElse(throw new Exception("error with identity_id")),
-            category = current.getOrElse("category", throw new Exception("error with category")),
-            subCategory = current.get("sub_category"),
+            category = category.toLowerCase,
+            subCategory = current.get("sub_category").map(_.toLowerCase),
             externalId = current.get("external_id"),
             occurredAt = current.get("occurred_at").map(sdf.parse).getOrElse(throw new Exception("error with occurred_at"))
           )
