@@ -1,9 +1,10 @@
 package com.ubirch.util
 
-import java.util.{ Calendar, Date }
-
 import org.joda.time.format.{ DateTimeFormatter, ISODateTimeFormat }
 import org.joda.time.{ DateTime, DateTimeZone, LocalTime, Period }
+
+import java.time.{ LocalDate, LocalDateTime, ZoneId }
+import java.util.{ Calendar, Date }
 
 /**
   * Convenience for Dates
@@ -55,6 +56,18 @@ object DateUtil {
     calendar.set(Calendar.MINUTE, 0)
     calendar.set(Calendar.HOUR, 0)
     calendar.getTime
+  }
+
+  def dateToLocalTime(dateToConvert: Date, zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime = {
+    dateToConvert.toInstant
+      .atZone(zoneId)
+      .toLocalDateTime
+  }
+
+  def dateToLocalDate(dateToConvert: Date, zoneId: ZoneId = ZoneId.systemDefault()): LocalDate = {
+    dateToConvert.toInstant
+      .atZone(zoneId)
+      .toLocalDate
   }
 
 }

@@ -8,7 +8,7 @@ abstract class Response[T] {
   val ok: T
 }
 object Response {
-  val version = "1.0"
+  val version = "1.0.0"
 }
 
 /**
@@ -28,7 +28,6 @@ object NOK {
   final val SERVER_ERROR = 'ServerError
   final val PARSING_ERROR = 'ParsingError
   final val NO_ROUTE_FOUND_ERROR = 'NoRouteFound
-  final val DELETE_ERROR = 'TokenDeleteError
   final val ACCT_EVENT_QUERY_ERROR = 'AcctEventQueryError
   final val AUTHENTICATION_ERROR = 'AuthenticationError
 
@@ -42,8 +41,9 @@ object NOK {
 
 }
 
-case class Good(version: String, ok: Boolean, data: Any) extends Response[Boolean]
-object Good {
-  def apply(data: Any): Good = new Good(Response.version, ok = true, data)
+case class Return(version: String, ok: Boolean, data: Any) extends Response[Boolean]
+object Return {
+  def apply(data: Any): Return = new Return(Response.version, ok = true, data)
+  def apply(ok: Boolean, data: Any): Return = new Return(Response.version, ok = ok, data)
 }
 

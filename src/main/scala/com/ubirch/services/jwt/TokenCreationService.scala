@@ -1,14 +1,14 @@
 package com.ubirch.services.jwt
 
-import java.time.Clock
-import java.util.UUID
-
-import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import com.ubirch.util.TaskHelpers
-import javax.inject._
+
+import com.typesafe.scalalogging.LazyLogging
 import pdi.jwt.{ Jwt, JwtAlgorithm, JwtClaim }
 
+import java.time.Clock
+import java.util.UUID
+import javax.inject._
 import scala.util.Try
 
 trait TokenCreationService {

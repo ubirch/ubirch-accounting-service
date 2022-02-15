@@ -1,15 +1,16 @@
 package com.ubirch
 package services.cluster
 
-import java.net.InetSocketAddress
-import java.nio.file.{ Files, Paths }
-import java.security.KeyStore
+import com.ubirch.ConfPaths.CassandraClusterConfPaths
+import com.ubirch.util.URLsHelper
 
 import com.datastax.driver.core._
 import com.datastax.driver.core.policies.RoundRobinPolicy
 import com.typesafe.config.Config
-import com.ubirch.ConfPaths.CassandraClusterConfPaths
-import com.ubirch.util.URLsHelper
+
+import java.net.InetSocketAddress
+import java.nio.file.{ Files, Paths }
+import java.security.KeyStore
 import javax.inject._
 import javax.net.ssl.{ SSLContext, TrustManagerFactory }
 
@@ -107,7 +108,7 @@ class DefaultClusterService @Inject() (config: Config) extends ClusterService wi
       .withPoolingOptions(poolingOptions)
       .withCredentials(username, password)
       .withQueryOptions(queryOptions)
-      .withProtocolVersion(ProtocolVersion.V3)
+      .withProtocolVersion(ProtocolVersion.V4)
       .withClusterName("event-log")
 
     if (withSSL) {

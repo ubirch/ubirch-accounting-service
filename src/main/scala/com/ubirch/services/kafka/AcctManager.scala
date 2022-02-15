@@ -1,23 +1,19 @@
 package com.ubirch
 package services.kafka
 
-import java.io.ByteArrayInputStream
-import java.util.Date
-import java.util.concurrent.ExecutionException
-
-import com.datastax.driver.core.exceptions.{ InvalidQueryException, NoHostAvailableException }
-import com.typesafe.config.Config
-import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
 import com.ubirch.kafka.util.Exceptions.NeedForPauseException
-import com.ubirch.models.{ AcctEvent, AcctEventDAO, AcctEventRow }
+import com.ubirch.models.{ AcctEvent, AcctEventOwnerRow, AcctEventRow, AcctStoreDAO }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.DateUtil
-import javax.inject._
+
+import com.datastax.driver.core.exceptions.{ InvalidQueryException, NoHostAvailableException }
+import com.typesafe.config.Config
+import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
 import monix.reactive.Observable
@@ -25,6 +21,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization._
 import org.json4s.Formats
 
+import java.io.ByteArrayInputStream
+import java.time.ZoneId
+import java.util.concurrent.ExecutionException
+import javax.inject._
 import scala.concurrent.{ ExecutionContext, Promise }
 
 abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
@@ -61,7 +61,7 @@ abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
 
 @Singleton
 class DefaultAcctManager @Inject() (
-    acctEventDAO: AcctEventDAO,
+    acctStoreDAO: AcctStoreDAO,
     jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle
@@ -96,15 +96,34 @@ class DefaultAcctManager @Inject() (
       }
       .flatMap { acctEvent =>
 
-        //TODO: Can we just not have direct value?
-        val row = AcctEventRow(id = acctEvent.id, ownerId = acctEvent.ownerId, identityId = acctEvent.identityId.orNull, category = acctEvent.category, description = acctEvent.description, tokenValue = acctEvent.token, day = DateUtil.resetTimeInDate(acctEvent.occurredAt), occurredAt = acctEvent.occurredAt, createdAt = new Date())
-        acctEventDAO
-          .insert(row)
-          .map(x => (acctEvent, row, x))
+        val day = DateUtil.dateToLocalTime(acctEvent.occurredAt, ZoneId.systemDefault())
 
+        val eventsRow = AcctEventRow(
+          id = acctEvent.id,
+          identityId = acctEvent.identityId,
+          category = acctEvent.category,
+          subCategory = acctEvent.subCategory.getOrElse("default"),
+          year = day.getYear,
+          month = day.getMonthValue,
+          day = day.getDayOfMonth,
+          hour = day.getHour,
+          occurredAt = acctEvent.occurredAt,
+          externalId = acctEvent.externalId
+        )
+        val eventsOwnerRow = acctEvent.ownerId.map { o =>
+          AcctEventOwnerRow(o, acctEvent.identityId, acctEvent.occurredAt)
+        }
+        for {
+          res <- acctStoreDAO
+            .events
+            .insert(eventsRow)
+            .map(x => (acctEvent, eventsRow, x))
+
+          _ <- eventsOwnerRow.map(eo => acctStoreDAO.owner.insert(eo)).getOrElse(Observable.unit)
+        } yield res
       }
       .flatMap { case (_, row, _) =>
-        logger.info("acct_evt_inserted={}", row.toString)
+        logger.debug("acct_evt_inserted={}", row.toString)
         Observable.unit
       }
       .onErrorHandle {

@@ -1,14 +1,14 @@
 package com.ubirch.controllers.concerns
 
-import java.util.{ Locale, UUID }
-
 import com.ubirch.models.NOK
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
+
 import org.json4s.JNothing
 import org.json4s.JsonAST.JValue
 import org.scalatra.ScalatraBase
 import org.scalatra.auth.{ ScentryConfig, ScentryStrategy, ScentrySupport }
 
+import java.util.{ Locale, UUID }
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import scala.language.implicitConversions
 import scala.util.Try
 
@@ -20,20 +20,29 @@ trait BearerAuthSupport[TokenType <: AnyRef] {
   protected def bearerAuth()(implicit request: HttpServletRequest, response: HttpServletResponse): Option[TokenType] = {
     val beReq = new BearerAuthStrategy.BearerAuthRequest(request)
     if (!beReq.providesAuth) {
-      response.setHeader("WWW-Authenticate", "Bearer realm=\"%s\"" format realm)
-      halt(401, NOK.authenticationError("Unauthenticated"))
+      val bearerRealm = "Bearer realm=\"%s\"" format realm
+      halt(401, NOK.authenticationError("Unauthenticated"), Map("WWW-Authenticate" -> bearerRealm, "Content-Type" -> "application/json"))
     }
     if (!beReq.isBearerAuth) {
-      halt(400, NOK.authenticationError("Invalid bearer token"))
+      halt(400, NOK.authenticationError("Invalid bearer token"), Map("Content-Type" -> "application/json"))
     }
 
     scentry.authenticate("Bearer")
 
   }
 
-  protected def authenticated(p: TokenType => Boolean = _ => true)(action: TokenType => Any)(implicit request: HttpServletRequest, response: HttpServletResponse): Any = {
+  protected def authenticated(p: (TokenType => Boolean)*)(action: TokenType => Any)(implicit request: HttpServletRequest, response: HttpServletResponse): Any = {
+    val predicates: Seq[TokenType => Boolean] = p
     bearerAuth() match {
-      case Some(value) if p(value) => action(value)
+      case Some(value) if predicates.forall(x => x(value)) => action(value)
+      case _ => halt(403, NOK.authenticationError("Forbidden"))
+    }
+  }
+
+  protected def getToken(p: (TokenType => Boolean)*)(implicit request: HttpServletRequest, response: HttpServletResponse): Try[TokenType] = Try {
+    val predicates: Seq[TokenType => Boolean] = p
+    bearerAuth() match {
+      case Some(value) if predicates.forall(x => x(value)) => value
       case _ => halt(403, NOK.authenticationError("Forbidden"))
     }
   }
@@ -54,7 +63,7 @@ object BearerAuthStrategy {
 
     private def authorizationKey: Option[String] = AUTHORIZATION_KEYS.find(r.getHeader(_) != null)
 
-    def isBearerAuth: Boolean = (false /: scheme) { (_, sch) => sch == "bearer" }
+    def isBearerAuth: Boolean = scheme.foldLeft(false) { (_, sch) => sch == "bearer" }
     def providesAuth: Boolean = authorizationKey.isDefined
 
     private[this] val credentials = params.getOrElse("")
@@ -82,12 +91,14 @@ case class Token(value: String, json: JValue, sub: String, name: String, email: 
   def ownerId: String = id
   def isAdmin: Boolean = roles.contains(Token.ADMIN)
   def isUser: Boolean = roles.contains(Token.USER)
+  def hasRole(role: Symbol): Boolean = roles.contains(role)
+  def getRole(role: Symbol): Option[Symbol] = roles.find(_ == role)
   def ownerIdAsUUID: Try[UUID] = Try(UUID.fromString(ownerId))
 }
 
 object Token {
-  final val ADMIN = 'ADMIN
-  final val USER = 'USER
+  final val ADMIN = Symbol("ADMIN")
+  final val USER = Symbol("USER")
   def apply(value: String): Token = new Token(value, JNothing, sub = "", name = "", email = "", roles = Nil)
 }
 
@@ -107,7 +118,7 @@ trait BearerAuthenticationSupport extends ScentrySupport[Token] with BearerAuthS
     new ScentryConfig {}.asInstanceOf[ScentryConfiguration]
   }
 
-  override def realm: String = "Ubirch Token Service"
+  override def realm: String = "Ubirch Accounting Service"
 
 }
 

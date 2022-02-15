@@ -1,25 +1,58 @@
 package com.ubirch.services
 
-import java.util.UUID
+import com.ubirch.models.{ AcctEventOwnerRow, AcctStoreDAO }
 
-import com.ubirch.models.{ AcctEventDAO, AcctEventRow }
-import javax.inject.{ Inject, Singleton }
+import monix.eval.Task
 import monix.reactive.Observable
 
+import java.time.LocalDate
+import java.util.UUID
+import javax.inject.{ Inject, Singleton }
+
 trait AcctEventsService {
-  def byOwnerIdAndIdentityId(ownerId: UUID, identityId: Option[UUID]): Observable[AcctEventRow]
+  def monthCount(
+      identityId: UUID,
+      category: String,
+      date: LocalDate,
+      subCategory: Option[String]
+  ): Task[MonthlyCountResult]
+
+  def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow]
 }
 
-@Singleton
-class DefaultAcctEventsService @Inject() (acctEventDAO: AcctEventDAO) extends AcctEventsService {
-  override def byOwnerIdAndIdentityId(ownerId: UUID, identityId: Option[UUID]): Observable[AcctEventRow] = identityId match {
-    case Some(id) =>
-      acctEventDAO.byOwnerIdAndIdentityId(ownerId, id)
-        .onErrorHandle { x =>
-          x.printStackTrace()
-          throw x
-        }
+case class MonthlyCountResult(year: Int, month: Int, count: Long)
 
-    case None => acctEventDAO.byOwnerId(ownerId)
+@Singleton
+class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends AcctEventsService {
+
+  def monthRange(date: LocalDate): Seq[(Int, Int)] = (1 to date.lengthOfMonth).flatMap { day =>
+    (0 to 23).map { hour =>
+      (day, hour)
+    }
   }
+
+  override def monthCount(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[MonthlyCountResult] = {
+
+    val tasks = monthRange(date).par.map { case (day, hour) =>
+      acctStoreDAO.events.count(
+        identityId = identityId,
+        category = category,
+        year = date.getYear,
+        month = date.getMonthValue,
+        day = day,
+        hour = hour,
+        subCategory = subCategory
+      ).foldLeftL(0L)((a, b) => a + b)
+    }.toList
+
+    Task
+      .parSequenceUnordered(tasks)
+      .map(count => MonthlyCountResult(date.getYear, date.getMonthValue, count.sum))
+
+  }
+
+  override def getKnownIdentitiesByOwner(ownerId: UUID): Observable[AcctEventOwnerRow] = {
+    acctStoreDAO.owner.byOwnerId(ownerId)
+  }
+
 }

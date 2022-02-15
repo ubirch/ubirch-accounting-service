@@ -1,13 +1,14 @@
 package com.ubirch
 package services.jwt
 
-import java.security.PublicKey
+import com.ubirch.services.formats.JsonConverterService
 
 import com.typesafe.scalalogging.LazyLogging
-import com.ubirch.services.formats.JsonConverterService
-import javax.inject.{ Inject, Singleton }
 import org.json4s.JValue
 import pdi.jwt.{ Jwt, JwtAlgorithm }
+
+import java.security.PublicKey
+import javax.inject.{ Inject, Singleton }
 
 trait TokenVerificationService {
   def decodeAndVerify(jwt: String, publicKey: PublicKey): Option[JValue]
