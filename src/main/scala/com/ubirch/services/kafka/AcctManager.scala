@@ -101,8 +101,8 @@ class DefaultAcctManager @Inject() (
         val eventsRow = AcctEventRow(
           id = acctEvent.id,
           identityId = acctEvent.identityId,
-          category = acctEvent.category,
-          subCategory = acctEvent.subCategory.getOrElse("default"),
+          category = acctEvent.category.toLowerCase,
+          subCategory = acctEvent.subCategory.getOrElse("default").toLowerCase,
           year = day.getYear,
           month = day.getMonthValue,
           day = day.getDayOfMonth,
