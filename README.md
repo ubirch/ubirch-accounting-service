@@ -12,13 +12,17 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 
 ## Categories
 
-The system has two principal categories. Anchoring and Verification.
+The system has three principal categories. 
+
+- `anchoring`, and 
+- `upp_verification`, and 
+- `uvs_verification`.
 
 All UPPs that pass by Niomon are registered against the Accounting Service by the Event Log.
 
 All UPPs/Hashes that are verified with the version 2 of the verification service are registered against the Accounting Service
 
-All UVS verifications are registered against this service in batches of 100
+All UVS verifications are registered against this service in batches of 100.
 
 ## Http Interface
 
@@ -27,7 +31,7 @@ All UVS verifications are registered against this service in batches of 100
 
 ### Steps to prepare a request
 
-1. Get your ubirch token.
+1. Get your `ubirch` token.
 2. Prepare the query params.
 3. Prepare the request and send.
 
@@ -68,6 +72,7 @@ _subCategory_: (Optional) It is the subcategory for the stored event.
   "identityId":"39092dd9-0e72-41b3-b6b0-cd414e6d55a2",
   "category":"verification",
   "subCategory": "entry_a",
+  "externalId": "39092dd9-0e72-41b3-b6b0-cd414e6d55a2",
   "occurredAt":"2020-11-06T12:42:34.976Z"
 }
 ```
@@ -83,6 +88,8 @@ _identityId_: It represents the identity that generated the UPP or event. The de
 _category_: It represents the kind of event. That's to say, what action originated it.
 
 _subCategory_: (Optional) It represents a subkind of event. Useful for partitioning data by another element.
+
+_externalId_: (Optional) It represents an external value that can be used as an optional id. Max length is 36.
 
 _occurredAt_: It represents the time at which the event took place.
 
