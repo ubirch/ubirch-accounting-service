@@ -72,8 +72,8 @@
         <tspan xml:space="preserve" x="360.326" y="213.515">  "ownerId":"User Id on Keycloak as UUID",</tspan>
         <tspan xml:space="preserve" x="360.326" y="220.627">  "identityId":"OID as UUID",</tspan>
         <tspan xml:space="preserve" x="360.326" y="227.739">  "category":"upp_verification | anchoring | uvs_verification",</tspan>
-        <tspan xml:space="preserve" x="360.326" y="234.851">  "sub_category": "extra category for event",</tspan>
-        <tspan xml:space="preserve" x="360.326" y="241.963">  "external_id": "possible external id max 32 chars"</tspan>
+        <tspan xml:space="preserve" x="360.326" y="234.851">  "subCategory": "extra category for event",</tspan>
+        <tspan xml:space="preserve" x="360.326" y="241.963">  "externalId": "possible external id max 36 chars"</tspan>
         <tspan xml:space="preserve" x="360.326" y="249.075">  "occurredAt":"Timestamp of event"</tspan>
         <tspan x="360.326" y="256.187">}</tspan>
       </text>
@@ -139,11 +139,11 @@
       </text>
     </g>
     <g>
-      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="731.239,428.443 859.639,428.443 871.639,440.443 871.639,460.554 731.239,460.554 "/>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="859.639,428.443 859.639,440.443 871.639,440.443 "/>
-      <text font-size="5.64444" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="738.239" y="446.682">
-        <tspan x="738.239" y="446.682">OID ^ Category ^ Date | SubCategory </tspan>
-        <tspan x="738.239" y="453.738">Where Date is like YYYY-MM</tspan>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="731.24,428.444 859.64,428.444 871.64,440.444 871.64,460.555 731.24,460.555 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="859.64,428.444 859.64,440.444 871.64,440.444 "/>
+      <text font-size="5.64444" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="738.24" y="446.683">
+        <tspan x="738.24" y="446.683">OID ^ Category ^ Date | SubCategory </tspan>
+        <tspan x="738.24" y="453.739">Where Date is like YYYY-MM</tspan>
       </text>
     </g>
     <g>
@@ -261,9 +261,9 @@
         <tspan x="578.416" y="480.567">Token (thing:storedata)</tspan>
       </text>
     </g>
-    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="481.823" y1="630.164" x2="553.349" y2="630.622"/>
-    <text font-size="5.64436" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="490.993" y="643.002">
-      <tspan x="490.993" y="643.002">not implemented</tspan>
+    <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="481.824" y1="630.164" x2="553.35" y2="630.622"/>
+    <text font-size="5.64444" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="490.994" y="643.002">
+      <tspan x="490.994" y="643.002">not implemented</tspan>
     </text>
   </g>
 </svg>
