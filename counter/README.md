@@ -16,5 +16,3 @@ It is a node-based application that allows to query the accounting service API.
 - `monthlyReport.js --id=UUID_OF_IDENTITY --cat=CATEGORY --date=YYYY-MM-DD --subcat=SUBCATEGORY` -> subcat is optional
 
 ![Result Query](result_query.png)
-
-

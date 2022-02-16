@@ -6,7 +6,8 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 2. [Query through http Interface](#http-interface)
 3. [Ingestion through Kafka Interface](#kafka-interface-ingestion)
 4. [Ingestion through HTTP Interface](#http-interface-ingestion)
-5. [Swagger](#swagger)
+5. [Counter Tool](counter/README.md)
+6. [Swagger](#swagger)
 
 ![General System](./acct_events_v3.svg)
 

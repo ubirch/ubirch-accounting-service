@@ -20,6 +20,6 @@ token=CHANGEME
 
 curl -s -X GET -H "authorization: bearer $token" \
  -H "content-type: application/json" \
-  "http://localhost:8081/api/acct_events/v1/$identity_id?cat=$category&date=$date&sub_cat=$sub_category" \
+  "$host/api/acct_events/v1/$identity_id?cat=$category&date=$date&sub_cat=$sub_category" \
   | jq .
 
