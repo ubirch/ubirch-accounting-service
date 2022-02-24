@@ -25,6 +25,8 @@ All UPPs/Hashes that are verified with the version 2 of the verification service
 
 All UVS verifications are registered against this service in batches of 100.
 
+![A word about events](./accouting_events_categories.svg)
+
 ## Http Interface
 
 1. [Getting Started](#steps-to-prepare-a-request)
