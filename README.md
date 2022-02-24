@@ -45,11 +45,11 @@ In order to use the endpoints of this service, you need an Ubirch Token with sco
 #### Report by month
 
 This endpoint allows you to get a report of the number of events registered for a particular identity for a particular month. You can optionally filter by subcategory or tag.
-
 ```shell script
+# host can be defined as: https://accounting.STAGE.ubirch.com, where STAGE: [dev, demo, prod]
 curl -s -X GET -H "authorization: bearer $token" \
  -H "content-type: application/json" \
-  "http://localhost:8081/api/acct_events/v1/$identityId?cat=$category&date=$date&sub_cat=$sub_cat" \
+  "$host/api/acct_events/v1/$identityId?cat=$category&date=$date&sub_cat=$sub_cat" \
  | jq .
 ```
 
