@@ -6,9 +6,24 @@ const argv = yargs(hideBin(process.argv)).argv
 
 const config = require('./config.json')
 
-if (argv.id === undefined || argv.cat === undefined || argv.date === undefined) {
-  console.log('Usage -> monthlyReport.js --id=UUID_OF_IDENTITY --cat=CATEGORY --date=YYYY-MM-DD --subcat=SUBCATEGORY')
+function logAndExit () {
+  console.log('Usage -> monthlyReport.js --id=UUID_OF_IDENTITY --cat=CATEGORY --date=YYYY-MM --subcat=SUBCATEGORY')
   process.exit(1)
+}
+
+if (argv.id === undefined || argv.cat === undefined || argv.date === undefined) {
+  logAndExit()
+}
+
+if (argv.date) {
+  const dateParts = argv.date.split('-')
+  if (dateParts.length === 2) {
+    argv.date = dateParts[0] + '-' + dateParts[1] + '-' + '01'
+  } else if (dateParts.length === 3) {
+    argv.date = dateParts[0] + '-' + dateParts[1] + '-' + dateParts[2]
+  } else {
+    logAndExit()
+  }
 }
 
 const request = new Request(

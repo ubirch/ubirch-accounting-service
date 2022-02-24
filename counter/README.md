@@ -14,6 +14,6 @@ and a category. Optionally, you can filter further by subcategory (also known by
       "token": "UBIRCH JWT TOKEN with get:info scope and the target id as the identity id"
     }
     ```
-- `node monthlyReport.js --id=UUID_OF_IDENTITY --cat=CATEGORY --date=YYYY-MM-DD --subcat=SUBCATEGORY` -> subcat is optional
+- `node monthlyReport.js --id=UUID_OF_IDENTITY --cat=CATEGORY --date=YYYY-MM --subcat=SUBCATEGORY` -> subcat is optional
 
 ![Result Query](result_query.png)
