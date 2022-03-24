@@ -20,7 +20,7 @@ async function monthlyReportTable (request) {
                 '\nHost=' + request.host +
                 '\nIdentityId=' + request.identityId +
                 '\nCategory=' + request.queryParams.cat +
-                '\nSubcategory=' + request.queryParams.sub_cat +
+                '\nSubcategory=' + (request.queryParams.sub_cat ? request.queryParams.sub_cat : "N/A") +
                 '\nMonth=' + LocalDate.parse(request.queryParams.date).atStartOfDay().month().name()
     }
   }

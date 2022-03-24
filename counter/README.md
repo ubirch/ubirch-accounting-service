@@ -14,6 +14,7 @@ and a category. Optionally, you can filter further by subcategory (also known by
       "token": "UBIRCH JWT TOKEN with get:info scope and the target id as the identity id"
     }
     ```
+- Read this section about supported categorie. [A word about categories](https://github.com/ubirch/ubirch-accounting-service#categories).
 - `node monthlyReport.js --id=UUID_OF_IDENTITY --cat=CATEGORY --date=YYYY-MM --subcat=SUBCATEGORY` -> subcat is optional
 
 ![Result Query](result_query.png)
