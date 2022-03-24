@@ -8,6 +8,7 @@ import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch.services.kafka.AcctManager
+import com.ubirch.util.DateUtil
 
 import com.google.inject.binder.ScopedBindingBuilder
 import com.typesafe.config.{ Config, ConfigValueFactory }
@@ -89,7 +90,7 @@ class AcctEventsControllerKafkaSpec
 
         get(s"/v1/${identityId.toString}?date=$formattedDate&cat=verification", headers = Map("authorization" -> s"bearer $token")) {
           status should equal(200)
-          val expected = """{"version":"1.0.0","ok":true,"data":[{"year":2022,"month":2,"count":50}]}""".stripMargin
+          val expected = s"""{"version":"1.0.0","ok":true,"data":[{"year":2022,"month":${DateUtil.dateToLocalDate(date).getMonthValue},"count":50}]}""".stripMargin
           assert(body == expected)
         }
 
