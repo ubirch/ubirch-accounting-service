@@ -9,6 +9,9 @@ async function byMonth (request) {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + request.token
     }
+  }).catch(error => {
+    console.log(error.response.data)
+    process.exit(1)
   })
 
   return response.data.data
