@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="55cm" height="32cm" viewBox="521 520 1084 628" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs/>
+  <g id="Background">
+    <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1138.65" y="779.886">
+      <tspan x="1138.65" y="779.886"></tspan>
+    </text>
+    <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1196.94" y="849.99">
+      <tspan x="1196.94" y="849.99"></tspan>
+    </text>
+    <rect style="fill: #b80000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="727.584" y="703.165" width="876.06" height="444.167" rx="0" ry="0"/>
+    <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1036.47" y="913.283" width="261.152" height="93.5344" rx="0" ry="0"/>
+    <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1320.35" y="910.102" width="259.922" height="96.2684" rx="0" ry="0"/>
+    <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1341.25" y="966.584">
+      <tspan x="1341.25" y="966.584">UPP Anchoring</tspan>
+    </text>
+    <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1165.61" y="925.248">
+      <tspan x="1165.61" y="925.248"></tspan>
+    </text>
+    <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="765.275" y="911.059" width="261.6" height="96.8788" rx="0" ry="0"/>
+    <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="789.086" y="971.893">
+      <tspan x="789.086" y="971.893">UPP Verification</tspan>
+    </text>
+    <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1054.21" y="957.402">
+      <tspan x="1054.21" y="957.402">DCC Verification</tspan>
+    </text>
+    <text font-size="26.416" style="fill: #ffffff; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700" x="1123.78" y="758.898">
+      <tspan x="1123.78" y="758.898">Ubirch Trust Service</tspan>
+    </text>
+    <g>
+      <ellipse style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" cx="547.146" cy="539.424" rx="6" ry="6"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="523.146" y1="551.424" x2="571.146" y2="551.424"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="547.146" y1="545.424" x2="547.146" y2="575.424"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="547.146" y1="575.424" x2="523.146" y2="601.424"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="547.146" y1="575.424" x2="571.146" y2="601.424"/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="547.146" y="625.305">
+        <tspan x="547.146" y="625.305">Identity</tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="572.945" y1="586.359" x2="1328.24" y2="906.494"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="1314.64,906.162 1331.32,907.803 1318.54,896.955 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="813.646" y="666.549">{anchors upps}</text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="573.139" y1="604.035" x2="846.646" y2="905.09"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="834.44,899.091 848.9,907.571 841.842,892.367 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="551.146" y="772.549">{verifies hashes}</text>
+    </g>
+    <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="763.846" y="1036.57" width="820.298" height="96.2684" rx="0" ry="0"/>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="573.149" y1="591.558" x2="1084.37" y2="908.754"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="1070.99,906.334 1087.22,910.521 1076.26,897.837 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="745.146" y="692.549">{verifies dccs}</text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="573.01" y1="596.437" x2="1108.32" y2="1031.35"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="1095.35,1027.26 1110.92,1033.46 1101.66,1019.49 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="843.268" y="812.008">{YTM}</text>
+    </g>
+    <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1032.35" y="1093.39">
+      <tspan x="1032.35" y="1093.39">Events Counter</tspan>
+    </text>
+  </g>
+</svg>

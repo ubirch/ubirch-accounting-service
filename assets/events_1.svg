@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="33cm" height="23cm" viewBox="479 708 660 447" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs/>
+  <g id="Background">
+    <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1138.65" y="779.886">
+      <tspan x="1138.65" y="779.886"></tspan>
+    </text>
+    <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1196.94" y="849.99">
+      <tspan x="1196.94" y="849.99"></tspan>
+    </text>
+    <g>
+      <rect style="fill: #b80000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="734.084" y="709.665" width="330.15" height="444.167" rx="0" ry="0"/>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="765.473" y="1025.28" width="261.152" height="93.5344" rx="0" ry="0"/>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="767.351" y="795.602" width="259.922" height="96.2684" rx="0" ry="0"/>
+      <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="793.756" y="857.085">
+        <tspan x="793.756" y="857.085">UPP Anchoring</tspan>
+      </text>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="899.159" y="931.748">
+        <tspan x="899.159" y="931.748"></tspan>
+      </text>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="765.275" y="911.059" width="261.6" height="96.8788" rx="0" ry="0"/>
+      <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="789.086" y="971.893">
+        <tspan x="789.086" y="971.893">UPP Verification</tspan>
+      </text>
+      <text font-size="28.2218" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="780.206" y="1085.9">
+        <tspan x="780.206" y="1085.9">DCC Verification</tspan>
+      </text>
+      <text font-size="26.416" style="fill: #ffffff; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700" x="748.283" y="759.898">
+        <tspan x="748.283" y="759.898">Ubirch Trust Service</tspan>
+      </text>
+      <ellipse style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" cx="505.647" cy="918.923" rx="6" ry="6"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="481.647" y1="930.923" x2="529.647" y2="930.923"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="505.647" y1="924.923" x2="505.647" y2="954.923"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="505.647" y1="954.923" x2="481.647" y2="980.923"/>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="505.647" y1="954.923" x2="529.647" y2="980.923"/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="505.647" y="1004.8">
+        <tspan x="505.647" y="1004.8">Identity</tspan>
+      </text>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="530.891" y1="947.757" x2="759.897" y2="882.746"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="749.095,891.01 763.122,881.831 746.364,881.39 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="560.646" y="902.923">{anchors upps}</text>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="531.651" y1="955.228" x2="757.579" y2="957.875"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="744.874,962.727 760.932,957.914 744.991,952.727 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="599.146" y="950.923">{verifies hashes}</text>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="531.649" y1="962.724" x2="758.071" y2="1030.65"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="744.52,1031.81 761.282,1031.62 747.394,1022.23 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="596.146" y="980.923">{verifies dccs}</text>
+    </g>
+  </g>
+</svg>
