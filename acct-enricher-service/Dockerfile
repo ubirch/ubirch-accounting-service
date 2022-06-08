@@ -13,9 +13,6 @@ EXPOSE 9010
 EXPOSE 9020
 EXPOSE 4321
 
-COPY certs/truststore-prod.jks /usr/share/service/lib/truststore-prod.jks
-COPY certs/truststore-devtest.jks /usr/share/service/lib/truststore-devtest.jks
-
 ENTRYPOINT [ \
   "/bin/bash", \
   "-c", \
@@ -38,6 +35,5 @@ ENTRYPOINT [ \
 
 # Add Maven dependencies (not shaded into the artifact; Docker-cached)
 COPY ${JAR_LIBS} /usr/share/service/lib
-COPY src/main/scala/com/ubirch/resources/swagger-ui /usr/share/service/swagger
 # Add the service itself
 COPY ${JAR_FILE} /usr/share/service/main.jar
