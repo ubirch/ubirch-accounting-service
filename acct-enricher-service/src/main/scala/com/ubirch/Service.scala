@@ -1,5 +1,7 @@
 package com.ubirch
 
+import com.ubirch.models.FlywaySupport
+
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
@@ -11,7 +13,7 @@ import javax.inject.{ Inject, Singleton }
   * Represents a bootable service object that starts the system
   */
 @Singleton
-class Service @Inject() ()(implicit scheduler: Scheduler) extends LazyLogging {
+class Service @Inject() (flywaySupport: FlywaySupport)(implicit scheduler: Scheduler) extends LazyLogging {
 
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
@@ -22,7 +24,7 @@ class Service @Inject() ()(implicit scheduler: Scheduler) extends LazyLogging {
   def start(): CancelableFuture[Unit] = {
 
     (for {
-      _ <- Task.unit
+      _ <- Task.delay(flywaySupport.migrateWhenOn())
     } yield ()).onErrorRecover {
       case e: Exception =>
         logger.error("error_starting=" + e.getClass.getCanonicalName + " - " + e.getMessage, e)
