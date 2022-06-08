@@ -8,24 +8,24 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 4. [Query through http Interface](#http-interface)
 5. [Ingestion through Kafka Interface](#kafka-interface-ingestion)
 6. [Ingestion through HTTP Interface](#http-interface-ingestion)
-7. [Counter Tool](counter/README.md)
+7. [Counter Tool](../counter/README.md)
 8. [Swagger](#swagger)
 
 ## Motivation
 
 The following images show a graphical story of why this service and its connections. Long story short: We needed to learn to count.
 
-![Events One](./assets/events_1.svg)
+![Events One](../assets/events_1.svg)
 
-![Events Two](./assets/events_2.svg)
+![Events Two](../assets/events_2.svg)
 
-![Events Three](./assets/events_3.svg)
+![Events Three](../assets/events_3.svg)
 
 ## General System
 
 This image presents a high-level view of the accounting services and its interfaces.
 
-![General System](./assets/acct_events_v3.svg)
+![General System](../assets/acct_events_v3.svg)
 
 ## Categories
 
@@ -41,7 +41,7 @@ All UPPs/Hashes that are verified with the version 2 of the verification service
 
 All UVS verifications are registered against this service in batches of 100.
 
-![A word about events](./assets/accouting_events_categories.svg)
+![A word about events](../assets/accouting_events_categories.svg)
 
 ## Http Interface
 
