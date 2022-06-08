@@ -21,12 +21,6 @@ The following images show a graphical story of why this service and its connecti
 
 ![Events Three](../assets/events_3.svg)
 
-## General System
-
-This image presents a high-level view of the accounting services and its interfaces.
-
-![General System](../assets/acct_events_v3.svg)
-
 ## Categories
 
 The system has three principal categories. 
