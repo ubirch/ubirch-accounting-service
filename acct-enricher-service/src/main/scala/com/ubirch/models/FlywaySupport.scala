@@ -42,7 +42,7 @@ abstract class FlywaySupportImpl[Dialect <: SqlIdiom](conf: Config, quillJdbcCon
           .locations(locations: _*)
           .sqlMigrationSuffixes(suffixes: _*)
           .dataSource(quillJdbcContext.getDataSource)
-          .schemas("kyct")
+          .schemas("enricher")
           .load()
 
         flyway = Some(newFlyway)
