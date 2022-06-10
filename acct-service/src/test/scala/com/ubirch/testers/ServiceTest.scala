@@ -13,8 +13,8 @@ import org.apache.kafka.common.serialization.StringSerializer
 
 import java.util.concurrent.CountDownLatch
 import java.util.{ Calendar, Date, UUID }
-import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.language.postfixOps
 import scala.util.{ Failure, Success }
 

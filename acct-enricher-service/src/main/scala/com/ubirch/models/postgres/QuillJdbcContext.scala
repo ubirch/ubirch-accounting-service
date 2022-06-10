@@ -1,4 +1,4 @@
-package com.ubirch.models
+package com.ubirch.models.postgres
 
 import com.ubirch.services.lifeCycle.Lifecycle
 

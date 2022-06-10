@@ -1,6 +1,6 @@
 package com.ubirch
 
-import com.ubirch.models.{ DefaultPostgresFlywaySupport, DefaultPostgresQuillJdbcContext, FlywaySupport, QuillJdbcContext }
+import com.ubirch.models.postgres.{ DefaultPostgresFlywaySupport, DefaultPostgresQuillJdbcContext, FlywaySupport, QuillJdbcContext }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
 import com.ubirch.services.externals.{ DefaultHttpClient, HttpClient }

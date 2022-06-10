@@ -1,6 +1,6 @@
 package com.ubirch
 
-import com.ubirch.models.FlywaySupport
+import com.ubirch.models.postgres.FlywaySupport
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task

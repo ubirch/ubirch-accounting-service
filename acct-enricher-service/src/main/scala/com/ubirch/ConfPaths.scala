@@ -23,6 +23,19 @@ object ConfPaths {
     final val DATABASE_NAME = "system.database.dataSource.databaseName"
   }
 
+  trait CassandraClusterConfPaths {
+    final val CONTACT_POINTS = "acctSystem.cassandra.cluster.contactPoints"
+    final val CONSISTENCY_LEVEL = "acctSystem.cassandra.cluster.consistencyLevel"
+    final val SERIAL_CONSISTENCY_LEVEL = "acctSystem.cassandra.cluster.serialConsistencyLevel"
+    final val WITH_SSL = "acctSystem.cassandra.cluster.withSSL"
+    final val TRUST_STORE = "acctSystem.cassandra.cluster.trustStore"
+    final val TRUST_STORE_PASSWORD = "acctSystem.cassandra.cluster.trustStorePassword"
+    final val USERNAME = "acctSystem.cassandra.cluster.username"
+    final val PASSWORD = "acctSystem.cassandra.cluster.password"
+    final val KEYSPACE = "acctSystem.cassandra.cluster.keyspace"
+    final val PREPARED_STATEMENT_CACHE_SIZE = "acctSystem.cassandra.cluster.preparedStatementCacheSize"
+  }
+
   trait ExecutionContextConfPaths {
     final val THREAD_POOL_SIZE = "system.executionContext.threadPoolSize"
   }
@@ -38,6 +51,7 @@ object ConfPaths {
 
   object PostgresPaths extends PostgresPaths
   object GenericConfPaths extends GenericConfPaths
+  object CassandraClusterConfPaths extends CassandraClusterConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
   object TokenVerificationPaths extends TokenVerificationPaths
 

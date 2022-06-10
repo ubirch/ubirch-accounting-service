@@ -130,6 +130,32 @@
 
     <dependencies>
 
+        <!-- https://mvnrepository.com/artifact/io.getquill/quill-cassandra-monix -->
+        <dependency>
+            <groupId>io.getquill</groupId>
+            <artifactId>quill-cassandra-monix_${scala.compat.version}</artifactId>
+            <version>3.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.getquill</groupId>
+            <artifactId>quill-cassandra_${scala.compat.version}</artifactId>
+            <version>3.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.nosan</groupId>
+            <artifactId>embedded-cassandra</artifactId>
+            <version>${embedded-cassandra}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
+        <dependency>
+            <groupId>org.lz4</groupId>
+            <artifactId>lz4-java</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>

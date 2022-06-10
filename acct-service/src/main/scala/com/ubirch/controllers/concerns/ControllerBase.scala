@@ -16,13 +16,12 @@ import java.nio.charset.{ Charset, StandardCharsets }
 import java.util.Date
 import javax.servlet.http.{ HttpServletRequest, HttpServletRequestWrapper, HttpServletResponse, HttpServletResponseWrapper }
 import javax.servlet.{ ReadListener, ServletInputStream }
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{ Duration, _ }
 import scala.io.Source
 import scala.jdk.CollectionConverters._
+import scala.language.postfixOps
 import scala.util.Try
 import scala.util.control.NoStackTrace
-import scala.concurrent.duration._
-import scala.language.postfixOps
 
 /**
   * Represents a customized ServletInputStream that allows to cache the body of a request.
