@@ -16,10 +16,13 @@ import java.nio.charset.{ Charset, StandardCharsets }
 import java.util.Date
 import javax.servlet.http.{ HttpServletRequest, HttpServletRequestWrapper, HttpServletResponse, HttpServletResponseWrapper }
 import javax.servlet.{ ReadListener, ServletInputStream }
+import scala.concurrent.duration.Duration
 import scala.io.Source
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 import scala.util.control.NoStackTrace
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
   * Represents a customized ServletInputStream that allows to cache the body of a request.
@@ -92,8 +95,8 @@ abstract class ControllerBase extends ScalatraServlet
   with ServiceMetrics
   with LazyLogging {
 
-  def asyncResult(name: String)(body: HttpServletRequest => HttpServletResponse => Task[ActionResult])(implicit request: HttpServletRequest, response: HttpServletResponse, scheduler: Scheduler): AsyncResult = {
-    asyncResultCore {
+  def asyncResult(name: String, timeout: Duration = 30 seconds)(body: HttpServletRequest => HttpServletResponse => Task[ActionResult])(implicit request: HttpServletRequest, response: HttpServletResponse, scheduler: Scheduler): AsyncResult = {
+    asyncResultCore(timeout) {
       () =>
         count(name) {
           (for {
@@ -104,8 +107,12 @@ abstract class ControllerBase extends ScalatraServlet
     }
   }
 
-  private def asyncResultCore(body: () => CancelableFuture[ActionResult]): AsyncResult = {
-    new AsyncResult() { override val is = body() }
+  private def asyncResultCore(timeoutValue: Duration)(body: () => CancelableFuture[ActionResult]): AsyncResult = {
+    new AsyncResult() {
+      override val is = body()
+      implicit override def timeout: Duration = timeoutValue
+
+    }
   }
 
   private def actionResult(body: HttpServletRequest => HttpServletResponse => Task[ActionResult])(implicit request: HttpServletRequest, response: HttpServletResponse): Task[ActionResult] = {

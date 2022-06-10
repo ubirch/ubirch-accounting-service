@@ -6,7 +6,7 @@ import io.getquill.{ CassandraStreamContext, SnakeCase }
 import monix.reactive.Observable
 
 import java.util.UUID
-import javax.inject.Inject
+import javax.inject.{ Inject, Singleton }
 
 trait AcctEventOwnerRowsQueries extends TablePointer[AcctEventOwnerRow] {
 
@@ -27,6 +27,7 @@ trait AcctEventOwnerRowsQueries extends TablePointer[AcctEventOwnerRow] {
 
 }
 
+@Singleton
 class AcctEventOwnerDAO @Inject() (val connectionService: ConnectionService) extends AcctEventOwnerRowsQueries {
   val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
 

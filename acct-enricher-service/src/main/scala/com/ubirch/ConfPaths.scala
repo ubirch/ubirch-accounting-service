@@ -6,12 +6,12 @@ package com.ubirch
 object ConfPaths {
 
   trait GenericConfPaths {
-    final val NAME = "acctSystem.name"
+    final val NAME = "system.name"
   }
 
   trait HttpServerConfPaths {
-    final val PORT = "acctSystem.server.port"
-    final val SWAGGER_PATH = "acctSystem.server.swaggerPath"
+    final val PORT = "system.server.port"
+    final val SWAGGER_PATH = "system.server.swaggerPath"
   }
 
   trait PostgresPaths {
@@ -24,16 +24,16 @@ object ConfPaths {
   }
 
   trait ExecutionContextConfPaths {
-    final val THREAD_POOL_SIZE = "acctSystem.executionContext.threadPoolSize"
+    final val THREAD_POOL_SIZE = "system.executionContext.threadPoolSize"
   }
 
   trait PrometheusConfPaths {
-    final val PORT = "acctSystem.metrics.prometheus.port"
+    final val PORT = "system.metrics.prometheus.port"
   }
 
   trait TokenVerificationPaths {
-    final val CONFIG_URL = "acctSystem.tokenVerification.configURL"
-    final val KID = "acctSystem.tokenVerification.kid"
+    final val CONFIG_URL = "system.tokenVerification.configURL"
+    final val KID = "system.tokenVerification.kid"
   }
 
   object PostgresPaths extends PostgresPaths

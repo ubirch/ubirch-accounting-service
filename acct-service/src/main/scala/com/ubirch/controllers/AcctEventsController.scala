@@ -6,6 +6,7 @@ import com.ubirch.api.InvalidClaimException
 import com.ubirch.controllers.concerns.{ BearerAuthStrategy, ControllerBase, SwaggerElements }
 import com.ubirch.defaults.TokenApi
 import com.ubirch.models.{ AcctEvent, AcctEventRow, NOK, Return }
+import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.{ AcctEventsService, AcctEventsStoreService }
 import com.ubirch.util.{ DateUtil, TaskHelpers }
 
@@ -13,15 +14,19 @@ import com.typesafe.config.Config
 import io.prometheus.client.Counter
 import monix.eval.Task
 import monix.execution.Scheduler
+import monix.reactive.Consumer
 import org.json4s.Formats
 import org.scalatra._
 import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
+import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.time.{ LocalDate, ZoneId }
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 @Singleton
 class AcctEventsController @Inject() (
@@ -29,9 +34,10 @@ class AcctEventsController @Inject() (
     val swagger: Swagger,
     jFormats: Formats,
     acctEvents: AcctEventsService,
-    acctEventsStore: AcctEventsStoreService
+    acctEventsStore: AcctEventsStoreService,
+    jsonConverterService: JsonConverterService
 )(implicit val executor: ExecutionContext, scheduler: Scheduler)
-  extends ControllerBase with TaskHelpers {
+  extends ControllerBase with ContentEncodingSupport with TaskHelpers {
 
   override protected val applicationDescription = "Acct Events Controller"
   override protected implicit def jsonFormats: Formats = jFormats
@@ -55,7 +61,7 @@ class AcctEventsController @Inject() (
   }
 
   val getV1: SwaggerSupportSyntax.OperationBuilder =
-    (apiOperation[List[AcctEventRow]]("getV1TokenList")
+    (apiOperation[List[AcctEventRow]]("getV1")
       summary "Queries for the accounting events for an identity."
       description "Queries for the accounting events for an identity."
       tags SwaggerElements.TAG_SERVICE
@@ -113,6 +119,97 @@ class AcctEventsController @Inject() (
 
       } yield {
         Ok(Return(evs))
+      }).onErrorHandle {
+        case e: InvalidClaimException =>
+          logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
+          Forbidden(NOK.authenticationError("Forbidden"))
+        case e: ServiceException =>
+          logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          BadRequest(NOK.acctEventQueryError(s"Error querying acct event. ${e.getMessage}"))
+        case e: IllegalArgumentException =>
+          logger.error("1.3 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
+        case e: Exception =>
+          logger.error(s"1.4 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
+      }
+    }
+  }
+
+  val getChunkedV1: SwaggerSupportSyntax.OperationBuilder =
+    (apiOperation[List[AcctEventRow]]("getChunkedV1")
+      summary "Queries for the accounting events for an identity. Result is chunked"
+      description "Queries for the accounting events for an identity. Result is chunked"
+      tags SwaggerElements.TAG_SERVICE
+      parameters (
+        swaggerTokenAsHeader,
+        queryParam[String]("identity_id").optional.description("The uuid that belongs to the identity or device"),
+        queryParam[String]("cat").optional.description("Principal category"),
+        queryParam[LocalDate]("date").optional.description("Date for the query. Use yyyy-MM-dd this format"),
+        queryParam[Int]("hour").optional.description("Date for the query. Hour Definition: 0-23 format"),
+        queryParam[Int]("sub_cat").optional.description("Subcategory for query").optional
+      ))
+
+  get("/v1/chunked/:identity_id", operation(getChunkedV1)) {
+
+    def getConsumer(output: PrintWriter) = {
+      Consumer.foreach[AcctEventRow] { acctEvent =>
+        output.write(jsonConverterService.toString[AcctEventRow](acctEvent).toTry.get + "\n")
+        output.flush()
+      }
+    }
+
+    lazy val sdf = new SimpleDateFormat("yyyy-MM")
+
+    asyncResult("list_acct_events_identity", 60 seconds) { implicit request => response =>
+
+      (for {
+
+        claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
+          .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
+
+        _ <- Task.fromTry(claims.validateScope("thing:getinfo"))
+
+        //mandatory -start
+        rawIdentityId <- Task(params.get("identity_id"))
+        identityId <- Task(rawIdentityId)
+          .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
+          .flatMap(x => Task.fromTry(claims.validateIdentity(x)))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid identity_id: wrong identity param: " + rawIdentityId.getOrElse("")))
+
+        cat <- Task(params.get("cat"))
+          .map(_.filter(_.nonEmpty))
+          .map(_.map(_.toLowerCase()).getOrElse(throw new IllegalArgumentException("Invalid category Definition: End requires category")))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
+
+        date <- Task(params.get("date"))
+          .map(_.map(sdf.parse))
+          .map(_.map(x => DateUtil.dateToLocalDate(x, ZoneId.systemDefault())).getOrElse(throw new IllegalArgumentException("Invalid Date Definition: End requires Date")))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Date: Use yyyy-MM this format"))
+        //mandatory -end
+
+        //optional -start
+        subCat <- Task(params.get("sub_cat"))
+          .map(_.filter(_.nonEmpty))
+          .map(_.map(_.toLowerCase()))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
+        //optional -end
+
+        //http chunks
+        output <- Task.delay {
+          response.setHeader("Content-Type", "application/json")
+          response.setHeader("Transfer-Encoding", "chunked")
+          response.setStatus(200)
+          response.getWriter
+        }
+
+        _ <- acctEvents.byTime(identityId, cat, date, subCat)
+          .doOnStart(_ => Task.delay(logger.info(s"streaming_started: cat=$cat, identity_id->$identityId, date=$date, sub_cat=$subCat")))
+          .doOnComplete(Task.delay(logger.info(s"streaming_ended: cat=$cat, identity_id->$identityId, date=$date, sub_cat=$subCat")))
+          .consumeWith(getConsumer(output))
+
+      } yield {
+        Ok(())
       }).onErrorHandle {
         case e: InvalidClaimException =>
           logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)

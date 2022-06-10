@@ -6,7 +6,7 @@ import io.getquill.{ CassandraStreamContext, SnakeCase }
 import monix.reactive.Observable
 
 import java.util.UUID
-import javax.inject.Inject
+import javax.inject.{ Inject, Singleton }
 
 trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
@@ -22,7 +22,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
   def selectAllQ = quote(query[AcctEventRow])
 
-  def countQ(
+  def byTimeQ(
       identityId: UUID,
       category: String,
       year: Int,
@@ -42,14 +42,27 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
           .filter(_.hour == lift(hour))
       }
       subCategory match {
-        case Some(subCategory) => quote { q0.filter(_.subCategory == lift(subCategory)).map(x => x).size }
-        case None => quote { q0.map(x => x).size }
+        case Some(subCategory) => quote { q0.filter(_.subCategory == lift(subCategory)).map(x => x) }
+        case None => quote { q0.map(x => x) }
       }
     }
   }
 
+  def countQ(
+      identityId: UUID,
+      category: String,
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      subCategory: Option[String]
+  ) = quote {
+    byTimeQ(identityId, category, year, month, day, hour, subCategory).size
+  }
+
 }
 
+@Singleton
 class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends AcctEventRowsQueries {
   val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
 
@@ -68,5 +81,15 @@ class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends 
       hour: Int,
       subCategory: Option[String]
   ): Observable[Long] = run(countQ(identityId, category, year, month, day, hour, subCategory))
+
+  def byTime(
+      identityId: UUID,
+      category: String,
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int,
+      subCategory: Option[String]
+  ): Observable[AcctEventRow] = run(byTimeQ(identityId, category, year, month, day, hour, subCategory))
 
 }
