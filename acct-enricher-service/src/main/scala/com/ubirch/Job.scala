@@ -25,11 +25,16 @@ class Job @Inject() (flywaySupport: FlywaySupport)(implicit scheduler: Scheduler
 
     (for {
       _ <- Task.delay(flywaySupport.migrateWhenOn())
-    } yield ()).onErrorRecover {
-      case e: Exception =>
-        logger.error("error_starting=" + e.getClass.getCanonicalName + " - " + e.getMessage, e)
-        sys.exit(1)
-    }.runToFuture
+    } yield ())
+      .map { _ =>
+        logger.info("job_finished=OK")
+        sys.exit(0)
+      }
+      .onErrorRecover {
+        case e: Exception =>
+          logger.error("error_starting=" + e.getClass.getCanonicalName + " - " + e.getMessage, e)
+          sys.exit(1)
+      }.runToFuture
 
   }
 
