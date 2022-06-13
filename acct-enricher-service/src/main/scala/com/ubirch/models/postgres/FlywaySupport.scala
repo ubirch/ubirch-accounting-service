@@ -29,7 +29,7 @@ abstract class FlywaySupportImpl[Dialect <: SqlIdiom](conf: Config, quillJdbcCon
 
   def suffixes: List[String] = List(".sql")
 
-  def locations: List[Location] = List(new Location("classpath:db"))
+  def locations: List[Location] = List(new Location("classpath:db_sql"))
 
   private var flyway: Option[Flyway] = None
 

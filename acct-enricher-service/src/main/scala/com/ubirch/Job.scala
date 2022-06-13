@@ -13,13 +13,13 @@ import javax.inject.{ Inject, Singleton }
   * Represents a bootable service object that starts the system
   */
 @Singleton
-class Service @Inject() (flywaySupport: FlywaySupport)(implicit scheduler: Scheduler) extends LazyLogging {
+class Job @Inject() (flywaySupport: FlywaySupport)(implicit scheduler: Scheduler) extends LazyLogging {
 
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
   val home: String = System.getProperty("user.home")
 
-  logger.info(s"service_version=${Service.version} user_home=$home")
+  logger.info(s"job_version=${Job.version} user_home=$home")
 
   def start(): CancelableFuture[Unit] = {
 
@@ -35,9 +35,9 @@ class Service @Inject() (flywaySupport: FlywaySupport)(implicit scheduler: Sched
 
 }
 
-object Service extends Boot(List(new Binder)) {
+object Job extends Boot(List(new Binder)) {
   final val version = "0.7.6"
   def main(args: Array[String]): Unit = * {
-    get[Service].start()
+    get[Job].start()
   }
 }
