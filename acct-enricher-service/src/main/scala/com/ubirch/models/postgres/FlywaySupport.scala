@@ -1,6 +1,6 @@
 package com.ubirch.models.postgres
 
-import com.ubirch.ConfPaths.PostgresPaths
+import com.ubirch.ConfPaths.PostgresConfPaths
 
 import com.google.inject.Inject
 import com.typesafe.config.Config
@@ -23,7 +23,7 @@ trait FlywaySupport {
   def isOn: Boolean
 }
 
-abstract class FlywaySupportImpl[Dialect <: SqlIdiom](conf: Config, quillJdbcContext: QuillJdbcContext[Dialect]) extends FlywaySupport with PostgresPaths {
+abstract class FlywaySupportImpl[Dialect <: SqlIdiom](conf: Config, quillJdbcContext: QuillJdbcContext[Dialect]) extends FlywaySupport with PostgresConfPaths {
 
   private val migrateOnStart = conf.getBoolean(MIGRATE_ON_START)
 

@@ -14,7 +14,7 @@ object ConfPaths {
     final val SWAGGER_PATH = "system.server.swaggerPath"
   }
 
-  trait PostgresPaths {
+  trait PostgresConfPaths {
     final val MIGRATE_ON_START = "system.migrateOnStart"
     final val SERVER_NAME = "system.database.dataSource.serverName"
     final val USER = "system.database.dataSource.user"
@@ -54,11 +54,16 @@ object ConfPaths {
     final val REALM_NAME = "system.thingAPI.realmName"
   }
 
-  object PostgresPaths extends PostgresPaths
+  trait JobConfPaths {
+    final val UBIRCH_TOKEN = "system.ubirchToken"
+  }
+
+  object PostgresConfPaths extends PostgresConfPaths
   object GenericConfPaths extends GenericConfPaths
   object CassandraClusterConfPaths extends CassandraClusterConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
   object TokenVerificationPaths extends TokenVerificationPaths
   object ThingAPIConfPaths extends ThingAPIConfPaths
+  object JobConfPaths extends JobConfPaths
 
 }
