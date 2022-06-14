@@ -4,7 +4,7 @@ import com.ubirch.models.postgres.{ DefaultPostgresFlywaySupport, DefaultPostgre
 import com.ubirch.services.cluster.{ ClusterService, ConnectionService, DefaultClusterService, DefaultConnectionService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
-import com.ubirch.services.externals.{ DefaultHttpClient, HttpClient }
+import com.ubirch.services.externals.{ DefaultHttpClient, DefaultThingAPI, HttpClient, ThingAPI }
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
 import com.ubirch.services.jwt._
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
@@ -40,6 +40,7 @@ class Binder
   def PublicKeyPoolService: ScopedBindingBuilder = bind(classOf[PublicKeyPoolService]).to(classOf[DefaultPublicKeyPoolService])
   def QuillJdbcContext: ScopedBindingBuilder = bind(new TypeLiteral[QuillJdbcContext[PostgresDialect]]() {}).to(classOf[DefaultPostgresQuillJdbcContext])
   def FlywaySupport: ScopedBindingBuilder = bind(classOf[FlywaySupport]).to(classOf[DefaultPostgresFlywaySupport])
+  def ThingAPI: ScopedBindingBuilder = bind(classOf[ThingAPI]).to(classOf[DefaultThingAPI])
 
   override def configure(): Unit = {
     Config
@@ -57,6 +58,7 @@ class Binder
     PublicKeyPoolService
     QuillJdbcContext
     FlywaySupport
+    ThingAPI
     ()
   }
 

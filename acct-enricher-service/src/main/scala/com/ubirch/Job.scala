@@ -25,6 +25,9 @@ class Job @Inject() (flywaySupport: FlywaySupport)(implicit scheduler: Scheduler
 
     (for {
       _ <- Task.delay(flywaySupport.migrateWhenOn())
+      //Check database scripts
+      //Check if tenants and devices need to be updated
+      //If yes, get data and store
     } yield ())
       .map { _ =>
         logger.info("job_finished=OK")

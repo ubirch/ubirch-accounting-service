@@ -49,10 +49,16 @@ object ConfPaths {
     final val KID = "system.tokenVerification.kid"
   }
 
+  trait ThingAPIConfPaths {
+    final val URL = "system.thingAPI.url"
+    final val REALM_NAME = "system.thingAPI.realmName"
+  }
+
   object PostgresPaths extends PostgresPaths
   object GenericConfPaths extends GenericConfPaths
   object CassandraClusterConfPaths extends CassandraClusterConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
   object TokenVerificationPaths extends TokenVerificationPaths
+  object ThingAPIConfPaths extends ThingAPIConfPaths
 
 }
