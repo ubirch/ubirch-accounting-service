@@ -3,7 +3,7 @@ CREATE TABLE identity
     id          uuid      NOT NULL,
     keycloak_id uuid      NOT NULL,
     tenant_id   uuid      NOT NULL,
-    description uuid,
+    description varchar,
     attributes  varchar,
     created_at  timestamp not null default now(),
     updated_at  timestamp not null default now(),

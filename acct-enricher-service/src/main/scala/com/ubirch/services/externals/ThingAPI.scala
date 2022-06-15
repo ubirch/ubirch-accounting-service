@@ -16,9 +16,9 @@ import javax.inject.{ Inject, Singleton }
 
 trait ThingAPI {
   def getTenants(accessToken: String): Task[List[Tenant]]
-  def getTenantDevices(accessToken: String, tenantId: UUID): Task[List[Device]]
+  def getTenantIdentities(accessToken: String, tenantId: UUID): Task[List[Identity]]
 }
-case class Device(keycloakId: String, deviceId: String, description: String, attributes: Map[String, String], tenantId: Option[UUID])
+case class Identity(keycloakId: String, deviceId: String, description: String, attributes: Map[String, String], tenantId: Option[UUID])
 case class Tenant(id: String, name: String, attributes: Map[String, String], subTenants: List[Tenant], path: String)
 
 @Singleton
@@ -51,7 +51,7 @@ class DefaultThingAPI @Inject() (config: Config, httpClient: HttpClient, jsonCon
     }
   }
 
-  override def getTenantDevices(accessToken: String, tenantId: UUID): Task[List[Device]] = {
+  override def getTenantIdentities(accessToken: String, tenantId: UUID): Task[List[Identity]] = {
     for {
       res <- httpClient.executeAsTask {
         SimpleRequestBuilder
@@ -65,7 +65,7 @@ class DefaultThingAPI @Inject() (config: Config, httpClient: HttpClient, jsonCon
 
       bodyAsString = new String(res.body, StandardCharsets.UTF_8)
 
-      tenants <- Task.fromEither(jsonConverterService.as[List[Device]](bodyAsString)).map(_.map(_.copy(tenantId = Some(tenantId))))
+      tenants <- Task.fromEither(jsonConverterService.as[List[Identity]](bodyAsString)).map(_.map(_.copy(tenantId = Some(tenantId))))
 
     } yield {
       tenants

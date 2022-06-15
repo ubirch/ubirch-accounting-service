@@ -1,6 +1,6 @@
 package com.ubirch
 
-import com.ubirch.models.postgres.{ DefaultPostgresFlywaySupport, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, FlywaySupport, QuillJdbcContext, TenantDAO }
+import com.ubirch.models.postgres.{ DefaultPostgresFlywaySupport, DefaultPostgresIdentityDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, FlywaySupport, IdentityDAO, QuillJdbcContext, TenantDAO }
 import com.ubirch.services.cluster.{ ClusterService, ConnectionService, DefaultClusterService, DefaultConnectionService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
@@ -42,6 +42,7 @@ class Binder
   def FlywaySupport: ScopedBindingBuilder = bind(classOf[FlywaySupport]).to(classOf[DefaultPostgresFlywaySupport])
   def ThingAPI: ScopedBindingBuilder = bind(classOf[ThingAPI]).to(classOf[DefaultThingAPI])
   def TenantDAO: ScopedBindingBuilder = bind(classOf[TenantDAO]).to(classOf[DefaultPostgresTenantDAO])
+  def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultPostgresIdentityDAO])
 
   override def configure(): Unit = {
     Config
@@ -61,6 +62,7 @@ class Binder
     FlywaySupport
     ThingAPI
     TenantDAO
+    IdentityDAO
     ()
   }
 

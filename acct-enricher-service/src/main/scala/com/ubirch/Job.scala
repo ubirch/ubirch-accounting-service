@@ -1,7 +1,7 @@
 package com.ubirch
 
 import com.ubirch.ConfPaths.JobConfPaths
-import com.ubirch.models.postgres.{ FlywaySupport, TenantDAO, TenantRow }
+import com.ubirch.models.postgres.{ FlywaySupport, IdentityDAO, IdentityRow, TenantDAO, TenantRow }
 import com.ubirch.services.externals.{ Tenant, ThingAPI }
 
 import com.typesafe.config.Config
@@ -21,7 +21,8 @@ class Job @Inject() (
     config: Config,
     flywaySupport: FlywaySupport,
     thingAPI: ThingAPI,
-    tenantDAO: TenantDAO
+    tenantDAO: TenantDAO,
+    identityDAO: IdentityDAO
 )(implicit scheduler: Scheduler) extends LazyLogging {
 
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
@@ -45,7 +46,10 @@ class Job @Inject() (
       _ = logger.info(s"job_step($jobId)=stored tenants", v("job_id", jobId))
       subTenants <- tenantDAO.getSubTenants
       _ = logger.info(s"job_step($jobId)=got ${subTenants.size} subtenants", v("job_id", jobId))
-      _ <- Task.sequence(subTenants.map { st => thingAPI.getTenantDevices(ubirchToken, st.id) }).map(_.flatten)
+      devices <- Task.sequence(subTenants.map { st => thingAPI.getTenantIdentities(ubirchToken, st.id) }).map(_.flatten)
+      _ <- Task.sequence(devices.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
+      _ = logger.info(s"job_step($jobId)=stored devices", v("job_id", jobId))
+
     } yield ())
       .map { _ =>
         logger.info(s"job_step($jobId)=finished OK", v("job_id", jobId))
