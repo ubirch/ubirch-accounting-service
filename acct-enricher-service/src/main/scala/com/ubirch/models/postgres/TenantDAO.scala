@@ -11,7 +11,7 @@ import javax.inject.{ Inject, Singleton }
 
 case class TenantRow(
     id: UUID,
-    parentId: UUID,
+    parentId: Option[UUID],
     groupName: String,
     groupPath: String,
     name: Option[String],
