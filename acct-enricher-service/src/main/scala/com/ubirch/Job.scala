@@ -43,6 +43,9 @@ class Job @Inject() (
       _ = logger.info(s"job_step($jobId)=got tenants", v("job_id", jobId))
       _ <- store(tenants)
       _ = logger.info(s"job_step($jobId)=stored tenants", v("job_id", jobId))
+      subTenants <- tenantDAO.getSubTenants
+      _ = logger.info(s"job_step($jobId)=got ${subTenants.size} subtenants", v("job_id", jobId))
+      _ <- Task.sequence(subTenants.map { st => thingAPI.getTenantDevices(ubirchToken, st.id) }).map(_.flatten)
     } yield ())
       .map { _ =>
         logger.info(s"job_step($jobId)=finished OK", v("job_id", jobId))
@@ -50,7 +53,7 @@ class Job @Inject() (
       }
       .onErrorRecover {
         case e: Exception =>
-          logger.error(s"job_step($jobId)= " + " error_starting " + e.getClass.getCanonicalName + " - " + e.getMessage, e, v("job_id", jobId))
+          logger.error(s"job_step($jobId)= " + e.getClass.getCanonicalName + " - " + e.getMessage, e, v("job_id", jobId))
           sys.exit(1)
       }.runToFuture
 

@@ -4,7 +4,7 @@ import com.ubirch.services.externals.Tenant
 import com.ubirch.services.formats.JsonConverterService
 
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ H2Dialect, Insert, PostgresDialect }
+import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect }
 import monix.eval.Task
 
 import java.util.{ Date, UUID }
@@ -44,7 +44,7 @@ object TenantRow {
 
 trait TenantDAO {
   def store(tenantRow: TenantRow): Task[Unit]
-
+  def getSubTenants: Task[List[TenantRow]]
 }
 
 class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dialect], jsonConverterService: JsonConverterService) extends TenantDAO with MapEncoding {
@@ -59,7 +59,10 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
     else jsonConverterService.toString(value).toTry.get
   }
 
-  override def toMap(value: String): Map[String, String] = jsonConverterService.as[Map[String, String]](value).toTry.get
+  override def toMap(value: String): Map[String, String] = {
+    if (value.isEmpty) Map.empty
+    else jsonConverterService.as[Map[String, String]](value).toTry.get
+  }
 
   private def store_Q(tenantRow: TenantRow): Quoted[Insert[TenantRow]] = {
     quote {
@@ -72,6 +75,16 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
     Task.delay(run(store_Q(tenantRow))).map(_ => ())
   }
 
+  private def getSubTenants_Q: Quoted[EntityQuery[TenantRow]] = {
+    quote {
+      query[TenantRow]
+        .filter(_.parentId.isDefined)
+    }
+  }
+
+  override def getSubTenants: Task[List[TenantRow]] = {
+    Task.delay(run(getSubTenants_Q))
+  }
 }
 
 @Singleton
