@@ -1,5 +1,6 @@
 package com.ubirch.models.postgres
 
+import com.ubirch.services.externals.Tenant
 import com.ubirch.services.formats.JsonConverterService
 
 import io.getquill.context.sql.idiom.SqlIdiom
@@ -23,6 +24,24 @@ case class TenantRow(
     updatedAt: Date
 )
 
+object TenantRow {
+  def fromTenant(parent: Option[Tenant], tenant: Tenant) = {
+    TenantRow(
+      id = UUID.fromString(tenant.id),
+      parentId = parent.map(_.id).map(x => UUID.fromString(x)),
+      groupName = tenant.name,
+      groupPath = tenant.path,
+      name = tenant.attributes.get("tenant_name"),
+      address = tenant.attributes.get("tenant_address"),
+      representative = tenant.attributes.get("tenant_representative"),
+      taxId = tenant.attributes.get("tenant_tax_id"),
+      attributes = tenant.attributes,
+      createdAt = new Date(),
+      updatedAt = new Date()
+    )
+  }
+}
+
 trait TenantDAO {
   def store(tenantRow: TenantRow): Task[Unit]
 
@@ -35,7 +54,10 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
   implicit val tenantRowSchemaMeta = schemaMeta[TenantRow]("enricher.tenant")
   implicit val tenantRowInsertMeta = insertMeta[TenantRow]()
 
-  override def stringifyMap(value: Map[String, String]): String = jsonConverterService.toString(value).toTry.get
+  override def stringifyMap(value: Map[String, String]): String = {
+    if (value.isEmpty) ""
+    else jsonConverterService.toString(value).toTry.get
+  }
 
   override def toMap(value: String): Map[String, String] = jsonConverterService.as[Map[String, String]](value).toTry.get
 
