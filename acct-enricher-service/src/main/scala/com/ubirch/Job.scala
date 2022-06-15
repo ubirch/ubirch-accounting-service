@@ -32,21 +32,6 @@ class Job @Inject() (
 
   logger.info(s"job_version=${Job.version} user_home=$home")
 
-  def store(tenants: List[Tenant]): Task[List[Unit]] = {
-    def go(parent: Option[Tenant], tenants: List[Tenant]): Task[List[Unit]] = {
-      tenants match {
-        case Nil => Task.delay(Nil)
-        case tenant :: other =>
-          tenantDAO.store(TenantRow.fromTenant(parent, tenant))
-            .flatMap(_ => go(parent, other))
-            .flatMap(_ => go(Some(tenant), tenant.subTenants))
-      }
-    }
-
-    go(None, tenants)
-
-  }
-
   def start(): CancelableFuture[Unit] = {
 
     val jobId = UUID.randomUUID()
@@ -68,6 +53,21 @@ class Job @Inject() (
           logger.error(s"job_step($jobId)= " + " error_starting " + e.getClass.getCanonicalName + " - " + e.getMessage, e, v("job_id", jobId))
           sys.exit(1)
       }.runToFuture
+
+  }
+
+  private def store(tenants: List[Tenant]): Task[List[Unit]] = {
+    def go(parent: Option[Tenant], tenants: List[Tenant]): Task[List[Unit]] = {
+      tenants match {
+        case Nil => Task.delay(Nil)
+        case tenant :: other =>
+          tenantDAO.store(TenantRow.fromTenant(parent, tenant))
+            .flatMap(_ => go(parent, other))
+            .flatMap(_ => go(Some(tenant), tenant.subTenants))
+      }
+    }
+
+    go(None, tenants)
 
   }
 
