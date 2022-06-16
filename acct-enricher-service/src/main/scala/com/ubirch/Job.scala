@@ -10,6 +10,7 @@ import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
+import net.logstash.logback.argument.StructuredArgument
 import net.logstash.logback.argument.StructuredArguments.v
 
 import java.text.SimpleDateFormat
@@ -50,20 +51,20 @@ class Job @Inject() (
       _ = logger.info(s"job_step($jobId)=started Ok with a query day of ${queryDays.mkString(",")}", v("job_id", jobId))
 
       _ <- Task.delay(flywaySupport.migrateWhenOn())
-      _ = logger.info(s"job_step($jobId)=checked postgres db", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=checked postgres db", jobIdStructuredArgument(jobId))
 
       tenants <- thingAPI.getTenants(ubirchToken)
-      _ = logger.info(s"job_step($jobId)=got tenants", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=got tenants", jobIdStructuredArgument(jobId))
 
       _ <- store(tenants)
-      _ = logger.info(s"job_step($jobId)=stored tenants", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=stored tenants", jobIdStructuredArgument(jobId))
 
       subTenants <- tenantDAO.getSubTenants
-      _ = logger.info(s"job_step($jobId)=got ${subTenants.size} subtenants", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=got ${subTenants.size} subtenants", jobIdStructuredArgument(jobId))
 
       identities <- Task.sequence(subTenants.map { st => thingAPI.getTenantIdentities(ubirchToken, st.id) }).map(_.flatten)
       identityRows <- Task.sequence(identities.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
-      _ = logger.info(s"job_step($jobId)=stored identities", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=stored identities", jobIdStructuredArgument(jobId))
 
       _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "anchoring", date = queryDay, subCategory = None, identityRows)))
       _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "upp_verification", date = queryDay, subCategory = None, identityRows)))
@@ -72,12 +73,12 @@ class Job @Inject() (
     } yield ())
       .timed
       .map { case (duration, _) =>
-        logger.info(s"job_step($jobId)=finished OK with a duration of ${duration.toMinutes} minutes", v("job_id", jobId))
+        logger.info(s"job_step($jobId)=finished OK with a duration of ${duration.toMinutes} minutes", jobIdStructuredArgument(jobId))
         sys.exit(0)
       }
       .onErrorRecover {
         case e: Exception =>
-          logger.error(s"job_step($jobId)= " + e.getClass.getCanonicalName + " - " + e.getMessage, e, v("job_id", jobId))
+          logger.error(s"job_step($jobId)= " + e.getClass.getCanonicalName + " - " + e.getMessage, e, jobIdStructuredArgument(jobId))
           sys.exit(1)
       }.runToFuture
 
@@ -87,7 +88,7 @@ class Job @Inject() (
     val aggregationId = UUID.randomUUID()
     for {
       _ <- Task.unit
-      _ = logger.info(s"job_step($jobId)=started $category aggregation($aggregationId) for date ${date.toString}", v("job_id", jobId), v("aggregation_id", aggregationId))
+      _ = logger.info(s"job_step($jobId)=started $category aggregation($aggregationId) for date ${date.toString}", jobIdStructuredArgument(jobId), jobAggregationIdStructuredArgument(aggregationId))
       monthlyResultsAnchoring <- Task.sequence(identityRows.map(i => acctEventsService.dailyCount(
         identityId = i.id,
         tenantId = i.tenantId,
@@ -95,13 +96,17 @@ class Job @Inject() (
         date = date,
         subCategory = subCategory
       )))
-      _ = logger.info(s"job_step($jobId)=finished $category aggregation($aggregationId) for date ${date.toString}", v("job_id", jobId), v("aggregation_id", aggregationId))
+      _ = logger.info(s"job_step($jobId)=finished $category aggregation($aggregationId) for date ${date.toString}", jobIdStructuredArgument(jobId), jobAggregationIdStructuredArgument(aggregationId))
       _ <- Task.sequence(monthlyResultsAnchoring.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
-      _ = logger.info(s"job_step($jobId)=stored  $category aggregation($aggregationId) for date ${date.toString}", v("job_id", jobId), v("aggregation_id", aggregationId))
+      _ = logger.info(s"job_step($jobId)=stored $category aggregation($aggregationId) for date ${date.toString}", jobIdStructuredArgument(jobId), jobAggregationIdStructuredArgument(aggregationId))
     } yield {
       ()
     }
   }
+
+  private def jobIdStructuredArgument(jobId: UUID): StructuredArgument = v("acct_enricher.job_id", jobId)
+
+  private def jobAggregationIdStructuredArgument(aggregationId: UUID): StructuredArgument = v("acct_enricher.job_aggregation_id", aggregationId)
 
   private def store(tenants: List[Tenant]): Task[List[Unit]] = {
     def go(parent: Option[Tenant], tenants: List[Tenant]): Task[List[Unit]] = {
