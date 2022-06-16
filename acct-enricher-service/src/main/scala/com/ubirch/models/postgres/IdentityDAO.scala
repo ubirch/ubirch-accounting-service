@@ -62,8 +62,8 @@ class IdentityDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContex
       query[IdentityRow]
         .insert(lift(identityRow))
         .onConflictUpdate(_.id)(
-          (t, _) => t.description -> t.description,
-          (t, _) => t.attributes -> t.attributes,
+          (t, e) => t.description -> e.description,
+          (t, e) => t.attributes -> e.attributes,
           (t, _) => t.updatedAt -> lift(new Date())
         )
     }
