@@ -1,6 +1,6 @@
 package com.ubirch.models.postgres
 
-import com.ubirch.services.MonthlyCountResult
+import com.ubirch.services.DailyCountResult
 import com.ubirch.services.formats.JsonConverterService
 
 import io.getquill.{ H2Dialect, Insert, PostgresDialect }
@@ -22,7 +22,7 @@ case class EventRow(
 )
 
 object EventRow {
-  def fromMonthlyCountResult(result: MonthlyCountResult) =
+  def fromDailyCountResult(result: DailyCountResult) =
     EventRow(
       identityId = result.identityId,
       tenantId = result.tenantId,

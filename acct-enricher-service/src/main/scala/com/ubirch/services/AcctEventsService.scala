@@ -23,7 +23,7 @@ trait AcctEventsService {
       category: String,
       date: LocalDate,
       subCategory: Option[String]
-  ): Task[MonthlyCountResult]
+  ): Task[DailyCountResult]
 }
 
 trait Result {
@@ -91,7 +91,7 @@ class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends Ac
 
   }
 
-  override def dailyCount(identityId: UUID, tenantId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[MonthlyCountResult] = {
+  override def dailyCount(identityId: UUID, tenantId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[DailyCountResult] = {
 
     val tasks = dailyRange(date).par.map { case (day, hour) =>
       acctStoreDAO.events.count(
@@ -108,7 +108,7 @@ class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends Ac
     Task
       .parSequenceUnordered(tasks)
       .map { count =>
-        MonthlyCountResult(
+        DailyCountResult(
           identityId = identityId,
           tenantId = tenantId,
           category = category,
@@ -116,6 +116,7 @@ class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends Ac
           subCategory = subCategory,
           year = date.getYear,
           month = date.getMonthValue,
+          day = date.getDayOfMonth,
           count = count.sum
         )
       }
