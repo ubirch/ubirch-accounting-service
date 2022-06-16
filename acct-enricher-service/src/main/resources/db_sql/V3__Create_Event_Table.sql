@@ -12,3 +12,8 @@ CREATE TABLE event
         FOREIGN KEY (tenant_id)
             REFERENCES tenant (id)
 );
+
+COMMENT
+ON TABLE identity
+    IS 'This is the entity that contains the info of the events';
+
