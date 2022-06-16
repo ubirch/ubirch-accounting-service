@@ -4,6 +4,7 @@ import com.ubirch.ConfPaths.JobConfPaths
 import com.ubirch.models.postgres.{ EventDAO, EventRow, FlywaySupport, IdentityDAO, IdentityRow, TenantDAO, TenantRow }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.externals.{ Tenant, ThingAPI }
+import com.ubirch.util.DateUtil
 
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
@@ -11,7 +12,8 @@ import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
 import net.logstash.logback.argument.StructuredArguments.v
 
-import java.time.LocalDate
+import java.text.SimpleDateFormat
+import java.time.{ LocalDate, ZoneId }
 import java.util.{ TimeZone, UUID }
 import javax.inject.{ Inject, Singleton }
 
@@ -37,11 +39,9 @@ class Job @Inject() (
 
   val cats: List[String] = List("anchoring", "upp_verification", "uvs_verification").distinct
 
-  val queryDays: List[LocalDate] = LocalDate.now() :: List(LocalDate.now().plusDays(1)).distinct
-
   logger.info(s"job_version=${Job.version} user_home=$home")
 
-  def start(): CancelableFuture[Unit] = {
+  def start(queryDays: List[LocalDate]): CancelableFuture[Unit] = {
 
     val jobId = UUID.randomUUID()
 
@@ -122,7 +122,20 @@ class Job @Inject() (
 
 object Job extends Boot(List(new Binder)) {
   final val version = "0.7.6"
+
+  lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
+
   def main(args: Array[String]): Unit = * {
-    get[Job].start()
+    val queryDays =
+      args
+        .map(sdf.parse)
+        .map(x => DateUtil.dateToLocalDate(x, ZoneId.systemDefault()))
+        .toList
+        .distinct match {
+          case Nil => List(LocalDate.now().minusDays(1))
+          case other => other
+        }
+
+    get[Job].start(queryDays)
   }
 }
