@@ -59,6 +59,10 @@ class EventDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[D
     quote {
       query[EventRow]
         .insert(lift(eventRow))
+        .onConflictUpdate(_.identityId, _.tenantId, _.category, _.date)(
+          (t, _) => t.count -> t.count,
+          (t, _) => t.updatedAt -> lift(new Date())
+        )
     }
   }
 
