@@ -64,41 +64,9 @@ class Job @Inject() (
       identityRows <- Task.sequence(identities.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
       _ = logger.info(s"job_step($jobId)=stored identities", v("job_id", jobId))
 
-      _ = logger.info(s"job_step($jobId)=started monthlyResultsAnchoring", v("job_id", jobId))
-      monthlyResultsAnchoring <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
-        identityId = i.id,
-        tenantId = i.tenantId,
-        category = "anchoring",
-        date = LocalDate.now(),
-        subCategory = None
-      )))
-      _ = logger.info(s"job_step($jobId)=finished monthlyResultsAnchoring", v("job_id", jobId))
-      _ <- Task.sequence(monthlyResultsAnchoring.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
-      _ = logger.info(s"job_step($jobId)=stored monthlyResultsAnchoring", v("job_id", jobId))
-
-      _ = logger.info(s"job_step($jobId)=started monthlyResultsUPPVerification", v("job_id", jobId))
-      monthlyResultsUPPVerification <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
-        identityId = i.id,
-        tenantId = i.tenantId,
-        category = "upp_verification",
-        date = LocalDate.now(),
-        subCategory = None
-      )))
-      _ = logger.info(s"job_step($jobId)=finished monthlyResultsUPPVerification", v("job_id", jobId))
-      _ <- Task.sequence(monthlyResultsUPPVerification.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
-      _ = logger.info(s"job_step($jobId)=stored monthlyResultsUPPVerification", v("job_id", jobId))
-
-      _ = logger.info(s"job_step($jobId)=started monthlyResultsUVSVerification", v("job_id", jobId))
-      monthlyResultsUVSVerification <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
-        identityId = i.id,
-        tenantId = i.tenantId,
-        category = "uvs_verification",
-        date = LocalDate.now(),
-        subCategory = None
-      )))
-      _ = logger.info(s"job_step($jobId)=finished monthlyResultsUVSVerification", v("job_id", jobId))
-      _ <- Task.sequence(monthlyResultsUVSVerification.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
-      _ = logger.info(s"job_step($jobId)=stored monthlyResultsUVSVerification", v("job_id", jobId))
+      _ <- aggregateAndStore(jobId = jobId, category = "anchoring", date = LocalDate.now(), subCategory = None, identityRows)
+      _ <- aggregateAndStore(jobId = jobId, category = "upp_verification", date = LocalDate.now(), subCategory = None, identityRows)
+      _ <- aggregateAndStore(jobId = jobId, category = "uvs_verification", date = LocalDate.now(), subCategory = None, identityRows)
 
     } yield ())
       .timed
@@ -112,6 +80,25 @@ class Job @Inject() (
           sys.exit(1)
       }.runToFuture
 
+  }
+
+  private def aggregateAndStore(jobId: UUID, category: String, date: LocalDate, subCategory: Option[String], identityRows: List[IdentityRow]) = {
+    for {
+      _ <- Task.unit
+      _ = logger.info(s"job_step($jobId)=started $category aggregation", v("job_id", jobId))
+      monthlyResultsAnchoring <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
+        identityId = i.id,
+        tenantId = i.tenantId,
+        category = category,
+        date = date,
+        subCategory = subCategory
+      )))
+      _ = logger.info(s"job_step($jobId)=finished $category aggregation", v("job_id", jobId))
+      _ <- Task.sequence(monthlyResultsAnchoring.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
+      _ = logger.info(s"job_step($jobId)=stored  $category aggregation", v("job_id", jobId))
+    } yield {
+      ()
+    }
   }
 
   private def store(tenants: List[Tenant]): Task[List[Unit]] = {
