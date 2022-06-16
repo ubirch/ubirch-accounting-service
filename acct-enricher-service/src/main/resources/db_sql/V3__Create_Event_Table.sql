@@ -14,6 +14,6 @@ CREATE TABLE event
 );
 
 COMMENT
-ON TABLE identity
+ON TABLE event
     IS 'This is the entity that contains the info of the events';
 

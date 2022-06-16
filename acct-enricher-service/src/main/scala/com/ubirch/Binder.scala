@@ -1,13 +1,13 @@
 package com.ubirch
 
-import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresFlywaySupport, DefaultPostgresIdentityDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, FlywaySupport, IdentityDAO, QuillJdbcContext, TenantDAO }
-import com.ubirch.services.{ AcctEventsService, DefaultAcctEventsService }
+import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresFlywaySupport, DefaultPostgresIdentityDAO, DefaultPostgresJobDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, FlywaySupport, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
 import com.ubirch.services.cluster.{ ClusterService, ConnectionService, DefaultClusterService, DefaultConnectionService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
 import com.ubirch.services.externals.{ DefaultHttpClient, DefaultThingAPI, HttpClient, ThingAPI }
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
+import com.ubirch.services.{ AcctEventsService, DefaultAcctEventsService }
 
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.{ AbstractModule, Module, TypeLiteral }
@@ -40,6 +40,7 @@ class Binder
   def TenantDAO: ScopedBindingBuilder = bind(classOf[TenantDAO]).to(classOf[DefaultPostgresTenantDAO])
   def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultPostgresIdentityDAO])
   def EventDAO: ScopedBindingBuilder = bind(classOf[EventDAO]).to(classOf[DefaultPostgresEventDAO])
+  def JobDAO: ScopedBindingBuilder = bind(classOf[JobDAO]).to(classOf[DefaultPostgresJobDAO])
   def AcctEventsService: ScopedBindingBuilder = bind(classOf[AcctEventsService]).to(classOf[DefaultAcctEventsService])
 
   override def configure(): Unit = {
@@ -60,6 +61,7 @@ class Binder
     IdentityDAO
     EventDAO
     AcctEventsService
+    JobDAO
     ()
   }
 
