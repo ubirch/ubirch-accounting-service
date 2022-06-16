@@ -44,11 +44,6 @@ object ConfPaths {
     final val PORT = "system.metrics.prometheus.port"
   }
 
-  trait TokenVerificationPaths {
-    final val CONFIG_URL = "system.tokenVerification.configURL"
-    final val KID = "system.tokenVerification.kid"
-  }
-
   trait ThingAPIConfPaths {
     final val URL = "system.thingAPI.url"
     final val REALM_NAME = "system.thingAPI.realmName"
@@ -62,7 +57,6 @@ object ConfPaths {
   object GenericConfPaths extends GenericConfPaths
   object CassandraClusterConfPaths extends CassandraClusterConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
-  object TokenVerificationPaths extends TokenVerificationPaths
   object ThingAPIConfPaths extends ThingAPIConfPaths
   object JobConfPaths extends JobConfPaths
 
