@@ -11,7 +11,6 @@ import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
 import net.logstash.logback.argument.StructuredArguments.v
 
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.{ TimeZone, UUID }
 import javax.inject.{ Inject, Singleton }
@@ -34,11 +33,13 @@ class Job @Inject() (
 
   val home: String = System.getProperty("user.home")
 
-  val ubirchToken = config.getString(JobConfPaths.UBIRCH_TOKEN)
+  val ubirchToken: String = config.getString(JobConfPaths.UBIRCH_TOKEN)
+
+  val cats: List[String] = List("anchoring", "upp_verification", "uvs_verification")
+
+  val queryDay: LocalDate = LocalDate.now()
 
   logger.info(s"job_version=${Job.version} user_home=$home")
-
-  val cats = List("anchoring", "upp_verification", "uvs_verification")
 
   def start(): CancelableFuture[Unit] = {
 
@@ -46,7 +47,7 @@ class Job @Inject() (
 
     (for {
       _ <- Task.unit
-      _ = logger.info(s"job_step($jobId)=started Ok", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=started Ok with a query day of $queryDay", v("job_id", jobId))
 
       _ <- Task.delay(flywaySupport.migrateWhenOn())
       _ = logger.info(s"job_step($jobId)=checked postgres db", v("job_id", jobId))
@@ -64,9 +65,9 @@ class Job @Inject() (
       identityRows <- Task.sequence(identities.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
       _ = logger.info(s"job_step($jobId)=stored identities", v("job_id", jobId))
 
-      _ <- aggregateAndStore(jobId = jobId, category = "anchoring", date = LocalDate.now(), subCategory = None, identityRows)
-      _ <- aggregateAndStore(jobId = jobId, category = "upp_verification", date = LocalDate.now(), subCategory = None, identityRows)
-      _ <- aggregateAndStore(jobId = jobId, category = "uvs_verification", date = LocalDate.now(), subCategory = None, identityRows)
+      _ <- aggregateAndStore(jobId = jobId, category = "anchoring", date = queryDay, subCategory = None, identityRows)
+      _ <- aggregateAndStore(jobId = jobId, category = "upp_verification", date = queryDay, subCategory = None, identityRows)
+      _ <- aggregateAndStore(jobId = jobId, category = "uvs_verification", date = queryDay, subCategory = None, identityRows)
 
     } yield ())
       .timed
@@ -122,16 +123,5 @@ object Job extends Boot(List(new Binder)) {
   final val version = "0.7.6"
   def main(args: Array[String]): Unit = * {
     get[Job].start()
-  }
-}
-
-object x {
-  def main(args: Array[String]): Unit = {
-    val sdf = new SimpleDateFormat("yyyy-MM-dd")
-
-    val r = sdf.parse("2022-05-05")
-
-    println(r)
-
   }
 }
