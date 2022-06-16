@@ -12,6 +12,7 @@ import javax.inject.{ Inject, Singleton }
 trait AcctEventsService {
   def monthCount(
       identityId: UUID,
+      tenantId: UUID,
       category: String,
       date: LocalDate,
       subCategory: Option[String]
@@ -27,7 +28,7 @@ trait AcctEventsService {
   ): Observable[AcctEventRow]
 }
 
-case class MonthlyCountResult(year: Int, month: Int, count: Long)
+case class MonthlyCountResult(identityId: UUID, tenantId: UUID, category: String, date: LocalDate, subCategory: Option[String], year: Int, month: Int, count: Long)
 
 @Singleton
 class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends AcctEventsService {
@@ -38,7 +39,7 @@ class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends Ac
     }
   }
 
-  override def monthCount(identityId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[MonthlyCountResult] = {
+  override def monthCount(identityId: UUID, tenantId: UUID, category: String, date: LocalDate, subCategory: Option[String]): Task[MonthlyCountResult] = {
 
     val tasks = monthRange(date).par.map { case (day, hour) =>
       acctStoreDAO.events.count(
@@ -54,7 +55,18 @@ class DefaultAcctEventsService @Inject() (acctStoreDAO: AcctStoreDAO) extends Ac
 
     Task
       .parSequenceUnordered(tasks)
-      .map(count => MonthlyCountResult(date.getYear, date.getMonthValue, count.sum))
+      .map { count =>
+        MonthlyCountResult(
+          identityId = identityId,
+          tenantId = tenantId,
+          category = category,
+          date = date,
+          subCategory = subCategory,
+          year = date.getYear,
+          month = date.getMonthValue,
+          count = count.sum
+        )
+      }
 
   }
 

@@ -1,7 +1,7 @@
 package com.ubirch
 
 import com.ubirch.ConfPaths.JobConfPaths
-import com.ubirch.models.postgres.{ FlywaySupport, IdentityDAO, IdentityRow, TenantDAO, TenantRow }
+import com.ubirch.models.postgres.{ EventDAO, EventRow, FlywaySupport, IdentityDAO, IdentityRow, TenantDAO, TenantRow }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.externals.{ Tenant, ThingAPI }
 
@@ -11,6 +11,7 @@ import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
 import net.logstash.logback.argument.StructuredArguments.v
 
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.{ TimeZone, UUID }
 import javax.inject.{ Inject, Singleton }
@@ -25,6 +26,7 @@ class Job @Inject() (
     thingAPI: ThingAPI,
     tenantDAO: TenantDAO,
     identityDAO: IdentityDAO,
+    eventDAO: EventDAO,
     acctEventsService: AcctEventsService
 )(implicit scheduler: Scheduler) extends LazyLogging {
 
@@ -61,6 +63,7 @@ class Job @Inject() (
 
       monthlyResultsAnchoringFiber <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
         identityId = i.id,
+        tenantId = i.tenantId,
         category = "anchoring",
         date = LocalDate.now(),
         subCategory = None
@@ -69,6 +72,7 @@ class Job @Inject() (
 
       monthlyResultsUPPVerificationFiber <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
         identityId = i.id,
+        tenantId = i.tenantId,
         category = "upp_verification",
         date = LocalDate.now(),
         subCategory = None
@@ -77,6 +81,7 @@ class Job @Inject() (
 
       monthlyResultsUVSVerificationFiber <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
         identityId = i.id,
+        tenantId = i.tenantId,
         category = "uvs_verification",
         date = LocalDate.now(),
         subCategory = None
@@ -84,12 +89,16 @@ class Job @Inject() (
       _ = logger.info(s"job_step($jobId)=started monthlyResultsUVSVerification", v("job_id", jobId))
 
       monthlyResultsAnchoring <- monthlyResultsAnchoringFiber.join
-      monthlyResultsUPPVerification <- monthlyResultsUPPVerificationFiber.join
-      monthlyResultsUVSVerification <- monthlyResultsUVSVerificationFiber.join
+      _ <- Task.sequence(monthlyResultsAnchoring.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
+      _ = logger.info(s"job_step($jobId)=stored monthlyResultsAnchoring", v("job_id", jobId))
 
-      _ = println(monthlyResultsAnchoring)
-      _ = println(monthlyResultsUPPVerification)
-      _ = println(monthlyResultsUVSVerification)
+      monthlyResultsUPPVerification <- monthlyResultsUPPVerificationFiber.join
+      _ <- Task.sequence(monthlyResultsUPPVerification.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
+      _ = logger.info(s"job_step($jobId)=stored monthlyResultsUPPVerification", v("job_id", jobId))
+
+      monthlyResultsUVSVerification <- monthlyResultsUVSVerificationFiber.join
+      _ <- Task.sequence(monthlyResultsUVSVerification.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
+      _ = logger.info(s"job_step($jobId)=stored monthlyResultsUVSVerification", v("job_id", jobId))
 
     } yield ())
       .timed
@@ -126,5 +135,16 @@ object Job extends Boot(List(new Binder)) {
   final val version = "0.7.6"
   def main(args: Array[String]): Unit = * {
     get[Job].start()
+  }
+}
+
+object x {
+  def main(args: Array[String]): Unit = {
+    val sdf = new SimpleDateFormat("yyyy-MM-dd")
+
+    val r = sdf.parse("2022-05-05")
+
+    println(r)
+
   }
 }
