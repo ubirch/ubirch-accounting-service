@@ -1,6 +1,7 @@
 package com.ubirch
 
 import com.ubirch.models.postgres.{ DefaultPostgresFlywaySupport, DefaultPostgresIdentityDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, FlywaySupport, IdentityDAO, QuillJdbcContext, TenantDAO }
+import com.ubirch.services.{ AcctEventsService, DefaultAcctEventsService }
 import com.ubirch.services.cluster.{ ClusterService, ConnectionService, DefaultClusterService, DefaultConnectionService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
@@ -43,6 +44,7 @@ class Binder
   def ThingAPI: ScopedBindingBuilder = bind(classOf[ThingAPI]).to(classOf[DefaultThingAPI])
   def TenantDAO: ScopedBindingBuilder = bind(classOf[TenantDAO]).to(classOf[DefaultPostgresTenantDAO])
   def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultPostgresIdentityDAO])
+  def AcctEventsService: ScopedBindingBuilder = bind(classOf[AcctEventsService]).to(classOf[DefaultAcctEventsService])
 
   override def configure(): Unit = {
     Config
@@ -63,6 +65,7 @@ class Binder
     ThingAPI
     TenantDAO
     IdentityDAO
+    AcctEventsService
     ()
   }
 

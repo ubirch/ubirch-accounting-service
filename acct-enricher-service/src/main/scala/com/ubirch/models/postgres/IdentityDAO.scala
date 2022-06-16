@@ -36,7 +36,7 @@ object IdentityRow {
 }
 
 trait IdentityDAO {
-  def store(identityRow: IdentityRow): Task[Unit]
+  def store(identityRow: IdentityRow): Task[IdentityRow]
 
 }
 
@@ -69,8 +69,8 @@ class IdentityDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContex
     }
   }
 
-  override def store(identityRow: IdentityRow): Task[Unit] = {
-    Task.delay(run(store_Q(identityRow))).map(_ => ())
+  override def store(identityRow: IdentityRow): Task[IdentityRow] = {
+    Task.delay(run(store_Q(identityRow))).map(_ => identityRow)
   }
 
 }

@@ -24,16 +24,16 @@ object ConfPaths {
   }
 
   trait CassandraClusterConfPaths {
-    final val CONTACT_POINTS = "acctSystem.cassandra.cluster.contactPoints"
-    final val CONSISTENCY_LEVEL = "acctSystem.cassandra.cluster.consistencyLevel"
-    final val SERIAL_CONSISTENCY_LEVEL = "acctSystem.cassandra.cluster.serialConsistencyLevel"
-    final val WITH_SSL = "acctSystem.cassandra.cluster.withSSL"
-    final val TRUST_STORE = "acctSystem.cassandra.cluster.trustStore"
-    final val TRUST_STORE_PASSWORD = "acctSystem.cassandra.cluster.trustStorePassword"
-    final val USERNAME = "acctSystem.cassandra.cluster.username"
-    final val PASSWORD = "acctSystem.cassandra.cluster.password"
-    final val KEYSPACE = "acctSystem.cassandra.cluster.keyspace"
-    final val PREPARED_STATEMENT_CACHE_SIZE = "acctSystem.cassandra.cluster.preparedStatementCacheSize"
+    final val CONTACT_POINTS = "system.cassandra.cluster.contactPoints"
+    final val CONSISTENCY_LEVEL = "system.cassandra.cluster.consistencyLevel"
+    final val SERIAL_CONSISTENCY_LEVEL = "system.cassandra.cluster.serialConsistencyLevel"
+    final val WITH_SSL = "system.cassandra.cluster.withSSL"
+    final val TRUST_STORE = "system.cassandra.cluster.trustStore"
+    final val TRUST_STORE_PASSWORD = "system.cassandra.cluster.trustStorePassword"
+    final val USERNAME = "system.cassandra.cluster.username"
+    final val PASSWORD = "system.cassandra.cluster.password"
+    final val KEYSPACE = "system.cassandra.cluster.keyspace"
+    final val PREPARED_STATEMENT_CACHE_SIZE = "system.cassandra.cluster.preparedStatementCacheSize"
   }
 
   trait ExecutionContextConfPaths {
