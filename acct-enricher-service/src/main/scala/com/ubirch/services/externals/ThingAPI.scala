@@ -42,7 +42,7 @@ class DefaultThingAPI @Inject() (config: Config, httpClient: HttpClient, jsonCon
       }
 
       bodyAsString = new String(res.body, StandardCharsets.UTF_8)
-      _ = logger.info(bodyAsString)
+      _ = logger.debug(bodyAsString)
 
       tenants <- Task.fromEither(jsonConverterService.as[List[Tenant]](bodyAsString))
 

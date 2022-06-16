@@ -68,6 +68,16 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
     quote {
       query[TenantRow]
         .insert(lift(tenantRow))
+        .onConflictUpdate(_.id)(
+          (t, _) => t.groupName -> t.groupName,
+          (t, _) => t.groupPath -> t.groupPath,
+          (t, _) => t.name -> t.name,
+          (t, _) => t.address -> t.address,
+          (t, _) => t.representative -> t.representative,
+          (t, _) => t.taxId -> t.taxId,
+          (t, _) => t.attributes -> t.attributes,
+          (t, _) => t.updatedAt -> lift(new Date())
+        )
     }
   }
 
