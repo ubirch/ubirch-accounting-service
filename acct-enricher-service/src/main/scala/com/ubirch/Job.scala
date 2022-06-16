@@ -47,24 +47,10 @@ class Job @Inject() (
     val jobId = UUID.randomUUID()
 
     (for {
-      _ <- Task.unit
-      _ = logger.info(s"job_step($jobId)=started Ok with a query day of ${queryDays.mkString(",")}", jobIdStructuredArgument(jobId))
-
-      _ <- Task.delay(flywaySupport.migrateWhenOn())
-      _ = logger.info(s"job_step($jobId)=checked postgres db", jobIdStructuredArgument(jobId))
-
-      tenants <- thingAPI.getTenants(ubirchToken)
-      _ = logger.info(s"job_step($jobId)=got tenants", jobIdStructuredArgument(jobId))
-
-      _ <- storeOrUpdate(tenants)
-      _ = logger.info(s"job_step($jobId)=stored tenants", jobIdStructuredArgument(jobId))
-
-      subTenants <- tenantDAO.getSubTenants
-      _ = logger.info(s"job_step($jobId)=got ${subTenants.size} subtenants", jobIdStructuredArgument(jobId))
-
-      identities <- Task.sequence(subTenants.map { st => thingAPI.getTenantIdentities(ubirchToken, st.id) }).map(_.flatten)
-      identityRows <- Task.sequence(identities.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
-      _ = logger.info(s"job_step($jobId)=stored identities", jobIdStructuredArgument(jobId))
+      _ <- preChecks(jobId, queryDays)
+      _ <- getAndStoreOrUpdateTenants(jobId)
+      subTenants <- getSubTenants(jobId)
+      identityRows <- getAndStoreOrUpdateIdentities(jobId, subTenants)
 
       _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "anchoring", date = queryDay, subCategory = None, identityRows)))
       _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "upp_verification", date = queryDay, subCategory = None, identityRows)))
@@ -84,6 +70,63 @@ class Job @Inject() (
       }.runToFuture
 
   }
+
+  private def preChecks(jobId: UUID, queryDays: List[LocalDate]) = {
+    for {
+      _ <- Task.unit
+      _ = logger.info(s"job_step($jobId)=started Ok with a query day of ${queryDays.mkString(",")}", jobIdStructuredArgument(jobId))
+
+      _ <- Task.delay(flywaySupport.migrateWhenOn())
+      _ = logger.info(s"job_step($jobId)=checked postgres db", jobIdStructuredArgument(jobId))
+    } yield {
+      ()
+    }
+  }
+
+  private def getAndStoreOrUpdateTenants(jobId: UUID) = {
+    for {
+      tenants <- thingAPI.getTenants(ubirchToken)
+      _ = logger.info(s"job_step($jobId)=got tenants", jobIdStructuredArgument(jobId))
+      _ <- storeOrUpdate(tenants)
+      _ = logger.info(s"job_step($jobId)=stored tenants", jobIdStructuredArgument(jobId))
+    } yield {
+      tenants
+    }
+  }
+
+  private def storeOrUpdate(tenants: List[Tenant]): Task[List[Unit]] = {
+    def go(parent: Option[Tenant], tenants: List[Tenant]): Task[List[Unit]] = {
+      tenants match {
+        case Nil => Task.delay(Nil)
+        case tenant :: other =>
+          tenantDAO.store(TenantRow.fromTenant(parent, tenant))
+            .flatMap(_ => go(parent, other))
+            .flatMap(_ => go(Some(tenant), tenant.subTenants))
+      }
+    }
+
+    go(None, tenants)
+
+  }
+
+  private def getSubTenants(jobId: UUID) =
+    for {
+      subTenants <- tenantDAO.getSubTenants
+      _ = logger.info(s"job_step($jobId)=got ${subTenants.size} subtenants", jobIdStructuredArgument(jobId))
+    } yield {
+      subTenants
+    }
+
+  private def jobIdStructuredArgument(jobId: UUID): StructuredArgument = v("acct_enricher.job_id", jobId)
+
+  private def getAndStoreOrUpdateIdentities(jobId: UUID, subTenants: List[TenantRow]) =
+    for {
+      identities <- Task.sequence(subTenants.map { st => thingAPI.getTenantIdentities(ubirchToken, st.id) }).map(_.flatten)
+      identityRows <- Task.sequence(identities.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
+      _ = logger.info(s"job_step($jobId)=stored identities", jobIdStructuredArgument(jobId))
+    } yield {
+      identityRows
+    }
 
   private def aggregateAndStore(jobId: UUID, category: String, date: LocalDate, subCategory: Option[String], identityRows: List[IdentityRow]) = {
     val aggregationId = UUID.randomUUID()
@@ -105,24 +148,7 @@ class Job @Inject() (
     }
   }
 
-  private def jobIdStructuredArgument(jobId: UUID): StructuredArgument = v("acct_enricher.job_id", jobId)
-
   private def jobAggregationIdStructuredArgument(aggregationId: UUID): StructuredArgument = v("acct_enricher.job_aggregation_id", aggregationId)
-
-  private def storeOrUpdate(tenants: List[Tenant]): Task[List[Unit]] = {
-    def go(parent: Option[Tenant], tenants: List[Tenant]): Task[List[Unit]] = {
-      tenants match {
-        case Nil => Task.delay(Nil)
-        case tenant :: other =>
-          tenantDAO.store(TenantRow.fromTenant(parent, tenant))
-            .flatMap(_ => go(parent, other))
-            .flatMap(_ => go(Some(tenant), tenant.subTenants))
-      }
-    }
-
-    go(None, tenants)
-
-  }
 
 }
 
