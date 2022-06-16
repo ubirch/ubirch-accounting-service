@@ -86,7 +86,7 @@ class Job @Inject() (
     for {
       _ <- Task.unit
       _ = logger.info(s"job_step($jobId)=started $category aggregation", v("job_id", jobId))
-      monthlyResultsAnchoring <- Task.sequence(identityRows.map(i => acctEventsService.monthCount(
+      monthlyResultsAnchoring <- Task.sequence(identityRows.map(i => acctEventsService.dailyCount(
         identityId = i.id,
         tenantId = i.tenantId,
         category = category,
