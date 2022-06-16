@@ -35,9 +35,9 @@ class Job @Inject() (
 
   val ubirchToken: String = config.getString(JobConfPaths.UBIRCH_TOKEN)
 
-  val cats: List[String] = List("anchoring", "upp_verification", "uvs_verification")
+  val cats: List[String] = List("anchoring", "upp_verification", "uvs_verification").distinct
 
-  val queryDay: LocalDate = LocalDate.now()
+  val queryDays: List[LocalDate] = LocalDate.now() :: List(LocalDate.now().plusDays(1)).distinct
 
   logger.info(s"job_version=${Job.version} user_home=$home")
 
@@ -47,7 +47,7 @@ class Job @Inject() (
 
     (for {
       _ <- Task.unit
-      _ = logger.info(s"job_step($jobId)=started Ok with a query day of $queryDay", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=started Ok with a query day of ${queryDays.mkString(",")}", v("job_id", jobId))
 
       _ <- Task.delay(flywaySupport.migrateWhenOn())
       _ = logger.info(s"job_step($jobId)=checked postgres db", v("job_id", jobId))
@@ -65,9 +65,9 @@ class Job @Inject() (
       identityRows <- Task.sequence(identities.map { d => identityDAO.store(IdentityRow.fromIdentity(d)) })
       _ = logger.info(s"job_step($jobId)=stored identities", v("job_id", jobId))
 
-      _ <- aggregateAndStore(jobId = jobId, category = "anchoring", date = queryDay, subCategory = None, identityRows)
-      _ <- aggregateAndStore(jobId = jobId, category = "upp_verification", date = queryDay, subCategory = None, identityRows)
-      _ <- aggregateAndStore(jobId = jobId, category = "uvs_verification", date = queryDay, subCategory = None, identityRows)
+      _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "anchoring", date = queryDay, subCategory = None, identityRows)))
+      _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "upp_verification", date = queryDay, subCategory = None, identityRows)))
+      _ <- Task.sequence(queryDays.map(queryDay => aggregateAndStore(jobId = jobId, category = "uvs_verification", date = queryDay, subCategory = None, identityRows)))
 
     } yield ())
       .timed
@@ -84,9 +84,10 @@ class Job @Inject() (
   }
 
   private def aggregateAndStore(jobId: UUID, category: String, date: LocalDate, subCategory: Option[String], identityRows: List[IdentityRow]) = {
+    val aggregationId = UUID.randomUUID()
     for {
       _ <- Task.unit
-      _ = logger.info(s"job_step($jobId)=started $category aggregation", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=started $category aggregation($aggregationId) for date ${date.toString}", v("job_id", jobId), v("aggregation_id", aggregationId))
       monthlyResultsAnchoring <- Task.sequence(identityRows.map(i => acctEventsService.dailyCount(
         identityId = i.id,
         tenantId = i.tenantId,
@@ -94,9 +95,9 @@ class Job @Inject() (
         date = date,
         subCategory = subCategory
       )))
-      _ = logger.info(s"job_step($jobId)=finished $category aggregation", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=finished $category aggregation($aggregationId) for date ${date.toString}", v("job_id", jobId), v("aggregation_id", aggregationId))
       _ <- Task.sequence(monthlyResultsAnchoring.map { d => eventDAO.store(EventRow.fromMonthlyCountResult(d)) })
-      _ = logger.info(s"job_step($jobId)=stored  $category aggregation", v("job_id", jobId))
+      _ = logger.info(s"job_step($jobId)=stored  $category aggregation($aggregationId) for date ${date.toString}", v("job_id", jobId), v("aggregation_id", aggregationId))
     } yield {
       ()
     }
