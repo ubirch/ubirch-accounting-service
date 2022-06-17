@@ -40,8 +40,9 @@ class DefaultPostgresQuillJdbcContext @Inject() (lifecycle: Lifecycle) extends P
     try {
       new PostgresJdbcContext(SnakeCase, "system.database")
     } catch {
-      case _: IllegalStateException =>
+      case e: IllegalStateException =>
         //This error will contain otherwise password information, which we wouldn't want to log.
+        e.printStackTrace()
         throw new IllegalStateException(
           "something went wrong on constructing postgres jdbc context; we're hiding the original exception message," +
             " so no password will be shown. You might want to activate the error and change the password afterwards."

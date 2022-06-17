@@ -1,5 +1,6 @@
 package com.ubirch
 
+import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresIdentityDAO, DefaultPostgresJobDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
 import com.ubirch.services.{ DefaultSummaryService, SummaryService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
@@ -9,8 +10,9 @@ import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook
 import com.ubirch.services.rest.SwaggerProvider
 
 import com.google.inject.binder.ScopedBindingBuilder
-import com.google.inject.{ AbstractModule, Module }
+import com.google.inject.{ AbstractModule, Module, TypeLiteral }
 import com.typesafe.config.Config
+import io.getquill.PostgresDialect
 import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra.swagger.Swagger
@@ -36,6 +38,11 @@ class Binder
   def PublicKeyDiscoveryService: ScopedBindingBuilder = bind(classOf[PublicKeyDiscoveryService]).to(classOf[DefaultPublicKeyDiscoveryService])
   def PublicKeyPoolService: ScopedBindingBuilder = bind(classOf[PublicKeyPoolService]).to(classOf[DefaultPublicKeyPoolService])
   def SummaryService: ScopedBindingBuilder = bind(classOf[SummaryService]).to(classOf[DefaultSummaryService])
+  def QuillJdbcContext: ScopedBindingBuilder = bind(new TypeLiteral[QuillJdbcContext[PostgresDialect]]() {}).to(classOf[DefaultPostgresQuillJdbcContext])
+  def TenantDAO: ScopedBindingBuilder = bind(classOf[TenantDAO]).to(classOf[DefaultPostgresTenantDAO])
+  def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultPostgresIdentityDAO])
+  def EventDAO: ScopedBindingBuilder = bind(classOf[EventDAO]).to(classOf[DefaultPostgresEventDAO])
+  def JobDAO: ScopedBindingBuilder = bind(classOf[JobDAO]).to(classOf[DefaultPostgresJobDAO])
 
   override def configure(): Unit = {
     Config
@@ -50,6 +57,11 @@ class Binder
     PublicKeyDiscoveryService
     PublicKeyPoolService
     SummaryService
+    QuillJdbcContext
+    TenantDAO
+    IdentityDAO
+    EventDAO
+    JobDAO
     ()
   }
 

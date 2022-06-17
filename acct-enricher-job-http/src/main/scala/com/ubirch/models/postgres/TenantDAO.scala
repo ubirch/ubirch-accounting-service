@@ -3,7 +3,7 @@ package com.ubirch.models.postgres
 import com.ubirch.services.formats.JsonConverterService
 
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect }
+import io.getquill.{ EntityQuery, H2Dialect, PostgresDialect }
 import monix.eval.Task
 
 import java.util.{ Date, UUID }
@@ -24,8 +24,7 @@ case class TenantRow(
 )
 
 trait TenantDAO {
-  def store(tenantRow: TenantRow): Task[Unit]
-  def getSubTenants: Task[List[TenantRow]]
+  def getSubTenants(tenantId: UUID): Task[List[TenantRow]]
 }
 
 class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dialect], jsonConverterService: JsonConverterService) extends TenantDAO with MapEncoding {
@@ -45,36 +44,16 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
     else jsonConverterService.as[Map[String, String]](value).toTry.get
   }
 
-  private def store_Q(tenantRow: TenantRow): Quoted[Insert[TenantRow]] = {
-    quote {
-      query[TenantRow]
-        .insert(lift(tenantRow))
-        .onConflictUpdate(_.id)(
-          (t, e) => t.groupName -> e.groupName,
-          (t, e) => t.groupPath -> e.groupPath,
-          (t, e) => t.name -> e.name,
-          (t, e) => t.address -> e.address,
-          (t, e) => t.representative -> e.representative,
-          (t, e) => t.taxId -> e.taxId,
-          (t, e) => t.attributes -> e.attributes,
-          (t, _) => t.updatedAt -> lift(new Date())
-        )
-    }
-  }
-
-  override def store(tenantRow: TenantRow): Task[Unit] = {
-    Task.delay(run(store_Q(tenantRow))).map(_ => ())
-  }
-
-  private def getSubTenants_Q: Quoted[EntityQuery[TenantRow]] = {
+  private def getSubTenants_Q(tenantId: UUID): Quoted[EntityQuery[TenantRow]] = {
     quote {
       query[TenantRow]
         .filter(_.parentId.isDefined)
+        .filter(_.parentId == lift(Option(tenantId)))
     }
   }
 
-  override def getSubTenants: Task[List[TenantRow]] = {
-    Task.delay(run(getSubTenants_Q))
+  override def getSubTenants(tenantId: UUID): Task[List[TenantRow]] = {
+    Task.delay(run(getSubTenants_Q(tenantId: UUID)))
   }
 }
 

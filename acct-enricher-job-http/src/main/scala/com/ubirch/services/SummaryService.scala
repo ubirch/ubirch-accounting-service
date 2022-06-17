@@ -1,5 +1,7 @@
 package com.ubirch.services
 
+import com.ubirch.models.postgres.{ EventDAO, TenantDAO }
+
 import monix.eval.Task
 
 import java.time.LocalDate
@@ -45,11 +47,13 @@ case class Consumption(
     supplierName: String,
     supplierId: String,
     invoiceId: String,
-    invoiceData: String,
+    invoiceDate: LocalDate,
     customers: List[Customer]
 )
+
 case class Customer(customerId: String, customerName: String, customerDetails: List[CustomerDetails])
-case class CustomerDetails(eventType: String, eventQuantity: Long)
+
+case class CustomerDetails(eventType: String, eventQuantity: Int)
 
 trait SummaryService {
   //    [Mandatory] invoice_id, invoice_date, order_ref: Could be provided by Sales and returned.
@@ -57,10 +61,33 @@ trait SummaryService {
   //    [Mandatory] Tenant Id
   //    [Optional] Category and/or subcategory, in the document above.
   //    [Optional] Customer Ids
-  def get(invoiceId: String, invoiceDate: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[CustomerDetails]
+  def get(invoiceId: String, invoiceDate: LocalDate, from: LocalDate, to: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[Consumption]
 }
 
 @Singleton
-class DefaultSummaryService @Inject() () extends SummaryService {
-  override def get(invoiceId: String, invoiceDate: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[CustomerDetails] = ???
+class DefaultSummaryService @Inject() (eventDAO: EventDAO, tenantDAO: TenantDAO) extends SummaryService {
+  override def get(invoiceId: String, invoiceDate: LocalDate, from: LocalDate, to: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[Consumption] =
+    for {
+      subTenants <- tenantDAO.getSubTenants(tenantId)
+      eventsProSubTenant <- Task.sequence(subTenants.map(st => eventDAO.get(st.id, from, to).map(_.map(x => (st, x)))))
+    } yield {
+
+      val customers = eventsProSubTenant.
+        flatMap {
+          _.groupBy { case (t, _) => t } // we group by subtenats
+            .mapValues(_.groupBy { case (_, e) => e.category }) //we group by category
+            .map { case (c, mevs) =>
+              val totalPerCat =
+                mevs.mapValues { evs =>
+                  evs.map { case (_, e) => e }.foldLeft(0)((t, e) => t + e.count) //we count all values per category
+                }.map { case (c, count) => CustomerDetails(c, count) }
+              (c, totalPerCat.toList)
+            }
+            .map { case (c, customerDetails) =>
+              Customer(c.id.toString, c.name.getOrElse(c.groupName), customerDetails) //ensamble Customer
+            }
+        }
+
+      Consumption("V1.00", "Ubirch", "ubirch", invoiceId, invoiceDate, customers)
+    }
 }

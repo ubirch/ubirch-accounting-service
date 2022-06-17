@@ -54,20 +54,20 @@ class AcctEventsEnricherController @Inject() (
 
     lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
 
-    asyncResult("acct_events_summary") { _ => _ =>
+    asyncResult("acct_events_summary") { implicit request => _ =>
       (for {
 
         tenantIdRaw <- Task(params.get("tenant_id"))
         tenantId <- Task(tenantIdRaw)
           .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Tenant Id: wrong tenant id param: " + tenantIdRaw.getOrElse("")))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Tenant Id: wrong tenant_id param: " + tenantIdRaw.getOrElse("")))
 
         orderRef <- Task(params.get("order_ref"))
           .map(_.filter(_.nonEmpty))
           .map(_.map(_.toLowerCase()).get)
-          .onErrorHandle(_ => throw new IllegalArgumentException("Order ref: wrong order ref param"))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Order ref: wrong oorder_ref param"))
 
-        cat <- Task(params.get("category"))
+        cat <- Task(params.get("cat"))
           .map(_.filter(_.nonEmpty))
           .map(_.map(_.toLowerCase()))
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
@@ -102,10 +102,10 @@ class AcctEventsEnricherController @Inject() (
           } yield f.isAfter(t)
         }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: From must be before To"))
 
-        _ <- summaryService.get(invoiceId = invoiceId, invoiceDate = invoiceDate, orderRef = orderRef, tenantId, cat)
+        res <- summaryService.get(invoiceId = invoiceId, invoiceDate = invoiceDate, from = from.get, to = to.get, orderRef = orderRef, tenantId, cat)
 
       } yield {
-        Ok(Return("done"))
+        Ok(Return(res))
       }).onErrorHandle {
         case e: ServiceException =>
           logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
