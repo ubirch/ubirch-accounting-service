@@ -53,6 +53,7 @@
     <modules>
         <module>acct-service</module>
         <module>acct-enricher-job</module>
+        <module>acct-enricher-job-http</module>
     </modules>
 
 </project>
