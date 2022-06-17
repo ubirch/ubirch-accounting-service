@@ -4,6 +4,7 @@ import io.getquill.context.sql.idiom.SqlIdiom
 import io.getquill.{ H2Dialect, Insert, PostgresDialect }
 import monix.eval.Task
 
+import java.time.LocalDate
 import java.util.{ Date, UUID }
 import javax.inject.{ Inject, Singleton }
 
@@ -15,7 +16,14 @@ case class JobRow(
     endedAt: Option[Date],
     createdAt: Date,
     updatedAt: Date
-)
+) {
+  def end(success: Boolean): JobRow = copy(success = Option(success), endedAt = Option(new Date()), updatedAt = new Date())
+}
+
+object JobRow {
+  def apply(queryDays: List[LocalDate]): JobRow =
+    new JobRow(UUID.randomUUID(), None, queryDays.mkString(","), new Date(), None, new Date(), new Date())
+}
 
 trait JobDAO {
   def store(jobRow: JobRow): Task[JobRow]
