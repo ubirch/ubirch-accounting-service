@@ -13,9 +13,6 @@ EXPOSE 9010
 EXPOSE 9020
 EXPOSE 4321
 
-COPY certs/truststore-prod.jks /usr/share/service/lib/truststore-prod.jks
-COPY certs/truststore-devtest.jks /usr/share/service/lib/truststore-devtest.jks
-
 ENTRYPOINT [ \
   "/bin/bash", \
   "-c", \
