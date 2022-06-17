@@ -266,7 +266,7 @@
       </text>
     </g>
     <g>
-      <rect style="fill: #d8e5e5; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x="1337.88" y="319.885" width="145.1" height="71.3566" rx="0" ry="0"/>
+      <rect style="fill: #d8e5e5; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="1337.88" y="319.885" width="145.1" height="71.3566" rx="0" ry="0"/>
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1410.43" y="343.444">
         <tspan x="1410.43" y="343.444">Enrichment</tspan>
         <tspan xml:space="preserve" x="1410.43" y="359.444"> Http Layer Service</tspan>
