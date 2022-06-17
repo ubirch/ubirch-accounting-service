@@ -37,7 +37,7 @@
         </license>
     </licenses>
 
-    <name>Ubirch Accounting Enricher [${project.version}]</name>
+    <name>Ubirch Accounting Enricher Job [${project.version}]</name>
     <description>Service that manages accountable events</description>
     <url>https://ubirch.com/</url>
 
