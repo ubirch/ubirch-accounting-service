@@ -1,5 +1,4 @@
 {
-    "host": "http://localhost:8081",
-    "---": "https://accounting.dev.ubirch.com",
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuLmRldi51YmlyY2guY29tIiwic3ViIjoiOTYzOTk1ZWQtY2UxMi00ZWE1LTg5ZGMtYjE4MTcwMWQxZDdiIiwiYXVkIjoiaHR0cHM6Ly9hcGkuY29uc29sZS5kZXYudWJpcmNoLmNvbSIsImlhdCI6MTY0Mzg4MTM2NiwianRpIjoiOGUxNzgzNmEtMmE5Yy00NWE5LTk5MzUtYzZjYmNkYWJkZjJkIiwic2NwIjpbInRoaW5nOmdldGluZm8iXSwicHVyIjoiQWNjb3VudGluZyBTZXJ2aWNlIiwidGdwIjpbXSwidGlkIjpbIioiXSwib3JkIjpbXX0.auEj9WY59mahpgKYQvpudyj3hKA8HRik4eFSIdwy4GJGyVashtiN0uDRJHCTXUeaotj3tlKx76ae3oewT7mIGw"
+    "host": "https://accounting.dev.ubirch.com",
+    "token": "CHANGEME"
 }

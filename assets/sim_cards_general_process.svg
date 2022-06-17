@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="84cm" height="38cm" viewBox="47 -3 1677 751" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs/>
+  <g id="Background">
+    <rect style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x="49.5078" y="374.068" width="1673.65" height="373.646" rx="0" ry="0"/>
+    <rect style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x="48.8235" y="-1.16615" width="1673.65" height="373.646" rx="0" ry="0"/>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="373.8" y="123.1" width="166.615" height="77.4251" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="457.108" y="157.694">
+        <tspan x="457.108" y="157.694">Thing-API</tspan>
+        <tspan x="457.108" y="173.694">&lt;&lt;console API&gt;&gt;</tspan>
+      </text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="645.8" y="18.1002" width="172.2" height="73.9" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="731.9" y="58.9315">
+        <tspan x="731.9" y="58.9315">Keycloak</tspan>
+      </text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="645.8" y="242.1" width="172.2" height="73.9" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="731.9" y="282.931">
+        <tspan x="731.9" y="282.931">Identity Service</tspan>
+      </text>
+    </g>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="540.415,142.456 731.9,142.456 731.9,103 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="736.9,103 731.9,93.0002 726.9,103 "/>
+    </g>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="540.415,181.169 731.9,181.169 731.9,231.1 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="726.9,231.1 731.9,241.1 736.9,231.1 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="636.158" y="181.169">
+      <tspan x="636.158" y="181.169">crytodata/kafka</tspan>
+    </text>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="636.158" y="142.456">
+      <tspan x="636.158" y="142.456">metadata/http</tspan>
+    </text>
+    <g>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="72.7326,128.659 178.833,128.659 190.833,140.659 190.833,194.659 72.7326,194.659 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="178.833,128.659 178.833,140.659 190.833,140.659 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="79.7326" y="153.54">
+        <tspan x="79.7326" y="153.54">SIM cards</tspan>
+        <tspan x="79.7326" y="169.54">info imported</tspan>
+        <tspan x="79.7326" y="185.54">as CSV</tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="190.833" y1="161.659" x2="362.8" y2="161.804"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="362.796,166.804 372.8,161.812 362.804,156.804 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="282.316" y="161.736">
+      <tspan x="282.316" y="161.736">Upload/http</tspan>
+    </text>
+    <g>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="883.272,219.844 1043.27,219.844 1055.27,231.844 1055.27,301.844 883.272,301.844 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="1043.27,219.844 1043.27,231.844 1055.27,231.844 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="890.272" y="244.725">
+        <tspan x="890.272" y="244.725">Stores cryptographic</tspan>
+        <tspan x="890.272" y="260.725">information of the</tspan>
+        <tspan x="890.272" y="276.725">device: sim cards</tspan>
+        <tspan x="890.272" y="292.725">(e.g: CSR)</tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="818" y1="260.576" x2="872.273" y2="260.798"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="872.252,265.798 882.272,260.839 872.293,255.799 "/>
+    </g>
+    <g>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="882.02,3.58204 1049.72,3.58204 1061.72,15.582 1061.72,69.582 882.02,69.582 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="1049.72,3.58204 1049.72,15.582 1061.72,15.582 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="889.02" y="28.4633">
+        <tspan x="889.02" y="28.4633">Stores metadata</tspan>
+        <tspan x="889.02" y="44.4633">of the device as </tspan>
+        <tspan x="889.02" y="60.4633">attributes: sim cards</tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="818" y1="36.5752" x2="871.02" y2="36.5809"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="871.019,41.5809 881.02,36.5819 871.021,31.5809 "/>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="372.732" y="437.676" width="172.2" height="73.9" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="458.832" y="478.507">
+        <tspan x="458.832" y="478.507">Niomon</tspan>
+      </text>
+    </g>
+    <ellipse style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" cx="87.644" cy="474.827" rx="20" ry="16.9646"/>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="107.644" y1="474.827" x2="361.732" y2="474.634"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="361.736,479.634 371.732,474.627 361.728,469.634 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="240.188" y="474.727">
+      <tspan x="240.188" y="474.727">Sends UPPs/http</tspan>
+    </text>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="372.456" y="584.396" width="172.2" height="73.9" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="458.556" y="625.227">
+        <tspan x="458.556" y="625.227">Verification Service</tspan>
+      </text>
+    </g>
+    <ellipse style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" cx="87.3694" cy="621.547" rx="20" ry="16.9646"/>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="107.369" y1="621.547" x2="361.456" y2="621.354"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="361.46,626.354 371.456,621.347 361.452,616.354 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="239.913" y="621.447">
+      <tspan x="239.913" y="621.447">Sends UPPs/http</tspan>
+    </text>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="679.906" y="516.234" width="190.15" height="73.9" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="774.981" y="549.065">
+        <tspan x="774.981" y="549.065">Accounting Service</tspan>
+        <tspan x="774.981" y="565.065">&lt;&lt;aggregation step I&gt;&gt;</tspan>
+      </text>
+    </g>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="544.932,474.626 612.419,474.626 612.419,534.709 668.906,534.709 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="668.906,539.709 678.906,534.709 668.906,529.709 "/>
+    </g>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="544.656,621.346 612.281,621.346 612.281,571.659 668.906,571.659 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="668.906,576.659 678.906,571.659 668.906,566.659 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="578.674" y="474.626">
+      <tspan x="578.674" y="474.626">anchoring event/kafka</tspan>
+    </text>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="578.468" y="621.346">
+      <tspan x="578.468" y="621.346">upp_verification event/kafka</tspan>
+    </text>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #00ff00" x="1074.42" y="516.437" width="279.75" height="73.9" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1214.29" y="549.268">
+        <tspan x="1214.29" y="549.268">Accounting Service</tspan>
+        <tspan x="1214.29" y="565.268">&lt;&lt;aggregation step II/Enrichement&gt;&gt;</tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="871.479" y1="553.249" x2="1063.42" y2="553.379"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="1063.41,558.379 1073.42,553.386 1063.42,548.379 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="972.947" y="553.318">
+      <tspan x="972.947" y="553.318">acct info/http</tspan>
+    </text>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="1214.29,505.437 1214.29,359.076 457.108,359.076 457.108,211.526 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="1209.29,505.437 1214.29,515.437 1219.29,505.437 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="462.108,211.526 457.108,201.526 452.108,211.526 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="835.699" y="359.076">
+      <tspan x="835.699" y="359.076">gets metadata for enrichment</tspan>
+    </text>
+    <g>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="1581.96,520.324 1711.16,520.324 1723.16,532.324 1723.16,586.324 1581.96,586.324 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="1711.16,520.324 1711.16,532.324 1723.16,532.324 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1588.96" y="545.205">
+        <tspan x="1588.96" y="545.205">JSON of</tspan>
+        <tspan x="1588.96" y="561.205">device(sim card)</tspan>
+        <tspan x="1588.96" y="577.205">usage</tspan>
+      </text>
+    </g>
+    <g>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x1="1365.17" y1="553.384" x2="1570.96" y2="553.341"/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="1365.16,548.384 1355.17,553.387 1365.17,558.384 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="1570.96,558.341 1580.96,553.339 1570.96,548.341 "/>
+    </g>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1426.59" y="551.602">
+      <tspan x="1426.59" y="551.602">query-report/http</tspan>
+    </text>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="170.369" y="-36.397">
+      <tspan x="170.369" y="-36.397"></tspan>
+    </text>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="87.644" y="457.863">
+      <tspan x="87.644" y="457.863">SIM card A</tspan>
+    </text>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="87.3694" y="604.583">
+      <tspan x="87.3694" y="604.583">SIM card B</tspan>
+    </text>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="83.034" y="87.4654">
+      <tspan x="83.034" y="87.4654"></tspan>
+    </text>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #ffffff" x="54.1144" y="7.05164" width="118.3" height="56" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="113.264" y="38.9329">
+        <tspan x="113.264" y="38.9329">1) Data Import</tspan>
+      </text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #ffffff" x="54.5992" y="385.826" width="106.1" height="40" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="107.649" y="409.708">
+        <tspan x="107.649" y="409.708">2) Anchoring</tspan>
+      </text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #ffffff" x="54.3929" y="541.868" width="113.1" height="40" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="110.943" y="565.749">
+        <tspan x="110.943" y="565.749">3) Verification</tspan>
+      </text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #ffffff" x="698.843" y="639.95" width="118.3" height="56" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="757.993" y="671.832">
+        <tspan x="757.993" y="671.832">4) Accouting I</tspan>
+      </text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 4; stroke: #ffffff" x="1088.13" y="625.604" width="118.3" height="56" rx="0" ry="0"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1147.28" y="657.485">
+        <tspan x="1147.28" y="657.485">5) Accouting II</tspan>
+      </text>
+    </g>
+  </g>
+</svg>
