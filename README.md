@@ -8,4 +8,4 @@ This image presents a high-level view of the accounting services and its interfa
 
 1. [Accounting Service](acct-service/README.md)
    1. [Accounting Service Counter](counter/README.md)
-2. [Accounting Enricher Job](acct-enricher-service/README.md)
+2. [Accounting Enricher Job](acct-enricher-job/README.md)

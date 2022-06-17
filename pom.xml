@@ -52,7 +52,7 @@
 
     <modules>
         <module>acct-service</module>
-        <module>acct-enricher-service</module>
+        <module>acct-enricher-job</module>
     </modules>
 
 </project>
