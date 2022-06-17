@@ -1,5 +1,5 @@
 import com.ubirch.Service
-import com.ubirch.controllers.{ InfoController, ResourcesController }
+import com.ubirch.controllers.{ AcctEventsEnricherController, InfoController, ResourcesController }
 
 import org.scalatra.LifeCycle
 
@@ -11,6 +11,7 @@ import javax.servlet.ServletContext
 class ScalatraBootstrap extends LifeCycle {
 
   lazy val infoController: InfoController = Service.get[InfoController]
+  lazy val acctEventsEnricherController: AcctEventsEnricherController = Service.get[AcctEventsEnricherController]
   lazy val resourceController: ResourcesController = Service.get[ResourcesController]
 
   override def init(context: ServletContext): Unit = {
@@ -23,6 +24,11 @@ class ScalatraBootstrap extends LifeCycle {
       handler = infoController,
       urlPattern = "/",
       name = "Info"
+    )
+    context.mount(
+      handler = acctEventsEnricherController,
+      urlPattern = "/api/acct_events",
+      name = "AcctEventsEnricher"
     )
     context.mount(
       handler = resourceController,
