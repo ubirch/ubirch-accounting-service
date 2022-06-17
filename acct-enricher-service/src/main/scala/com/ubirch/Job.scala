@@ -4,7 +4,7 @@ import com.ubirch.ConfPaths.JobConfPaths
 import com.ubirch.models.postgres.{ EventDAO, EventRow, FlywaySupport, IdentityDAO, IdentityRow, JobDAO, JobRow, TenantDAO, TenantRow }
 import com.ubirch.services.AcctEventsService
 import com.ubirch.services.externals.{ Tenant, ThingAPI }
-import com.ubirch.util.DateUtil
+import com.ubirch.util.{ DateUtil, TaskHelpers }
 
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
@@ -31,7 +31,7 @@ class Job @Inject() (
     identityDAO: IdentityDAO,
     eventDAO: EventDAO,
     acctEventsService: AcctEventsService
-)(implicit scheduler: Scheduler) extends LazyLogging {
+)(implicit scheduler: Scheduler) extends TaskHelpers with LazyLogging {
 
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
@@ -60,7 +60,7 @@ class Job @Inject() (
 
     } yield ())
       .timed
-      .doOnFinish { error => jobDAO.store(job.end(success = error.isEmpty)).map(_ => ()) }
+      .doOnFinish { error => jobDAO.store(job.end(success = error.isEmpty, error.map(_.getMessage))).map(_ => ()) }
       .map { case (duration, _) =>
         val dur = if (duration.toMinutes > 0) duration.toMinutes + " minutes" else duration.toSeconds + " seconds"
         logger.info(s"job_step(${job.id})=finished OK with a duration of $dur", jobIdStructuredArgument(job))
@@ -68,7 +68,7 @@ class Job @Inject() (
       }
       .onErrorRecover {
         case e: Exception =>
-          logger.error(s"job_step(${job.id})= " + e.getClass.getCanonicalName + " - " + e.getMessage, e, jobIdStructuredArgument(job))
+          logger.error(s"job_step(${job.id})=finished NOK due to: " + e.getClass.getCanonicalName + " - " + e.getMessage, e, jobIdStructuredArgument(job))
           sys.exit(1)
       }.runToFuture
 
@@ -76,11 +76,10 @@ class Job @Inject() (
 
   private def preChecks(job: JobRow, queryDays: List[LocalDate]) = {
     for {
-      _ <- Task.unit
-      _ = logger.info(s"job_step(${job.id})=started Ok with a query day of ${queryDays.mkString(",")}", jobIdStructuredArgument(job))
-
       _ <- Task.delay(flywaySupport.migrateWhenOn())
       _ = logger.info(s"job_step(${job.id})=checked postgres db", jobIdStructuredArgument(job))
+      _ = logger.info(s"job_step(${job.id})=started Ok with a query day of ${queryDays.mkString(",")}", jobIdStructuredArgument(job))
+      _ <- earlyResponseIf(ubirchToken.isEmpty)(new IllegalArgumentException("ubirch token can't be empty"))
     } yield {
       ()
     }

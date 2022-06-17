@@ -14,15 +14,16 @@ case class JobRow(
     queryDays: String,
     startedAt: Date,
     endedAt: Option[Date],
+    comment: Option[String],
     createdAt: Date,
     updatedAt: Date
 ) {
-  def end(success: Boolean): JobRow = copy(success = Option(success), endedAt = Option(new Date()), updatedAt = new Date())
+  def end(success: Boolean, comment: Option[String]): JobRow = copy(success = Option(success), endedAt = Option(new Date()), comment = comment.filter(_.nonEmpty), updatedAt = new Date())
 }
 
 object JobRow {
   def apply(queryDays: List[LocalDate]): JobRow =
-    new JobRow(UUID.randomUUID(), None, queryDays.mkString(","), new Date(), None, new Date(), new Date())
+    new JobRow(id = UUID.randomUUID(), success = None, queryDays = queryDays.mkString(","), startedAt = new Date(), endedAt = None, comment = None, createdAt = new Date(), updatedAt = new Date())
 }
 
 trait JobDAO {
