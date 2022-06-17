@@ -9,8 +9,6 @@ then
   host=$remote_host
 fi
 
-echo "=> host: $host"
-
 tenant_id=29b05321-7a34-4bbb-80f4-2bd4ee91033c
 invoice_id=12539f76-c7e9-47d6-b37b-4b59380721ac
 invoice_date=2022-06-04

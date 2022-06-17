@@ -2,6 +2,7 @@ package com.ubirch.services
 
 import com.ubirch.models.postgres.{ EventDAO, TenantDAO }
 
+import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 
 import java.time.LocalDate
@@ -65,10 +66,11 @@ trait SummaryService {
 }
 
 @Singleton
-class DefaultSummaryService @Inject() (eventDAO: EventDAO, tenantDAO: TenantDAO) extends SummaryService {
+class DefaultSummaryService @Inject() (eventDAO: EventDAO, tenantDAO: TenantDAO) extends SummaryService with LazyLogging {
   override def get(invoiceId: String, invoiceDate: LocalDate, from: LocalDate, to: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[Consumption] =
     for {
       subTenants <- tenantDAO.getSubTenants(tenantId)
+      _ = logger.info("summary_for_tenants:" + subTenants.map(x => x.name.getOrElse(x.groupName) + " id=" + x.id).mkString(","))
       eventsProSubTenant <- Task.sequence(subTenants.map(st => eventDAO.get(st.id, from, to).map(_.map(x => (st, x)))))
     } yield {
 

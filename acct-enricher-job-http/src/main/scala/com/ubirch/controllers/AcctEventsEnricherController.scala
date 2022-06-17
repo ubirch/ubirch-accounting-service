@@ -104,6 +104,8 @@ class AcctEventsEnricherController @Inject() (
 
         res <- summaryService.get(invoiceId = invoiceId, invoiceDate = invoiceDate, from = from.get, to = to.get, orderRef = orderRef, tenantId, cat)
 
+        _ = logger.info(s"query: tenant_id->$tenantId, order_ref->$orderRef, cat=${cat.getOrElse("")}, invoice_id->$invoiceId, invoice_date=${invoiceDate}, from=${from.getOrElse("")}, to=${to.getOrElse("")}")
+
       } yield {
         Ok(Return(res))
       }).onErrorHandle {
