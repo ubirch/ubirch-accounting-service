@@ -54,6 +54,25 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
 
     (EmbeddedCassandra.creationScripts ++ List(
       CqlScript.ofString(
+        """
+          |drop table if exists acct_system.acct_events;
+          |create table if not exists acct_system.acct_events
+          |(
+          |    id           UUID,
+          |    identity_id  UUID,
+          |    category     text,
+          |    sub_category text,
+          |    year         int,
+          |    month        int,
+          |    day          int,
+          |    hour         int,
+          |    occurred_at  timestamp,
+          |    external_id   text,
+          |    PRIMARY KEY ((identity_id, category, year, month, day, hour), sub_category, id)
+          |);
+          |""".stripMargin
+      ),
+      CqlScript.ofString(
         ("INSERT INTO acct_system.acct_events (" +
           "id, " +
           "identity_id, " +

@@ -57,8 +57,6 @@ object EmbeddedCassandra {
   def creationScripts: Seq[CqlScript] = List(
     CqlScript.ofString("drop keyspace IF EXISTS acct_system;"),
     CqlScript.ofString("CREATE KEYSPACE acct_system WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};"),
-    CqlScript.ofString("USE acct_system;"),
-    CqlScript.ofClasspath("db/migrations/v1_Adding_acct_events_table.cql"),
-    CqlScript.ofClasspath("db/migrations/v2_Adding_owner_table.cql")
+    CqlScript.ofString("USE acct_system;")
   )
 }
