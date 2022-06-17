@@ -2,8 +2,8 @@ package com.ubirch.models.postgres
 
 import com.ubirch.services.formats.JsonConverterService
 
-import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect }
 import io.getquill.context.sql.idiom.SqlIdiom
+import io.getquill.{ EntityQuery, H2Dialect, PostgresDialect }
 import monix.eval.Task
 
 import java.time.LocalDate
@@ -21,8 +21,7 @@ case class EventRow(
 )
 
 trait EventDAO {
-  def store(eventRow: EventRow): Task[EventRow]
-  def get(tenantId: UUID, from: LocalDate, to: LocalDate): Task[List[EventRow]]
+  def get(tenantId: UUID, category: Option[String], from: LocalDate, to: LocalDate): Task[List[EventRow]]
 }
 
 class EventDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dialect], jsonConverterService: JsonConverterService) extends EventDAO with MapEncoding {
@@ -30,7 +29,6 @@ class EventDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[D
   import quillJdbcContext.ctx._
 
   implicit val eventRowRowSchemaMeta = schemaMeta[EventRow]("enricher.event")
-  implicit val eventRowRowInsertMeta = insertMeta[EventRow]()
 
   implicit class DateQuotes(left: LocalDate) {
     def >=(right: LocalDate) = quote(infix"$left >= $right".as[Boolean])
@@ -47,31 +45,21 @@ class EventDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[D
     else jsonConverterService.as[Map[String, String]](value).toTry.get
   }
 
-  private def store_Q(eventRow: EventRow): Quoted[Insert[EventRow]] = {
-    quote {
-      query[EventRow]
-        .insert(lift(eventRow))
-        .onConflictUpdate(_.identityId, _.tenantId, _.category, _.date)(
-          (t, e) => t.count -> e.count,
-          (t, _) => t.updatedAt -> lift(new Date())
-        )
-    }
-  }
-
-  private def get_Q(tenantId: UUID, from: LocalDate, to: LocalDate): Quoted[EntityQuery[EventRow]] = {
-    quote {
+  private def get_Q(tenantId: UUID, category: Option[String], from: LocalDate, to: LocalDate): Quoted[EntityQuery[EventRow]] = {
+    val q0 = quote {
       query[EventRow]
         .filter(_.tenantId == lift(tenantId))
         .filter(e => e.date >= lift(from) && e.date <= lift(to))
     }
+
+    category match {
+      case Some(cat) => quote(q0.filter(_.category == lift(cat)))
+      case None => q0
+    }
   }
 
-  override def store(eventRow: EventRow): Task[EventRow] = {
-    Task.delay(run(store_Q(eventRow))).map(_ => eventRow)
-  }
-
-  def get(tenantId: UUID, from: LocalDate, to: LocalDate): Task[List[EventRow]] = {
-    Task.delay(run(get_Q(tenantId, from, to)))
+  def get(tenantId: UUID, category: Option[String], from: LocalDate, to: LocalDate): Task[List[EventRow]] = {
+    Task.delay(run(get_Q(tenantId, category, from, to)))
   }
 
 }

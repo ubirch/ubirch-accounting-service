@@ -31,7 +31,7 @@
     </appender>
 
     <logger name="org.eclipse.jetty" level="INFO"/>
-    <logger name="io.getquill.context.jdbc.JdbcContext" level="DEBUG"/>
+    <logger name="io.getquill.context.jdbc.JdbcContext" level="INFO"/>
 
     <logger name="com.ubirch" level="INFO"/>
 
