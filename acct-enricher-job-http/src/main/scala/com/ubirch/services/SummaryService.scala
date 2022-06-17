@@ -57,10 +57,10 @@ trait SummaryService {
   //    [Mandatory] Tenant Id
   //    [Optional] Category and/or subcategory, in the document above.
   //    [Optional] Customer Ids
-  def get(invoiceId: String, invoiceDate: LocalDate, orderRef: String, tenantId: UUID): Task[CustomerDetails]
+  def get(invoiceId: String, invoiceDate: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[CustomerDetails]
 }
 
 @Singleton
 class DefaultSummaryService @Inject() () extends SummaryService {
-  override def get(invoiceId: String, invoiceDate: LocalDate, orderRef: String, tenantId: UUID): Task[CustomerDetails] = ???
+  override def get(invoiceId: String, invoiceDate: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[CustomerDetails] = ???
 }

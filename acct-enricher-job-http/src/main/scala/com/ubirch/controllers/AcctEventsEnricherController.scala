@@ -4,7 +4,8 @@ import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.ServiceException
 import com.ubirch.controllers.concerns.ControllerBase
 import com.ubirch.models.{ NOK, Return }
-import com.ubirch.util.TaskHelpers
+import com.ubirch.services.SummaryService
+import com.ubirch.util.{ DateUtil, TaskHelpers }
 
 import com.typesafe.config.Config
 import io.prometheus.client.Counter
@@ -14,6 +15,8 @@ import org.json4s.Formats
 import org.scalatra._
 import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
+import java.text.SimpleDateFormat
+import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
 
@@ -21,11 +24,12 @@ import scala.concurrent.ExecutionContext
 class AcctEventsEnricherController @Inject() (
     config: Config,
     val swagger: Swagger,
-    jFormats: Formats
+    jFormats: Formats,
+    summaryService: SummaryService
 )(implicit val executor: ExecutionContext, scheduler: Scheduler)
   extends ControllerBase with ContentEncodingSupport with TaskHelpers {
 
-  override protected val applicationDescription = "Acct Events Controller"
+  override protected val applicationDescription = "Acct Events Enricher Controller"
   override protected implicit def jsonFormats: Formats = jFormats
 
   override val service: String = config.getString(GenericConfPaths.NAME)
@@ -48,10 +52,57 @@ class AcctEventsEnricherController @Inject() (
 
   get("/v1") {
 
+    lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
+
     asyncResult("acct_events_summary") { _ => _ =>
       (for {
 
-        _ <- Task.unit
+        tenantIdRaw <- Task(params.get("tenant_id"))
+        tenantId <- Task(tenantIdRaw)
+          .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Tenant Id: wrong tenant id param: " + tenantIdRaw.getOrElse("")))
+
+        orderRef <- Task(params.get("order_ref"))
+          .map(_.filter(_.nonEmpty))
+          .map(_.map(_.toLowerCase()).get)
+          .onErrorHandle(_ => throw new IllegalArgumentException("Order ref: wrong order ref param"))
+
+        cat <- Task(params.get("category"))
+          .map(_.filter(_.nonEmpty))
+          .map(_.map(_.toLowerCase()))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid cat: wrong cat param"))
+
+        invoiceIdRaw <- Task(params.get("invoice_id"))
+        invoiceId <- Task(invoiceIdRaw)
+          .map(_.filter(_.nonEmpty))
+          .map(_.map(_.toLowerCase()).get)
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Id: wrong invoice id param: " + tenantIdRaw.getOrElse("")))
+
+        invoiceDate <- Task(params.get("invoice_date"))
+          .map(_.map(sdf.parse))
+          .map(_.map(x => DateUtil.dateToLocalDate(x)).get)
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Date: Use yyyy-MM-dd this format"))
+
+        from <- Task(params.get("from"))
+          .map(_.map(sdf.parse))
+          .map(_.map(x => DateUtil.dateToLocalDate(x)))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid From: Use yyyy-MM-dd this format"))
+
+        to <- Task(params.get("to"))
+          .map(_.map(sdf.parse))
+          .map(_.map(x => DateUtil.dateToLocalDate(x)))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid To: Use yyyy-MM-dd this format"))
+
+        _ <- earlyResponseIf(from.isDefined && to.isEmpty)(new IllegalArgumentException("Invalid Range Definition: Start requires End"))
+        _ <- earlyResponseIf(from.isEmpty && to.isDefined)(new IllegalArgumentException("Invalid Range Definition: End requires Start"))
+        _ <- earlyResponseIf({
+          for {
+            f <- from
+            t <- to
+          } yield f.isAfter(t)
+        }.getOrElse(false))(new IllegalArgumentException("Invalid Range Definition: From must be before To"))
+
+        _ <- summaryService.get(invoiceId = invoiceId, invoiceDate = invoiceDate, orderRef = orderRef, tenantId, cat)
 
       } yield {
         Ok(Return("done"))
