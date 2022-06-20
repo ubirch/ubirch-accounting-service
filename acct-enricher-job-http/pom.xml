@@ -70,12 +70,7 @@
         <scalatest.version>3.0.5</scalatest.version>
         <scala.logging.version>3.9.0</scala.logging.version>
 
-        <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
-        <embedded-kafka>2.3.0</embedded-kafka>
-
         <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
-        <quill.cassandra.version>3.4.1</quill.cassandra.version>
-        <embedded-cassandra>3.0.3</embedded-cassandra>
 
         <guice.version>4.1.0</guice.version>
 
@@ -132,8 +127,8 @@
 
         <dependency>
             <groupId>com.ubirch</groupId>
-            <artifactId>ubirch-kafka-express</artifactId>
-            <version>${ubirch-kafka-express.version}</version>
+            <artifactId>ubirch-token-sdk</artifactId>
+            <version>2.0.5-SNAPSHOT</version>
         </dependency>
 
         <!--BouncyCastle-->

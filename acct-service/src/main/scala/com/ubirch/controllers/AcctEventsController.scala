@@ -85,7 +85,6 @@ class AcctEventsController @Inject() (
 
         claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
           .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
-
         _ <- Task.fromTry(claims.validateScope("thing:getinfo"))
 
         //mandatory -start
@@ -124,13 +123,13 @@ class AcctEventsController @Inject() (
           logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
-          logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error querying acct event. ${e.getMessage}"))
         case e: IllegalArgumentException =>
-          logger.error("1.3 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
-          logger.error(s"1.4 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          logger.error(s"1.3 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }
@@ -167,7 +166,6 @@ class AcctEventsController @Inject() (
 
         claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
           .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
-
         _ <- Task.fromTry(claims.validateScope("thing:getinfo"))
 
         //mandatory -start
@@ -215,13 +213,13 @@ class AcctEventsController @Inject() (
           logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
-          logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error querying acct event. ${e.getMessage}"))
         case e: IllegalArgumentException =>
-          logger.error("1.3 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.2 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
-          logger.error(s"1.4 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          logger.error(s"1.3 Error querying acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }
@@ -269,13 +267,13 @@ class AcctEventsController @Inject() (
           logger.error("1.0 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
-          logger.error("1.2 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.1 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error storing acct event. ${e.getMessage}"))
         case e: IllegalArgumentException =>
-          logger.error("1.3 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.2 Error storing acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
-          logger.error(s"1.4 Error storing acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          logger.error(s"1.3 Error storing acct event: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }
@@ -322,13 +320,13 @@ class AcctEventsController @Inject() (
           logger.error("1.0 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
-          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.1 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error acct identity by owner. ${e.getMessage}"))
         case e: IllegalArgumentException =>
-          logger.error("1.3 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
-          logger.error(s"1.4 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          logger.error(s"1.3 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }

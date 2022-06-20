@@ -70,10 +70,6 @@
         <scalatest.version>3.0.5</scalatest.version>
         <scala.logging.version>3.9.0</scala.logging.version>
 
-        <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
-        <embedded-kafka>2.3.0</embedded-kafka>
-
-        <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
         <quill.cassandra.version>3.4.1</quill.cassandra.version>
         <embedded-cassandra>3.0.3</embedded-cassandra>
 
@@ -84,9 +80,6 @@
         <log4j-over-slf4j.version>1.7.25</log4j-over-slf4j.version>
         <jcl-over-slf4j.version>1.7.25</jcl-over-slf4j.version>
         <logstash-logback-encoder.version>5.3</logstash-logback-encoder.version>
-
-        <bcpkix-jdk15on.version>1.61</bcpkix-jdk15on.version>
-        <bcprov-jdk15on.version>1.61</bcprov-jdk15on.version>
 
         <jwt-core.version>4.2.0</jwt-core.version>
 
@@ -99,14 +92,6 @@
         <json4s-native.version>3.6.0</json4s-native.version>
         <json4s-jackson.version>3.6.1</json4s-jackson.version>
         <json4s-ext>3.6.0</json4s-ext>
-
-        <!-- Scalatra -->
-        <scalatra.version>2.6.5</scalatra.version>
-        <scalatra-scalatest.version>2.6.5</scalatra-scalatest.version>
-        <scalactic.version>3.0.5</scalactic.version>
-        <scalatraSwagger.version>2.6.5</scalatraSwagger.version>
-
-        <jetty.version>9.4.45.v20220203</jetty.version>
 
         <!-- plugins -->
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>

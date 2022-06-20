@@ -2,7 +2,9 @@ package com.ubirch.controllers
 
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.ServiceException
-import com.ubirch.controllers.concerns.ControllerBase
+import com.ubirch.api.InvalidClaimException
+import com.ubirch.controllers.concerns.{ BearerAuthStrategy, ControllerBase }
+import com.ubirch.defaults.TokenApi
 import com.ubirch.models.{ NOK, Return }
 import com.ubirch.services.SummaryService
 import com.ubirch.util.{ DateUtil, TaskHelpers }
@@ -57,6 +59,12 @@ class AcctEventsEnricherController @Inject() (
     asyncResult("acct_events_summary") { implicit request => _ =>
       (for {
 
+        _ <- Task.unit
+
+        claims <- Task.fromTry(TokenApi.decodeAndVerify(BearerAuthStrategy.request2BearerAuthRequest(request).token))
+          .onErrorRecoverWith { case e: Exception => Task.raiseError(InvalidClaimException("Error authenticating", e.getMessage)) }
+        _ <- Task.fromTry(claims.validateScope("thing:getinfo"))
+
         tenantIdRaw <- Task(params.get("tenant_id"))
         tenantId <- Task(tenantIdRaw)
           .map(_.map(UUID.fromString).get) // We want to know if failed or not as soon as possible
@@ -109,14 +117,17 @@ class AcctEventsEnricherController @Inject() (
       } yield {
         Ok(Return(res))
       }).onErrorHandle {
+        case e: InvalidClaimException =>
+          logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
+          Forbidden(NOK.authenticationError("Forbidden"))
         case e: ServiceException =>
-          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.1 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error acct identity by owner. ${e.getMessage}"))
         case e: IllegalArgumentException =>
-          logger.error("1.3 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
-          logger.error(s"1.4 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          logger.error(s"1.3 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }
