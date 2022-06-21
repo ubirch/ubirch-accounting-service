@@ -1,8 +1,8 @@
 #!/bin/bash
 
 local=$1
-remote_host="https://accounting.dev.ubirch.com"
-host="http://localhost:8090"
+remote_host="https://accounting.enricher.dev.ubirch.com"
+host="http://localhost:8081"
 
 if [ "$local" == "-r" ]
 then
@@ -21,4 +21,5 @@ token=CHANGEME
 
 curl -v -X GET -H "authorization: bearer $token" \
  -H "content-type: application/json" \
-  "$host/api/acct_events/v1?tenant_id=$tenant_id&invoice_id=$invoice_id&invoice_date=$invoice_date&order_ref=$order_ref&cat=$category&from=$from&to=$to"
+  "$host/api/acct_events/v1?tenant_id=$tenant_id&invoice_id=$invoice_id&invoice_date=$invoice_date&order_ref=$order_ref&cat=$category&from=$from&to=$to" \
+  | jq .
