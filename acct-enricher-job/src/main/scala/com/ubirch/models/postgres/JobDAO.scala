@@ -42,6 +42,7 @@ class JobDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dia
         .insert(lift(jobRow))
         .onConflictUpdate(_.id)(
           (t, e) => t.success -> e.success,
+          (t, e) => t.comment -> e.comment,
           (t, e) => t.endedAt -> e.endedAt,
           (t, _) => t.updatedAt -> lift(new Date())
         )

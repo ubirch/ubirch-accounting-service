@@ -1,5 +1,6 @@
 package com.ubirch.services.externals
 
+import com.ubirch.ServiceException
 import com.ubirch.services.lifeCycle.Lifecycle
 
 import com.typesafe.config.Config
@@ -90,7 +91,7 @@ class DefaultHttpClient @Inject() (config: Config, lifecycle: Lifecycle) extends
 
         override def failed(e: Exception): Unit = {
           logger.error(s"error_in_execute (${request.getUri.toString}) -> ", e)
-          promise.failure(InvalidHttpException("error_in_execute", e.getMessage))
+          promise.failure(InvalidHttpException("error_in_execute", ServiceException.exceptionToString(e)))
         }
 
         override def cancelled(): Unit = {

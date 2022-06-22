@@ -1,13 +1,13 @@
 package com.ubirch
 
 import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresIdentityDAO, DefaultPostgresJobDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
-import com.ubirch.services.{ DefaultSummaryService, SummaryService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
 import com.ubirch.services.jwt._
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.rest.SwaggerProvider
+import com.ubirch.services.{ DefaultSummaryService, SummaryService }
 
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.{ AbstractModule, Module, TypeLiteral }

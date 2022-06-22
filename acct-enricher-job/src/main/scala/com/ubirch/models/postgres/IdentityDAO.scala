@@ -3,8 +3,8 @@ package com.ubirch.models.postgres
 import com.ubirch.services.externals.Identity
 import com.ubirch.services.formats.JsonConverterService
 
-import io.getquill.{ H2Dialect, Insert, PostgresDialect }
 import io.getquill.context.sql.idiom.SqlIdiom
+import io.getquill.{ H2Dialect, Insert, PostgresDialect }
 import monix.eval.Task
 
 import java.util.{ Date, UUID }

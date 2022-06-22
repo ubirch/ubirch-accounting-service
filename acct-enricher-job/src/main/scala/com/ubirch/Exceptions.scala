@@ -7,6 +7,15 @@ abstract class ServiceException(message: String) extends Exception(message) with
   def reason: String
 }
 
+object ServiceException {
+  def exceptionToString(throwable: Throwable): String = {
+    throwable match {
+      case e: ServiceException => e.name + ": - " + e.getMessage + " - " + e.reason
+      case e => e.getClass.getCanonicalName + ": - " + e.getMessage
+    }
+  }
+}
+
 case class NoContactPointsException(message: String) extends ServiceException(message) {
   override def reason: String = message
 }

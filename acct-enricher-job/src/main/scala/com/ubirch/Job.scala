@@ -60,7 +60,7 @@ class Job @Inject() (
 
     } yield ())
       .timed
-      .doOnFinish { error => jobDAO.store(job.end(success = error.isEmpty, error.map(_.getMessage))).map(_ => ()) }
+      .doOnFinish { error => jobDAO.store(job.end(success = error.isEmpty, error.map(e => ServiceException.exceptionToString(e)))).map(_ => ()) }
       .map { case (duration, _) =>
         val dur = if (duration.toMinutes > 0) duration.toMinutes + " minutes" else duration.toSeconds + " seconds"
         logger.info(s"job_step(${job.id})=finished OK with a duration of $dur", jobIdStructuredArgument(job))
