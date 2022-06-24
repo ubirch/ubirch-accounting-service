@@ -102,5 +102,17 @@ class DefaultPostgresTenantDAO @Inject() (quillJdbcContext: QuillJdbcContext[Pos
   extends TenantDAOImpl(quillJdbcContext, jsonConverterService)
 
 @Singleton
-class DefaultTenantDAO @Inject() (quillJdbcContext: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
-  extends TenantDAOImpl(quillJdbcContext, jsonConverterService)
+class DefaultH2TenantDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
+  extends TenantDAOImpl(quillJdbcContextH2, jsonConverterService) {
+  import this.quillJdbcContext.ctx._
+  private def store_Q(tenantRow: TenantRow): Quoted[Insert[TenantRow]] = {
+    quote {
+      query[TenantRow]
+        .insert(lift(tenantRow))
+    }
+  }
+
+  override def store(tenantRow: TenantRow): Task[Unit] = {
+    Task.delay(run(store_Q(tenantRow))).map(_ => ())
+  }
+}
