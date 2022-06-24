@@ -2,15 +2,15 @@ package com.ubirch
 
 import com.google.inject.TypeLiteral
 import com.google.inject.binder.ScopedBindingBuilder
-import com.ubirch.models.postgres.{DefaultEventDAO, DefaultH2FlywaySupport, DefaultH2QuillJdbcContext, DefaultIdentityDAO, DefaultJobDAO, DefaultTenantDAO, EventDAO, FlywaySupport, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO}
+import com.ubirch.models.postgres.{ DefaultEventDAO, DefaultH2FlywaySupport, DefaultH2QuillJdbcContext, DefaultH2IdentityDAO, DefaultH2JobDAO, DefaultH2TenantDAO, EventDAO, FlywaySupport, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
 import io.getquill.H2Dialect
 
 class InjectorHelperImpl() extends InjectorHelper(List(new Binder {
-  override def JobDAO: ScopedBindingBuilder = bind(classOf[JobDAO]).to(classOf[DefaultJobDAO])
+  override def JobDAO: ScopedBindingBuilder = bind(classOf[JobDAO]).to(classOf[DefaultH2JobDAO])
 
-  override def TenantDAO: ScopedBindingBuilder = bind(classOf[TenantDAO]).to(classOf[DefaultTenantDAO])
+  override def TenantDAO: ScopedBindingBuilder = bind(classOf[TenantDAO]).to(classOf[DefaultH2TenantDAO])
 
-  override def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultIdentityDAO])
+  override def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultH2IdentityDAO])
 
   override def EventDAO: ScopedBindingBuilder = bind(classOf[EventDAO]).to(classOf[DefaultEventDAO])
 

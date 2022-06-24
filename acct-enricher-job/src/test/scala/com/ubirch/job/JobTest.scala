@@ -1,10 +1,10 @@
-package com.ubirch.testers
+package com.ubirch.job
 
 import com.typesafe.config.ConfigFactory
-import com.ubirch.models.postgres.{EventDAO, FlywaySupport, IdentityDAO, JobDAO, TenantDAO}
-import com.ubirch.services.{AcctEventsService, DailyCountResult}
-import com.ubirch.services.externals.{Identity, Tenant, ThingAPI}
-import com.ubirch.{InjectorHelper, InjectorHelperImpl, Job, TestBaseWithH2}
+import com.ubirch.models.postgres._
+import com.ubirch.services.externals.{ Identity, Tenant, ThingAPI }
+import com.ubirch.services.{ AcctEventsService, DailyCountResult }
+import com.ubirch.{ InjectorHelper, InjectorHelperImpl, Job, TestBaseWithH2 }
 import monix.eval.Task
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -15,10 +15,10 @@ import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
 
-class JobTester extends TestBaseWithH2 with MockitoSugar {
+class JobTest extends TestBaseWithH2 with MockitoSugar {
   override def getInjector: InjectorHelper = new InjectorHelperImpl() {}
 
-  "JobTester" should {
+  "JobTest" should {
     "run successfully" in {
       val config = ConfigFactory.load()
       val flywaySupport = injector.get[FlywaySupport]

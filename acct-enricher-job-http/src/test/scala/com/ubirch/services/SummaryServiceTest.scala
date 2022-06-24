@@ -1,7 +1,7 @@
 package com.ubirch.services
 
 import com.ubirch.TestBase
-import com.ubirch.models.postgres.{EventDAO, EventRow, TenantDAO, TenantRow}
+import com.ubirch.models.postgres.{ EventDAO, EventRow, TenantDAO, TenantRow }
 import monix.eval.Task
 import monix.execution.atomic.Atomic
 import org.mockito.ArgumentMatchers
@@ -10,9 +10,9 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 
 import java.time.LocalDate
-import java.util.{Date, UUID}
+import java.util.{ Date, UUID }
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Random, Success, Try}
+import scala.util.{ Failure, Random, Success, Try }
 
 class SummaryServiceTest extends TestBase with MockitoSugar {
 

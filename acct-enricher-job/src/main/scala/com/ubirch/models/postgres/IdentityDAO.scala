@@ -89,7 +89,7 @@ class DefaultPostgresIdentityDAO @Inject() (quillJdbcContext: QuillJdbcContext[P
   extends IdentityDAOImpl(quillJdbcContext, jsonConverterService)
 
 @Singleton
-class DefaultIdentityDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
+class DefaultH2IdentityDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
   extends IdentityDAOImpl(quillJdbcContextH2, jsonConverterService) {
   import this.quillJdbcContext.ctx._
 

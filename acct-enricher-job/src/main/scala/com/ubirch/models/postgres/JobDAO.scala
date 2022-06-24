@@ -74,7 +74,7 @@ class DefaultPostgresJobDAO @Inject() (quillJdbcContext: QuillJdbcContext[Postgr
   extends JobDAOImpl(quillJdbcContext)
 
 @Singleton
-class DefaultJobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect])
+class DefaultH2JobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect])
   extends JobDAOImpl(quillJdbcContextH2) {
   import this.quillJdbcContext.ctx._
   private def store_Q(jobRow: JobRow): Quoted[Insert[JobRow]] = {

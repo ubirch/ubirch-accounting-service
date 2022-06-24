@@ -1,6 +1,6 @@
 package com.ubirch.services.cluster
 
-import com.ubirch.{Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase}
+import com.ubirch.{ Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase }
 import com.github.nosan.embedded.cassandra.api.cql.CqlScript
 import com.google.inject.Guice
 
