@@ -8,7 +8,7 @@ CREATE TABLE event
     created_at  timestamp not null default now(),
     updated_at  timestamp not null default now(),
     PRIMARY KEY (identity_id, tenant_id, category, date),
-    CONSTRAINT identity_fk_tenant_id
+    CONSTRAINT event_fk_tenant_id
         FOREIGN KEY (tenant_id)
             REFERENCES tenant (id)
 );
