@@ -1,7 +1,6 @@
 package com.ubirch.services.cluster
 
-import com.ubirch.{ Binder, EmbeddedCassandra, TestBase }
-
+import com.ubirch.{Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase}
 import com.github.nosan.embedded.cassandra.api.cql.CqlScript
 import com.google.inject.Guice
 
@@ -9,6 +8,7 @@ import com.google.inject.Guice
   * Test for the cassandra cluster
   */
 class ClusterSpec extends TestBase with EmbeddedCassandra {
+  override def getInjector: InjectorHelper = new InjectorHelperImpl() {}
 
   val cassandra = new CassandraTest
 

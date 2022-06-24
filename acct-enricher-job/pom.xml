@@ -69,6 +69,7 @@
         <scala.compat.version>2.12</scala.compat.version>
         <scalatest.version>3.0.5</scalatest.version>
         <scala.logging.version>3.9.0</scala.logging.version>
+        <mockito.version>3.2.9.0</mockito.version>
 
         <quill.cassandra.version>3.4.1</quill.cassandra.version>
         <embedded-cassandra>3.0.3</embedded-cassandra>
@@ -169,14 +170,13 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>7.10.0</version>
+            <version>8.5.12</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.1.210</version>
-            <scope>test</scope>
+            <version>2.1.212</version>
         </dependency>
 
         <dependency>
@@ -316,6 +316,14 @@
             <version>${scalatest.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.scalatestplus</groupId>
+            <artifactId>mockito-3-4_${scala.compat.version}</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 

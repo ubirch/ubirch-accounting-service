@@ -102,6 +102,7 @@
         <scalatraSwagger.version>2.6.5</scalatraSwagger.version>
 
         <jetty.version>9.4.45.v20220203</jetty.version>
+        <mockito.version>3.2.9.0</mockito.version>
 
         <!-- plugins -->
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
@@ -377,6 +378,13 @@
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.compat.version}</artifactId>
             <version>${scalatest.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scalatestplus</groupId>
+            <artifactId>mockito-3-4_${scala.compat.version}</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
