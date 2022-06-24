@@ -20,7 +20,8 @@ trait TestBase
   with BeforeAndAfterAll
   with MustMatchers
   with Awaits
-  with ExecutionContextsTests {
+  with ExecutionContextsTests
+  with InjectorTests {
 
 }
 
@@ -45,4 +46,12 @@ trait Awaits {
     Await.result(future, atMost)
   }
 
+}
+
+trait InjectorTests {
+  def getInjector: InjectorHelper
+}
+
+trait DefaultTestBase extends TestBase {
+  val injector: InjectorHelper = getInjector
 }

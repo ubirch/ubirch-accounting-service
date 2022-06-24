@@ -1,8 +1,9 @@
 package com.ubirch.models.postgres
 
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ H2Dialect, Insert, PostgresDialect }
+import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query }
 import monix.eval.Task
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
 
 import java.time.LocalDate
 import java.util.{ Date, UUID }
@@ -28,6 +29,7 @@ object JobRow {
 
 trait JobDAO {
   def store(jobRow: JobRow): Task[JobRow]
+  def getLatestJob: Task[Option[JobRow]]
 }
 
 class JobDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dialect]) extends JobDAO {
@@ -53,6 +55,18 @@ class JobDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dia
     Task.delay(run(store_Q(jobRow))).map(_ => jobRow)
   }
 
+  override def getLatestJob: Task[Option[JobRow]] = {
+    Task(run(getLatestJob_Q)).map(_.headOption)
+  }
+
+  private def getLatestJob_Q: Quoted[Query[JobRow]] = {
+    quote {
+      query[JobRow]
+        .sortBy(_.createdAt)
+        .take(1)
+    }
+  }
+
 }
 
 @Singleton
@@ -60,6 +74,37 @@ class DefaultPostgresJobDAO @Inject() (quillJdbcContext: QuillJdbcContext[Postgr
   extends JobDAOImpl(quillJdbcContext)
 
 @Singleton
-class DefaultJobDAO @Inject() (quillJdbcContext: QuillJdbcContext[H2Dialect])
-  extends JobDAOImpl(quillJdbcContext)
+class DefaultH2JobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect])
+  extends JobDAOImpl(quillJdbcContextH2) {
+  import this.quillJdbcContext.ctx._
+  private def store_Q(jobRow: JobRow): Quoted[Insert[JobRow]] = {
+    quote {
+      query[JobRow]
+        .insert(lift(jobRow))
+    }
+  }
+
+  private def update_Q(jobRow: JobRow) = {
+    quote {
+      query[JobRow]
+        .filter(_.id == lift(jobRow.id))
+        .update(
+          _.endedAt -> lift(jobRow.endedAt),
+          _.success -> lift(jobRow.success),
+          _.comment -> lift(jobRow.comment),
+          _.updatedAt -> lift(jobRow.updatedAt),
+          _.createdAt -> lift(jobRow.createdAt),
+          _.queryDays -> lift(jobRow.queryDays),
+          _.startedAt -> lift(jobRow.startedAt)
+        )
+    }
+  }
+
+  override def store(jobRow: JobRow): Task[JobRow] = {
+    Task.delay(run(store_Q(jobRow))).map(_ => jobRow).onErrorRecoverWith {
+      case _: JdbcSQLIntegrityConstraintViolationException =>
+        Task.delay(run(update_Q(jobRow))).map(_ => jobRow)
+    }
+  }
+}
 

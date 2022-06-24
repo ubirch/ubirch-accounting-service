@@ -2,9 +2,8 @@ package com.ubirch.models.postgres
 
 import com.ubirch.services.externals.Identity
 import com.ubirch.services.formats.JsonConverterService
-
+import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query }
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ H2Dialect, Insert, PostgresDialect }
 import monix.eval.Task
 
 import java.util.{ Date, UUID }
@@ -37,7 +36,7 @@ object IdentityRow {
 
 trait IdentityDAO {
   def store(identityRow: IdentityRow): Task[IdentityRow]
-
+  def getByTenantId(tenantId: UUID): Task[List[IdentityRow]]
 }
 
 class IdentityDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dialect], jsonConverterService: JsonConverterService) extends IdentityDAO with MapEncoding {
@@ -73,6 +72,16 @@ class IdentityDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContex
     Task.delay(run(store_Q(identityRow))).map(_ => identityRow)
   }
 
+  private def getByTenantId_Q(tenantId: UUID): Quoted[Query[IdentityRow]] = {
+    quote {
+      query[IdentityRow]
+        .filter(_.tenantId == lift(tenantId))
+    }
+  }
+
+  override def getByTenantId(tenantId: UUID): Task[List[IdentityRow]] = {
+    Task.delay(run(getByTenantId_Q(tenantId)))
+  }
 }
 
 @Singleton
@@ -80,5 +89,18 @@ class DefaultPostgresIdentityDAO @Inject() (quillJdbcContext: QuillJdbcContext[P
   extends IdentityDAOImpl(quillJdbcContext, jsonConverterService)
 
 @Singleton
-class DefaultIdentityDAO @Inject() (quillJdbcContext: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
-  extends IdentityDAOImpl(quillJdbcContext, jsonConverterService)
+class DefaultH2IdentityDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
+  extends IdentityDAOImpl(quillJdbcContextH2, jsonConverterService) {
+  import this.quillJdbcContext.ctx._
+
+  private def store_Q(identityRow: IdentityRow): Quoted[Insert[IdentityRow]] = {
+    quote {
+      query[IdentityRow]
+        .insert(lift(identityRow))
+    }
+  }
+
+  override def store(identityRow: IdentityRow): Task[IdentityRow] = {
+    Task.delay(run(store_Q(identityRow))).map(_ => identityRow)
+  }
+}
