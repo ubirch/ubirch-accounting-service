@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat
 import java.time.{ LocalDate, ZoneId }
 import java.util.{ TimeZone, UUID }
 import javax.inject.{ Inject, Singleton }
+import scala.concurrent.ExecutionContext
+import scala.util.{ Failure, Success }
 
 /**
   * Represents a bootable service object that starts the system
@@ -64,12 +66,10 @@ class Job @Inject() (
       .map { case (duration, _) =>
         val dur = if (duration.toMinutes > 0) duration.toMinutes + " minutes" else duration.toSeconds + " seconds"
         logger.info(s"job_step(${job.id})=finished OK with a duration of $dur", jobIdStructuredArgument(job))
-        sys.exit(0)
       }
       .onErrorRecover {
         case e: Exception =>
           logger.error(s"job_step(${job.id})=finished NOK due to: " + e.getClass.getCanonicalName + " - " + e.getMessage, e, jobIdStructuredArgument(job))
-          sys.exit(1)
       }.runToFuture
 
   }
@@ -170,6 +170,10 @@ object Job extends Boot(List(new Binder)) {
           case other => other
         }
 
-    get[Job].start(queryDays)
+    implicit val ec: ExecutionContext = get[ExecutionContext]
+    get[Job].start(queryDays).onComplete {
+      case Failure(_) => sys.exit(1)
+      case Success(_) => sys.exit(0)
+    }
   }
 }
