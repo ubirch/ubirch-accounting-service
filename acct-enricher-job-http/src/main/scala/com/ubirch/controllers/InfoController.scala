@@ -71,7 +71,7 @@ class InfoController @Inject() (config: Config, val swagger: Swagger, jFormats: 
   get("/", operation(getSimpleCheck)) {
     asyncResult("root") { _ => _ =>
       Task {
-        Ok(Return("Hallo, Hola, Hello, Salut, Hej, this is the Ubirch Accounting Enricher Http Service."))
+        Ok(Return("Hallo, Hola, Hello, Salut, Hej, Selam, this is the Ubirch Accounting Enricher Http Service."))
       }
     }
   }
