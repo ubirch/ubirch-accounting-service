@@ -154,7 +154,7 @@ class Job @Inject() (
 }
 
 object Job extends Boot(List(new Binder)) {
-  final val version = "0.7.6"
+  final val version = "0.7.7"
 
   def main(args: Array[String]): Unit = * {
     val queryDays =

@@ -22,11 +22,11 @@
     <parent>
         <groupId>com.ubirch</groupId>
         <artifactId>ubirch-accounting-parent</artifactId>
-        <version>0.7.6</version>
+        <version>0.7.7</version>
     </parent>
 
     <artifactId>ubirch-accounting-service</artifactId>
-    <version>0.7.6</version>
+    <version>0.7.7</version>
     <packaging>jar</packaging>
 
     <licenses>
