@@ -3,6 +3,7 @@ package com.ubirch.util
 import org.joda.time.format.{ DateTimeFormatter, ISODateTimeFormat }
 import org.joda.time.{ DateTime, DateTimeZone, LocalTime, Period }
 
+import java.text.SimpleDateFormat
 import java.time.{ LocalDate, LocalDateTime, ZoneId }
 import java.util.{ Calendar, Date }
 
@@ -68,6 +69,16 @@ object DateUtil {
     dateToConvert.toInstant
       .atZone(zoneId)
       .toLocalDate
+  }
+
+  def `yyyy-MM-dd`: SimpleDateFormat = {
+    new SimpleDateFormat("yyyy-MM-dd")
+  }
+
+  def `yyyy-MM-dd_NotLenient`: SimpleDateFormat = {
+    val sdf = `yyyy-MM-dd`
+    sdf.setLenient(false)
+    sdf
   }
 
 }

@@ -1,7 +1,7 @@
 package com.ubirch.models.postgres
 
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query }
+import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query, Update }
 import monix.eval.Task
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
 
@@ -76,7 +76,9 @@ class DefaultPostgresJobDAO @Inject() (quillJdbcContext: QuillJdbcContext[Postgr
 @Singleton
 class DefaultH2JobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect])
   extends JobDAOImpl(quillJdbcContextH2) {
+
   import this.quillJdbcContext.ctx._
+
   private def store_Q(jobRow: JobRow): Quoted[Insert[JobRow]] = {
     quote {
       query[JobRow]
@@ -84,7 +86,7 @@ class DefaultH2JobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect]
     }
   }
 
-  private def update_Q(jobRow: JobRow) = {
+  private def update_Q(jobRow: JobRow): Quoted[Update[JobRow]] = {
     quote {
       query[JobRow]
         .filter(_.id == lift(jobRow.id))
@@ -101,10 +103,13 @@ class DefaultH2JobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect]
   }
 
   override def store(jobRow: JobRow): Task[JobRow] = {
-    Task.delay(run(store_Q(jobRow))).map(_ => jobRow).onErrorRecoverWith {
-      case _: JdbcSQLIntegrityConstraintViolationException =>
-        Task.delay(run(update_Q(jobRow))).map(_ => jobRow)
-    }
+    Task
+      .delay(run(store_Q(jobRow)))
+      .map(_ => jobRow)
+      .onErrorRecoverWith {
+        case _: JdbcSQLIntegrityConstraintViolationException =>
+          Task.delay(run(update_Q(jobRow))).map(_ => jobRow)
+      }
   }
 }
 

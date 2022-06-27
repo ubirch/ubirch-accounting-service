@@ -17,7 +17,6 @@ import org.json4s.Formats
 import org.scalatra._
 import org.scalatra.swagger.{ Swagger, SwaggerSupportSyntax }
 
-import java.text.SimpleDateFormat
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext
@@ -54,8 +53,6 @@ class AcctEventsEnricherController @Inject() (
 
   get("/v1") {
 
-    lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
-
     asyncResult("acct_events_summary") { implicit request => _ =>
       (for {
 
@@ -87,17 +84,17 @@ class AcctEventsEnricherController @Inject() (
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Id: wrong invoice id param: " + tenantIdRaw.getOrElse("")))
 
         invoiceDate <- Task(params.get("invoice_date"))
-          .map(_.map(sdf.parse))
+          .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x)).get)
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Date: Use yyyy-MM-dd this format"))
 
         from <- Task(params.get("from"))
-          .map(_.map(sdf.parse))
+          .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x)))
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid From: Use yyyy-MM-dd this format"))
 
         to <- Task(params.get("to"))
-          .map(_.map(sdf.parse))
+          .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x)))
           .onErrorHandle(_ => throw new IllegalArgumentException("Invalid To: Use yyyy-MM-dd this format"))
 

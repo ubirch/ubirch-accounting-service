@@ -13,7 +13,6 @@ import monix.execution.{ CancelableFuture, Scheduler }
 import net.logstash.logback.argument.StructuredArgument
 import net.logstash.logback.argument.StructuredArguments.v
 
-import java.text.SimpleDateFormat
 import java.time.{ LocalDate, ZoneId }
 import java.util.{ TimeZone, UUID }
 import javax.inject.{ Inject, Singleton }
@@ -157,12 +156,10 @@ class Job @Inject() (
 object Job extends Boot(List(new Binder)) {
   final val version = "0.7.6"
 
-  lazy val sdf = new SimpleDateFormat("yyyy-MM-dd")
-
   def main(args: Array[String]): Unit = * {
     val queryDays =
       args
-        .map(sdf.parse)
+        .map(DateUtil.`yyyy-MM-dd_NotLenient`.parse)
         .map(x => DateUtil.dateToLocalDate(x, ZoneId.systemDefault()))
         .toList
         .distinct match {
