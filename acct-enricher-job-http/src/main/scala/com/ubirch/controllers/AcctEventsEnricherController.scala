@@ -70,7 +70,7 @@ class AcctEventsEnricherController @Inject() (
         orderRef <- Task(params.get("order_ref"))
           .map(_.filter(_.nonEmpty))
           .map(_.map(_.toLowerCase()).get)
-          .onErrorHandle(_ => throw new IllegalArgumentException("Order ref: wrong oorder_ref param"))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Order ref: wrong order_ref param"))
 
         cat <- Task(params.get("cat"))
           .map(_.filter(_.nonEmpty))
@@ -86,17 +86,23 @@ class AcctEventsEnricherController @Inject() (
         invoiceDate <- Task(params.get("invoice_date"))
           .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x)).get)
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Date: Use yyyy-MM-dd this format"))
+          .onErrorHandle { e =>
+            throw new IllegalArgumentException("Invalid Invoice Date: Use yyyy-MM-dd this format: " + e.getMessage)
+          }
 
         from <- Task(params.get("from"))
           .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x)))
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid From: Use yyyy-MM-dd this format"))
+          .onErrorHandle { e =>
+            throw new IllegalArgumentException("Invalid From: Use yyyy-MM-dd this format: " + e.getMessage)
+          }
 
         to <- Task(params.get("to"))
           .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))
           .map(_.map(x => DateUtil.dateToLocalDate(x)))
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid To: Use yyyy-MM-dd this format"))
+          .onErrorHandle { e =>
+            throw new IllegalArgumentException("Invalid To: Use yyyy-MM-dd this format: " + e.getMessage)
+          }
 
         _ <- earlyResponseIf(from.isDefined && to.isEmpty)(new IllegalArgumentException("Invalid Range Definition: Start requires End"))
         _ <- earlyResponseIf(from.isEmpty && to.isDefined)(new IllegalArgumentException("Invalid Range Definition: End requires Start"))
