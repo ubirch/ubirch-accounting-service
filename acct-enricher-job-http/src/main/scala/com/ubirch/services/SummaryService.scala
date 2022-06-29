@@ -73,28 +73,41 @@ class DefaultSummaryService @Inject() (eventDAO: EventDAO, tenantDAO: TenantDAO)
 
   override def get(invoiceId: String, invoiceDate: LocalDate, from: LocalDate, to: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[Consumption] =
     for {
+      tenant <- tenantDAO.getTenant(tenantId)
+      _ <- earlyResponseIf(tenant.isEmpty)(new IllegalArgumentException("Unknown tenant: " + tenantId.toString))
       _ <- earlyResponseIf(category.isDefined && !cats.contains(category.get))(new IllegalArgumentException("Unknown category: " + cats.mkString(", ")))
       subTenants <- tenantDAO.getSubTenants(tenantId)
-      _ = logger.info("summary_for_tenants:" + subTenants.map(x => x.name.getOrElse(x.groupName) + " id=" + x.id).mkString(","))
+      _ = logger.info("summary_for_tenants:" + subTenants.map(x => x.getEffectiveName + " id=" + x.id).mkString(","))
       eventsProSubTenant <- Task.sequence(subTenants.map(st => eventDAO.get(st.id, category, from, to).map(_.map(x => (st, x)))))
     } yield {
 
       val customers = eventsProSubTenant.
         flatMap {
-          _.groupBy { case (t, _) => t } // we group by subtenats
-            .mapValues(_.groupBy { case (_, e) => e.category }) //we group by category
-            .map { case (c, mevs) =>
+          _.groupBy { case (subTenantRow, _) => subTenantRow } // we group by subtenants
+            .mapValues(_.groupBy { case (_, eventRow) => eventRow.category }) //we group by category
+            .map { case (subTenantRow, categoriesAndEvents) =>
+
               val totalPerCat =
-                mevs.mapValues { evs =>
-                  evs.map { case (_, e) => e }.foldLeft(0)((t, e) => t + e.count) //we count all values per category
-                }.map { case (c, count) => CustomerDetails(c, count) }
-              (c, totalPerCat.toList)
+                categoriesAndEvents.mapValues { events =>
+                  events.map { case (_, eventRow) => eventRow }.foldLeft(0)((acc, eventRow) => acc + eventRow.count) //we count all values per category
+                }.map { case (category, count) =>
+                  CustomerDetails(tenant.map(_.mapEffectiveCategory(category)).getOrElse(category), count)
+                }
+
+              (subTenantRow, totalPerCat.toList)
             }
-            .map { case (c, customerDetails) =>
-              Customer(c.id.toString, c.name.getOrElse(c.groupName), customerDetails) //ensamble Customer
+            .map { case (subTenantRow, customerDetails) =>
+              Customer(subTenantRow.id.toString, subTenantRow.getEffectiveName, customerDetails.sortBy(_.eventType)) //ensamble Customer
             }
         }
 
-      Consumption("V1.00", "Ubirch", "ubirch", invoiceId, invoiceDate, customers)
+      Consumption(
+        schemaVersion = "V1.00",
+        supplierName = "ubirch GmbH",
+        supplierId = "ubirch GmbH",
+        invoiceId = invoiceId,
+        invoiceDate = invoiceDate,
+        customers = customers
+      )
     }
 }

@@ -21,10 +21,15 @@ case class TenantRow(
     attributes: Map[String, String],
     createdAt: Date,
     updatedAt: Date
-)
+) {
+  def getEffectiveName: String = name.getOrElse(groupName)
+  def mapCategory(category: String): Option[String] = attributes.get(category)
+  def mapEffectiveCategory(category: String): String = attributes.getOrElse("tenant_" + category, category)
+}
 
 trait TenantDAO {
   def getSubTenants(tenantId: UUID): Task[List[TenantRow]]
+  def getTenant(tenantId: UUID): Task[Option[TenantRow]]
 }
 
 class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dialect], jsonConverterService: JsonConverterService) extends TenantDAO with MapEncoding {
@@ -52,8 +57,19 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
     }
   }
 
+  private def getTenant_Q(tenantId: UUID): Quoted[EntityQuery[TenantRow]] = {
+    quote {
+      query[TenantRow]
+        .filter(_.id == lift(tenantId))
+    }
+  }
+
   override def getSubTenants(tenantId: UUID): Task[List[TenantRow]] = {
     Task.delay(run(getSubTenants_Q(tenantId: UUID)))
+  }
+
+  override def getTenant(tenantId: UUID): Task[Option[TenantRow]] = {
+    Task.delay(run(getTenant_Q(tenantId: UUID))).map(_.headOption)
   }
 }
 
