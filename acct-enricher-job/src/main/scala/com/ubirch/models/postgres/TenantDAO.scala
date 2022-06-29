@@ -25,16 +25,22 @@ case class TenantRow(
 )
 
 object TenantRow {
+
+  final val TENANT_NAME = "tenant_name"
+  final val TENANT_ADDRESS = "tenant_address"
+  final val TENANT_REPRESENTATIVE = "tenant_representative"
+  final val TENANT_TAX_ID = "tenant_tax_id"
+
   def fromTenant(parent: Option[Tenant], tenant: Tenant) = {
     TenantRow(
       id = UUID.fromString(tenant.id),
       parentId = parent.map(_.id).map(x => UUID.fromString(x)),
       groupName = tenant.name,
       groupPath = tenant.path,
-      name = tenant.attributes.get("tenant_name"),
-      address = tenant.attributes.get("tenant_address"),
-      representative = tenant.attributes.get("tenant_representative"),
-      taxId = tenant.attributes.get("tenant_tax_id"),
+      name = tenant.attributes.get(TENANT_NAME),
+      address = tenant.attributes.get(TENANT_ADDRESS),
+      representative = tenant.attributes.get(TENANT_REPRESENTATIVE),
+      taxId = tenant.attributes.get(TENANT_TAX_ID),
       attributes = tenant.attributes,
       createdAt = new Date(),
       updatedAt = new Date()

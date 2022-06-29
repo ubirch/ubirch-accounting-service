@@ -51,6 +51,7 @@ object ConfPaths {
 
   trait JobConfPaths {
     final val UBIRCH_TOKEN = "system.ubirchToken"
+    final val JOB_DATES = "system.jobDates"
   }
 
   object PostgresConfPaths extends PostgresConfPaths

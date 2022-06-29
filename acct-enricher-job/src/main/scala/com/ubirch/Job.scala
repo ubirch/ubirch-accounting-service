@@ -156,16 +156,33 @@ class Job @Inject() (
 object Job extends Boot(List(new Binder)) {
   final val version = "0.7.7"
 
+  def parse(localDateAsString: String) = {
+    val d = DateUtil.`yyyy-MM-dd_NotLenient`.parse(localDateAsString)
+    DateUtil.dateToLocalDate(d, ZoneId.systemDefault())
+  }
+
   def main(args: Array[String]): Unit = * {
+
+    val config = get[Config]
+
+    val possibleDatesFromEnv =
+      if (config.hasPath(JobConfPaths.JOB_DATES)) {
+        config.getString(JobConfPaths.JOB_DATES)
+          .split(" ")
+          .filter(_.nonEmpty)
+          .map(parse)
+          .toList
+      } else Nil
+
+    val possibleDatesFromArgs = args
+      .map(parse)
+      .toList
+      .distinct
+
     val queryDays =
-      args
-        .map(DateUtil.`yyyy-MM-dd_NotLenient`.parse)
-        .map(x => DateUtil.dateToLocalDate(x, ZoneId.systemDefault()))
-        .toList
-        .distinct match {
-          case Nil => List(LocalDate.now().minusDays(1))
-          case other => other
-        }
+      if (possibleDatesFromEnv.nonEmpty) possibleDatesFromEnv
+      else if (possibleDatesFromArgs.nonEmpty) possibleDatesFromArgs
+      else List(LocalDate.now().minusDays(1))
 
     implicit val ec: ExecutionContext = get[ExecutionContext]
     get[Job].start(queryDays).onComplete {
