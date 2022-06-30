@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
-<svg width="56cm" height="27cm" viewBox="161 99 1104 534" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="50cm" height="33cm" viewBox="161 58 991 646" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g id="Background">
     <g>
       <ellipse style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" cx="432.042" cy="266.776" rx="6.27414" ry="6.27414"/>
@@ -36,9 +36,9 @@
       <tspan x="505.152" y="306.64"></tspan>
     </text>
     <g>
-      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="967.868" y="283.756" width="182.9" height="44"/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1059.32" y="299.637">&lt;&lt;Role&gt;&gt;</text>
-      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1059.32" y="318.608">TENANT_role_name</text>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="967.868" y="283.256" width="182.9" height="44"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1059.32" y="299.137">&lt;&lt;Role&gt;&gt;</text>
+      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1059.32" y="318.108">TENANT_role_name</text>
     </g>
     <g>
       <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="746.381,351.476 746.381,440.116 746.261,440.116 746.261,539.928 "/>
@@ -48,13 +48,13 @@
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="750.261" y="535.809">1..*</text>
     </g>
     <g>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="845.414,305.62 901.055,305.62 901.055,305.756 967.868,305.756 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="845.414,305.62 901.055,305.62 901.055,305.256 967.868,305.256 "/>
       <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="820.242,305.62 834.242,300.82 848.242,305.62 834.242,310.42 "/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="903.055" y="302.669">has</text>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="903.055" y="302.419">has</text>
       <text xml:space="preserve" font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="852.242" y="302.601"> 1</text>
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="852.242" y="318.601"/>
-      <text xml:space="preserve" font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="963.868" y="302.737"> *</text>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="963.868" y="318.737"/>
+      <text xml:space="preserve" font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="963.868" y="302.237"> *</text>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="963.868" y="318.237"/>
     </g>
     <g>
       <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="650.404,304.304 583.86,304.304 583.86,304.33 506.339,304.33 "/>
@@ -64,17 +64,15 @@
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="510.339" y="301.311">*</text>
     </g>
     <g>
-      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="1030.77,417.266 1252.37,417.266 1264.37,429.266 1264.37,563.266 1030.77,563.266 "/>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="1252.37,417.266 1252.37,429.266 1264.37,429.266 "/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1037.77" y="442.147">
-        <tspan x="1037.77" y="442.147">1.Keycloak attributes</tspan>
-        <tspan x="1037.77" y="458.147">used for tenant info</tspan>
-        <tspan xml:space="preserve" x="1037.77" y="474.147"> - tenant_name</tspan>
-        <tspan xml:space="preserve" x="1037.77" y="490.147"> - tenant_address</tspan>
-        <tspan xml:space="preserve" x="1037.77" y="506.147"> - tenant_representative</tspan>
-        <tspan xml:space="preserve" x="1037.77" y="522.147"> - tenant_tax_id</tspan>
-        <tspan x="1037.77" y="538.147">2.Every tenant has a default</tspan>
-        <tspan x="1037.77" y="554.147">organizational unit.</tspan>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="272.771,59.7667 463.571,59.7667 475.571,71.7667 475.571,173.767 272.771,173.767 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="463.571,59.7667 463.571,71.7667 475.571,71.7667 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="279.771" y="84.648">
+        <tspan x="279.771" y="84.648">1.Keycloak attributes</tspan>
+        <tspan x="279.771" y="100.648">used for tenant info</tspan>
+        <tspan xml:space="preserve" x="279.771" y="116.648"> - tenant_name</tspan>
+        <tspan xml:space="preserve" x="279.771" y="132.648"> - tenant_address</tspan>
+        <tspan xml:space="preserve" x="279.771" y="148.648"> - tenant_representative</tspan>
+        <tspan xml:space="preserve" x="279.771" y="164.648"> - tenant_tax_id</tspan>
       </text>
     </g>
     <g>
@@ -96,18 +94,18 @@
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="472.994" y="558.957">*</text>
     </g>
     <g>
-      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="667.477" y="102.292" width="158.6" height="44"/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="746.777" y="118.173">&lt;&lt;Group&gt;&gt;</text>
-      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="746.777" y="137.144">TENANTS_ubirch</text>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="666.976" y="102.292" width="158.6" height="44"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="746.276" y="118.173">&lt;&lt;Group&gt;&gt;</text>
+      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="746.276" y="137.144">TENANTS_ubirch</text>
     </g>
-    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="746.777" y="124.292">
-      <tspan x="746.777" y="124.292"></tspan>
+    <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="746.276" y="124.292">
+      <tspan x="746.276" y="124.292"></tspan>
     </text>
     <g>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="746.777,171.464 746.777,220.795 746.381,220.795 746.381,281.298 "/>
-      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="746.777,146.292 751.577,160.292 746.777,174.292 741.977,160.292 "/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="746.579" y="217.776"/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="757.777" y="158.173">1</text>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="746.276,171.464 746.276,220.795 746.381,220.795 746.381,281.298 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="746.276,146.292 751.076,160.292 746.276,174.292 741.476,160.292 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="746.329" y="217.776"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="757.276" y="158.173">1</text>
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="750.381" y="277.18">*</text>
     </g>
     <g>
@@ -140,14 +138,38 @@
       <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="386.274" y="558.957"/>
     </g>
     <g>
-      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="1030.79" y1="436.137" x2="802.074" y2="330.119"/>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="815.652,330.902 799.033,328.709 811.446,339.975 "/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="913.391" y="377.718">{complies}</text>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="475.402" y1="167.772" x2="694.753" y2="278.291"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="681.208,277.066 697.747,279.8 685.708,268.135 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="588.071" y="220.54">{complies}</text>
     </g>
     <g>
-      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="1030.77" y1="563.266" x2="840.091" y2="561.973"/>
-      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="852.772,557.059 836.739,561.951 852.704,567.059 "/>
-      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="932.078" y="558.596">{complies}</text>
+      <line style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" x1="421.795" y1="173.743" x2="722.736" y2="533.783"/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="710.789,527.286 724.886,536.356 718.462,520.873 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="574.416" y="352.335">{complies}</text>
+    </g>
+    <g>
+      <rect style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" x="858.301" y="541.61" width="189.15" height="44"/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="952.876" y="557.491">&lt;&lt;Group&gt;&gt;</text>
+      <text font-size="16" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="952.876" y="576.461">TENANT_OU_default</text>
+    </g>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="818.851,350.132 818.851,389.282 952.876,389.282 952.876,540.616 "/>
+      <polygon style="fill: #000000; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="818.851,324.96 823.651,338.96 818.851,352.96 814.051,338.96 "/>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="885.863" y="386.264">has</text>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="829.851" y="336.841">1</text>
+      <text font-size="12.7998" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="956.876" y="536.497">1</text>
+    </g>
+    <g>
+      <polygon style="fill: #ffffff; fill-opacity: 1; stroke-opacity: 1; stroke-width: 2; stroke: #000000" fill-rule="evenodd" points="835.801,653.109 1057.4,653.109 1069.4,665.109 1069.4,703.109 835.801,703.109 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 1; stroke: #000000" points="1057.4,653.109 1057.4,665.109 1069.4,665.109 "/>
+      <text font-size="12.8" style="fill: #000000; fill-opacity: 1; stroke: none;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="842.801" y="677.991">
+        <tspan x="842.801" y="677.991">1.Every tenant has a default</tspan>
+        <tspan x="842.801" y="693.991">organizational unit.</tspan>
+      </text>
+    </g>
+    <g>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke-dasharray: 8; stroke: #000000" points="952.601,653.112 952.601,623.864 952.876,623.864 952.876,593.321 "/>
+      <polyline style="fill: none; stroke-opacity: 1; stroke-width: 2; stroke: #000000" points="957.876,605.968 952.876,589.968 947.876,605.968 "/>
     </g>
   </g>
 </svg>

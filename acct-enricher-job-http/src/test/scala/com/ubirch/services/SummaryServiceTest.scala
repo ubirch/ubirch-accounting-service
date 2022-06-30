@@ -46,6 +46,7 @@ class SummaryServiceTest extends TestBase with MockitoSugar {
 
       val tenantId = UUID.randomUUID()
       val subTenantId = UUID.randomUUID()
+      val tenant = TenantRow(tenantId, None, "TENANT_OU_small", "/TENANTS_ubirch/TENANT_size", Some("size"), None, None, None, Map.empty[String, String], new Date(), new Date())
       val subTenant = TenantRow(subTenantId, Some(tenantId), "TENANT_OU_small", "/TENANTS_ubirch/TENANT_size/TENANT_OU_small", Some("size"), None, None, None, Map.empty[String, String], new Date(), new Date())
 
       val anchoringCount = Atomic(0)
@@ -68,6 +69,7 @@ class SummaryServiceTest extends TestBase with MockitoSugar {
         EventRow(UUID.randomUUID(), tenantId, "uvs_verification", LocalDate.now(), count, new Date(), new Date())
       }).toList
 
+      when(tenantDAO.getTenant(any[UUID])).thenReturn(Task(Option(tenant)))
       when(tenantDAO.getSubTenants(any[UUID])).thenReturn(Task(List(subTenant)))
       when(eventDAO.get(any[UUID], ArgumentMatchers.eq(Some("anchoring")), any[LocalDate], any[LocalDate]))
         .thenReturn(Task(identitiesAnchoringCounts))
