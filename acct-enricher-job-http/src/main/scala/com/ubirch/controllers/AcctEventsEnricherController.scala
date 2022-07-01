@@ -1,7 +1,7 @@
 package com.ubirch.controllers
 
 import com.ubirch.ConfPaths.GenericConfPaths
-import com.ubirch.ServiceException
+import com.ubirch.{ NotFoundException, ServiceException }
 import com.ubirch.api.InvalidClaimException
 import com.ubirch.controllers.concerns.{ BearerAuthStrategy, ControllerBase }
 import com.ubirch.defaults.TokenApi
@@ -123,14 +123,17 @@ class AcctEventsEnricherController @Inject() (
         case e: InvalidClaimException =>
           logger.error("1.0 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.value)
           Forbidden(NOK.authenticationError("Forbidden"))
+        case e: NotFoundException =>
+          logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          Forbidden(NOK.notFound(e.getMessage))
         case e: ServiceException =>
-          logger.error("1.1 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error acct identity by owner. ${e.getMessage}"))
         case e: IllegalArgumentException =>
-          logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
+          logger.error("1.3 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
-          logger.error(s"1.3 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          logger.error(s"1.4 Error acct identity by owner: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
           InternalServerError(NOK.serverError("Sorry, something went wrong on our end"))
       }
     }

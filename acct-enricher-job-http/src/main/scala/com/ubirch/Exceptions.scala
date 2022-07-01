@@ -16,3 +16,5 @@ case class InvalidParamException(message: String, reason: String) extends Servic
 case class InvalidOtherClaims(message: String, value: String) extends ServiceException(message)
 case class InvalidAllClaims(message: String, value: String) extends ServiceException(message)
 case class InvalidSpecificClaim(message: String, value: String) extends ServiceException(message)
+
+case class NotFoundException(message: String) extends ServiceException(message)

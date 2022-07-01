@@ -28,6 +28,7 @@ object NOK {
   final val SERVER_ERROR = 'ServerError
   final val PARSING_ERROR = 'ParsingError
   final val NO_ROUTE_FOUND_ERROR = 'NoRouteFound
+  final val NOT_FOUND_ERROR = 'NotFound
   final val ACCT_EVENT_QUERY_ERROR = 'AcctEventQueryError
   final val AUTHENTICATION_ERROR = 'AuthenticationError
 
@@ -36,6 +37,7 @@ object NOK {
   def serverError(errorMessage: String): NOK = NOK(SERVER_ERROR, errorMessage)
   def parsingError(errorMessage: String): NOK = NOK(PARSING_ERROR, errorMessage)
   def noRouteFound(errorMessage: String): NOK = NOK(NO_ROUTE_FOUND_ERROR, errorMessage)
+  def notFound(errorMessage: String): NOK = NOK(NOT_FOUND_ERROR, errorMessage)
   def acctEventQueryError(errorMessage: String): NOK = NOK(ACCT_EVENT_QUERY_ERROR, errorMessage)
   def authenticationError(errorMessage: String): NOK = NOK(AUTHENTICATION_ERROR, errorMessage)
 

@@ -1,5 +1,6 @@
 package com.ubirch.services
 
+import com.ubirch.NotFoundException
 import com.ubirch.models.postgres.{ EventDAO, TenantDAO }
 import com.ubirch.util.TaskHelpers
 
@@ -74,7 +75,7 @@ class DefaultSummaryService @Inject() (eventDAO: EventDAO, tenantDAO: TenantDAO)
   override def get(invoiceId: String, invoiceDate: LocalDate, from: LocalDate, to: LocalDate, orderRef: String, tenantId: UUID, category: Option[String]): Task[Consumption] =
     for {
       tenant <- tenantDAO.getTenant(tenantId)
-      _ <- earlyResponseIf(tenant.isEmpty)(new IllegalArgumentException("Unknown tenant: " + tenantId.toString))
+      _ <- earlyResponseIf(tenant.isEmpty)(NotFoundException("Unknown tenant: " + tenantId.toString))
       _ <- earlyResponseIf(category.isDefined && !cats.contains(category.get))(new IllegalArgumentException("Unknown category: " + cats.mkString(", ")))
       subTenants <- tenantDAO.getSubTenants(tenantId)
       _ = logger.info("summary_for_tenants:" + subTenants.map(x => x.getEffectiveName + " id=" + x.id).mkString(","))
