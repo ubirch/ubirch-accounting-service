@@ -24,7 +24,7 @@ case class TenantRow(
 ) {
   def getEffectiveName: String = name.getOrElse(groupName)
   def mapCategory(category: String): Option[String] = attributes.get(category)
-  def mapEffectiveCategory(category: String): String = attributes.getOrElse("tenant_" + category, category)
+  def mapEffectiveCategory(category: String): String = attributes.getOrElse("tenant_category_" + category, category)
 }
 
 trait TenantDAO {
