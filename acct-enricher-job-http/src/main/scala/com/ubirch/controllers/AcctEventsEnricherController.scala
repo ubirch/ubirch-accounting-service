@@ -125,7 +125,7 @@ class AcctEventsEnricherController @Inject() (
           Forbidden(NOK.authenticationError("Forbidden"))
         case e: NotFoundException =>
           logger.error("1.1 Error querying acct event: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
-          Forbidden(NOK.notFound(e.getMessage))
+          NotFound(NOK.notFound(e.getMessage))
         case e: ServiceException =>
           logger.error("1.2 Error getting acct identity by owner: exception={} message={}", e.getClass.getCanonicalName, e.getMessage)
           BadRequest(NOK.acctEventQueryError(s"Error acct identity by owner. ${e.getMessage}"))
