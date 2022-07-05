@@ -164,15 +164,22 @@ object Job extends Boot(List(new Binder)) {
   def main(args: Array[String]): Unit = * {
 
     val config = get[Config]
+    lazy val envString = config.getString(JobConfPaths.JOB_DATES)
+      .split(" ")
+      .filter(_.nonEmpty)
+      .toList
+
+    val possibleTagsFromEnv =
+      if (config.hasPath(JobConfPaths.JOB_DATES))
+        envString.collect {
+          case "@today" => LocalDate.now()
+          case "@yesterday" => LocalDate.now().minusDays(1)
+        }
+      else Nil
 
     val possibleDatesFromEnv =
-      if (config.hasPath(JobConfPaths.JOB_DATES)) {
-        config.getString(JobConfPaths.JOB_DATES)
-          .split(" ")
-          .filter(_.nonEmpty)
-          .map(parse)
-          .toList
-      } else Nil
+      if (config.hasPath(JobConfPaths.JOB_DATES)) envString.map(parse)
+      else Nil
 
     val possibleDatesFromArgs = args
       .map(parse)
@@ -180,7 +187,8 @@ object Job extends Boot(List(new Binder)) {
       .distinct
 
     val queryDays =
-      if (possibleDatesFromEnv.nonEmpty) possibleDatesFromEnv
+      if (possibleDatesFromEnv.nonEmpty) possibleTagsFromEnv
+      else if (possibleDatesFromEnv.nonEmpty) possibleDatesFromEnv
       else if (possibleDatesFromArgs.nonEmpty) possibleDatesFromArgs
       else List(LocalDate.now().minusDays(1))
 
