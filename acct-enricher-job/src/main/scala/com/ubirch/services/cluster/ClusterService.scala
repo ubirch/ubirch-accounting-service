@@ -11,10 +11,10 @@ import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 
 import java.net.InetSocketAddress
-import java.nio.file.{Files, Paths}
+import java.nio.file.{ Files, Paths }
 import java.security.KeyStore
 import javax.inject._
-import javax.net.ssl.{SSLContext, TrustManagerFactory}
+import javax.net.ssl.{ SSLContext, TrustManagerFactory }
 
 /**
   * Component that contains configuration-related values.
