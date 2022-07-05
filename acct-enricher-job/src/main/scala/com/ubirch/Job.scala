@@ -156,6 +156,10 @@ class Job @Inject() (
 object Job extends Boot(List(new Binder)) {
   final val version = "0.7.7"
 
+  final val TODAY = "@today"
+  final val YESTERDAY = "@yesterday"
+  final val tags = List(TODAY, YESTERDAY)
+
   def parse(localDateAsString: String) = {
     val d = DateUtil.`yyyy-MM-dd_NotLenient`.parse(localDateAsString)
     DateUtil.dateToLocalDate(d, ZoneId.systemDefault())
@@ -172,13 +176,15 @@ object Job extends Boot(List(new Binder)) {
     val possibleTagsFromEnv =
       if (config.hasPath(JobConfPaths.JOB_DATES))
         envString.collect {
-          case "@today" => LocalDate.now()
-          case "@yesterday" => LocalDate.now().minusDays(1)
+          case TODAY => LocalDate.now()
+          case YESTERDAY => LocalDate.now().minusDays(1)
         }
       else Nil
 
     val possibleDatesFromEnv =
-      if (config.hasPath(JobConfPaths.JOB_DATES)) envString.map(parse)
+      if (config.hasPath(JobConfPaths.JOB_DATES)) envString
+        .filterNot(tags.contains)
+        .map(parse)
       else Nil
 
     val possibleDatesFromArgs = args
@@ -187,7 +193,7 @@ object Job extends Boot(List(new Binder)) {
       .distinct
 
     val queryDays =
-      if (possibleDatesFromEnv.nonEmpty) possibleTagsFromEnv
+      if (possibleTagsFromEnv.nonEmpty) possibleTagsFromEnv
       else if (possibleDatesFromEnv.nonEmpty) possibleDatesFromEnv
       else if (possibleDatesFromArgs.nonEmpty) possibleDatesFromArgs
       else List(LocalDate.now().minusDays(1))
