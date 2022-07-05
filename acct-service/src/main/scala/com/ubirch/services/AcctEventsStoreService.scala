@@ -39,7 +39,12 @@ class DefaultAcctEventsStoreService @Inject() (config: Config, jsonConverter: Js
 
   override def store(acctEvents: List[AcctEvent]): Task[List[RecordMetadata]] = {
     val tasks = acctEvents.map(publish)
-    Task.parSequenceUnordered(tasks)
+    Task.parSequenceUnordered(tasks).map { xrs =>
+      logger.info("store_request_received:" + acctEvents.length + " record_metadata:" + xrs.length)
+      xrs
+    }.doOnFinish {
+      me => Task.delay(me.map(e => logger.error("store_request_received:" + acctEvents.length, e)).getOrElse(()))
+    }
   }
 
   lifecycle.addStopHook { hookFunc(producer) }
