@@ -154,7 +154,7 @@ class Job @Inject() (
 }
 
 object Job extends Boot(List(new Binder)) {
-  final val version = "0.7.7"
+  final val version = "0.7.14"
 
   final val TODAY = "@today"
   final val YESTERDAY = "@yesterday"

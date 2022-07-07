@@ -50,7 +50,7 @@ class AcctEventsControllerSpec
 
       get(s"/v1/$identity?date=$date&cat=$category&sub_cat=$subcategory", headers = Map("authorization" -> s"bearer $token")) {
         status should equal(200)
-        val expected = """{"version":"1.0.0","ok":true,"data":[{"year":2022,"month":2,"count":1}]}""".stripMargin
+        val expected = """{"version":"0.7.14","ok":true,"data":[{"year":2022,"month":2,"count":1}]}""".stripMargin
         assert(body == expected)
       }
 
@@ -58,7 +58,7 @@ class AcctEventsControllerSpec
 
       get(s"/v1/$identity?date=$date&cat=$category&sub_cat=$subcategory", headers = Map("authorization" -> s"bearer $token")) {
         status should equal(200)
-        val expected = """{"version":"1.0.0","ok":true,"data":[{"year":2022,"month":2,"count":1}]}""".stripMargin
+        val expected = """{"version":"0.7.14","ok":true,"data":[{"year":2022,"month":2,"count":1}]}""".stripMargin
         assert(body == expected)
       }
 
@@ -66,7 +66,7 @@ class AcctEventsControllerSpec
 
       get(s"/v1/$identity?date=$date&cat=$category", headers = Map("authorization" -> s"bearer $token")) {
         status should equal(200)
-        val expected = """{"version":"1.0.0","ok":true,"data":[{"year":2022,"month":2,"count":2}]}""".stripMargin
+        val expected = """{"version":"0.7.14","ok":true,"data":[{"year":2022,"month":2,"count":2}]}""".stripMargin
         assert(body == expected)
       }
 
@@ -77,7 +77,7 @@ class AcctEventsControllerSpec
       def uuid = UUID.randomUUID()
       get(s"/v1/$uuid") {
         status should equal(403)
-        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AuthenticationError","errorMessage":"Forbidden"}""")
+        assert(body == """{"version":"0.7.14","ok":false,"errorType":"AuthenticationError","errorMessage":"Forbidden"}""")
       }
 
     }
@@ -89,19 +89,19 @@ class AcctEventsControllerSpec
       info("identity_id")
       get(s"/v1/123", headers = Map("authorization" -> s"bearer $token")) {
         status should equal(400)
-        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid identity_id: wrong identity param: 123"}""")
+        assert(body == """{"version":"0.7.14","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid identity_id: wrong identity param: 123"}""")
       }
 
       info("category")
       get(s"/v1/$identity", headers = Map("authorization" -> s"bearer $token")) {
         status should equal(400)
-        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid cat: wrong cat param"}""")
+        assert(body == """{"version":"0.7.14","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid cat: wrong cat param"}""")
       }
 
       info("date")
       get(s"/v1/$identity?cat=default", headers = Map("authorization" -> s"bearer $token")) {
         status should equal(400)
-        assert(body == """{"version":"1.0.0","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid Date: Use yyyy-MM this format"}""")
+        assert(body == """{"version":"0.7.14","ok":false,"errorType":"AcctEventQueryError","errorMessage":"Sorry, there is something invalid in your request: Invalid Date: Use yyyy-MM this format"}""")
       }
 
     }
