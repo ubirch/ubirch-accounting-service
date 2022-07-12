@@ -1,0 +1,36 @@
+# This structure was translated from this model
+# https://github.com/ubirch/ubirch-accounting-service/blob/master/assets/tenants.svg
+tenants:
+  - name: "tenant name 1"
+    representative: "tenant representative 1"
+    address: "tenant address 1"
+    txId: "tenant tax id 1"
+    eventCategoryMapping:
+      # Use this mapping to allow reports to show an alternative name
+      # to the standards
+      - tenant_anchoring: "alternative name for anchoring events"
+      - tenant_upp_verification: "alternative name for upp verification events"
+      - tenant_uvs_verification: "alternative name for uvs verificatoin events"
+    managementUser:
+      # Use this field to indicate what user "manages" the tenant account.
+      # Probably the account that was used to create the things.
+      email: "user@email.com"
+    subTenants:
+      # Note that all tenant have a default organizational unit as a subtenant.
+      # if your tenant has no subtenant, just add on subTenant and devices to a
+      # subtenant called "tenant_ou_default", see example below:
+      - name: "tenant_ou_default"
+        representative: "tenant_ou_default representative"
+        address: "tenant_ou_default address"
+        txId: "tenant_ou_default tax id"
+        things:
+          - id: "thing id from tenant_ou_default"
+      - name: "subTenant name 1"
+        representative: "subTenant representative 1"
+        address: "subTenant address 1"
+        txId: "subTenant tax id 1"
+        things:
+          - id: "thing id from subTenant 1"
+
+
+

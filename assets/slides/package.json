@@ -1,0 +1,20 @@
+{
+  "name": "slides",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "npx asciidoctor-revealjs tenant_consumption.adoc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@asciidoctor/reveal.js": "^5.0.0-rc.1",
+    "asciidoctor": "^2.2.6"
+  }
+}
