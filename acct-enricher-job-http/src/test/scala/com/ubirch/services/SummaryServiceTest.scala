@@ -1,6 +1,6 @@
 package com.ubirch.services
 
-import com.ubirch.TestBase
+import com.ubirch.{ InjectorHelper, InjectorHelperImpl, TestBase }
 import com.ubirch.models.postgres.{ EventDAO, EventRow, TenantDAO, TenantRow }
 import monix.eval.Task
 import monix.execution.atomic.Atomic
@@ -15,6 +15,7 @@ import scala.concurrent.duration.DurationInt
 import scala.util.{ Failure, Random, Success, Try }
 
 class SummaryServiceTest extends TestBase with MockitoSugar {
+  override def getInjector: InjectorHelper = new InjectorHelperImpl() {}
 
   "SummaryService" should {
     "fail if the given category is unknown" in {

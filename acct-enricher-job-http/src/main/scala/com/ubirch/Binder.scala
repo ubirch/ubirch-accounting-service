@@ -1,6 +1,6 @@
 package com.ubirch
 
-import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresIdentityDAO, DefaultPostgresJobDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
+import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresFlywaySupport, DefaultPostgresIdentityDAO, DefaultPostgresJobDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, FlywaySupport, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
@@ -8,7 +8,6 @@ import com.ubirch.services.jwt._
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.rest.SwaggerProvider
 import com.ubirch.services.{ DefaultSummaryService, SummaryService }
-
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.{ AbstractModule, Module, TypeLiteral }
 import com.typesafe.config.Config
@@ -43,6 +42,7 @@ class Binder
   def IdentityDAO: ScopedBindingBuilder = bind(classOf[IdentityDAO]).to(classOf[DefaultPostgresIdentityDAO])
   def EventDAO: ScopedBindingBuilder = bind(classOf[EventDAO]).to(classOf[DefaultPostgresEventDAO])
   def JobDAO: ScopedBindingBuilder = bind(classOf[JobDAO]).to(classOf[DefaultPostgresJobDAO])
+  def FlywaySupport: ScopedBindingBuilder = bind(classOf[FlywaySupport]).to(classOf[DefaultPostgresFlywaySupport])
 
   override def configure(): Unit = {
     Config
@@ -62,6 +62,7 @@ class Binder
     IdentityDAO
     EventDAO
     JobDAO
+    FlywaySupport
     ()
   }
 

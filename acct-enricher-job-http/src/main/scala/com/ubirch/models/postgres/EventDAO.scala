@@ -3,7 +3,7 @@ package com.ubirch.models.postgres
 import com.ubirch.services.formats.JsonConverterService
 
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ EntityQuery, H2Dialect, PostgresDialect }
+import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect }
 import monix.eval.Task
 
 import java.time.LocalDate
@@ -69,5 +69,14 @@ class DefaultPostgresEventDAO @Inject() (quillJdbcContext: QuillJdbcContext[Post
   extends EventDAOImpl(quillJdbcContext, jsonConverterService)
 
 @Singleton
-class DefaultEventDAO @Inject() (quillJdbcContext: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
-  extends EventDAOImpl(quillJdbcContext, jsonConverterService)
+class DefaultEventDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
+  extends EventDAOImpl(quillJdbcContextH2, jsonConverterService) {
+  import this.quillJdbcContext.ctx._
+
+  private def store_Q(eventRow: EventRow): Quoted[Insert[EventRow]] = {
+    quote(query[EventRow].insert(lift(eventRow)))
+  }
+
+  def insertEvent(eventRow: EventRow): Task[EventRow] = Task.delay(run(store_Q(eventRow))).map(_ => eventRow)
+}
+

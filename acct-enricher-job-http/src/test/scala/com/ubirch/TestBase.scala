@@ -4,7 +4,7 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import monix.reactive.Observable
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec }
+import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, WordSpec }
 
 import java.util.concurrent.Executors
 import scala.concurrent.duration.Duration
@@ -18,9 +18,9 @@ trait TestBase
   with ScalaFutures
   with BeforeAndAfterEach
   with BeforeAndAfterAll
-  with MustMatchers
   with Awaits
-  with ExecutionContextsTests {
+  with ExecutionContextsTests
+  with InjectorTests {
 
 }
 
@@ -46,3 +46,12 @@ trait Awaits {
   }
 
 }
+
+trait InjectorTests {
+  def getInjector: InjectorHelper
+}
+
+trait DefaultTestBase extends TestBase {
+  val injector: InjectorHelper = getInjector
+}
+

@@ -1,9 +1,8 @@
 package com.ubirch.models.postgres
 
 import com.ubirch.services.formats.JsonConverterService
-
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ EntityQuery, H2Dialect, PostgresDialect }
+import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect }
 import monix.eval.Task
 
 import java.util.{ Date, UUID }
@@ -78,5 +77,13 @@ class DefaultPostgresTenantDAO @Inject() (quillJdbcContext: QuillJdbcContext[Pos
   extends TenantDAOImpl(quillJdbcContext, jsonConverterService)
 
 @Singleton
-class DefaultTenantDAO @Inject() (quillJdbcContext: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
-  extends TenantDAOImpl(quillJdbcContext, jsonConverterService)
+class DefaultTenantDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect], jsonConverterService: JsonConverterService)
+  extends TenantDAOImpl(quillJdbcContextH2, jsonConverterService) {
+  import this.quillJdbcContext.ctx._
+
+  private def store_Q(tenantRow: TenantRow): Quoted[Insert[TenantRow]] = {
+    quote(query[TenantRow].insert(lift(tenantRow)))
+  }
+
+  def insertTenant(tenantRow: TenantRow): Task[TenantRow] = Task.delay(run(store_Q(tenantRow))).map(_ => tenantRow)
+}
