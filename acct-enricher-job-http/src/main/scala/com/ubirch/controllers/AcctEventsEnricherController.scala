@@ -81,7 +81,7 @@ class AcctEventsEnricherController @Inject() (
         invoiceId <- Task(invoiceIdRaw)
           .map(_.filter(_.nonEmpty))
           .map(_.map(_.toLowerCase()).get)
-          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Id: wrong invoice id param: " + tenantIdRaw.getOrElse("")))
+          .onErrorHandle(_ => throw new IllegalArgumentException("Invalid Invoice Id: wrong invoice id param: " + invoiceIdRaw.getOrElse("")))
 
         invoiceDate <- Task(params.get("invoice_date"))
           .map(_.map(DateUtil.`yyyy-MM-dd_NotLenient`.parse))

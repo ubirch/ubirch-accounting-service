@@ -1,11 +1,13 @@
 package com.ubirch
 
+import com.google.inject.TypeLiteral
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
 import com.ubirch.services.jwt.{ DefaultPublicKeyPoolService, PublicKeyDiscoveryService, PublicKeyPoolService, TokenCreationService }
-
 import com.google.inject.binder.ScopedBindingBuilder
 import com.typesafe.config.Config
+import com.ubirch.models.postgres.{ DefaultEventDAO, DefaultH2FlywaySupport, DefaultH2QuillJdbcContext, DefaultIdentityDAO, DefaultJobDAO, DefaultTenantDAO, EventDAO, FlywaySupport, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
+import io.getquill.H2Dialect
 import monix.eval.Task
 
 import java.security.Key
@@ -153,6 +155,30 @@ class FakeTokenCreator @Inject() (privKey: PrivKey, tokenCreationService: TokenC
 class InjectorHelperImpl() extends InjectorHelper(List(new Binder {
   override def PublicKeyPoolService: ScopedBindingBuilder = {
     bind(classOf[PublicKeyPoolService]).to(classOf[FakeDefaultPublicKeyPoolService])
+  }
+
+  override def EventDAO: ScopedBindingBuilder = {
+    bind(classOf[EventDAO]).to(classOf[DefaultEventDAO])
+  }
+
+  override def TenantDAO: ScopedBindingBuilder = {
+    bind(classOf[TenantDAO]).to(classOf[DefaultTenantDAO])
+  }
+
+  override def IdentityDAO: ScopedBindingBuilder = {
+    bind(classOf[IdentityDAO]).to(classOf[DefaultIdentityDAO])
+  }
+
+  override def JobDAO: ScopedBindingBuilder = {
+    bind(classOf[JobDAO]).to(classOf[DefaultJobDAO])
+  }
+
+  override def QuillJdbcContext: ScopedBindingBuilder = {
+    bind(new TypeLiteral[QuillJdbcContext[H2Dialect]]() {}).to(classOf[DefaultH2QuillJdbcContext])
+  }
+
+  override def FlywaySupport: ScopedBindingBuilder = {
+    bind(classOf[FlywaySupport]).to(classOf[DefaultH2FlywaySupport])
   }
 
   override def configure(): Unit = {
