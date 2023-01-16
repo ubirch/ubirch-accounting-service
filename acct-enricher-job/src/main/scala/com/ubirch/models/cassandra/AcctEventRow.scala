@@ -1,6 +1,7 @@
 package com.ubirch.models.cassandra
 
-import java.util.{ Date, UUID }
+import java.time.Instant
+import java.util.UUID
 
 case class AcctEventRow(
     id: UUID,
@@ -11,6 +12,6 @@ case class AcctEventRow(
     month: Int,
     day: Int,
     hour: Int,
-    occurredAt: Date,
+    occurredAt: Instant,
     externalId: Option[String]
 )

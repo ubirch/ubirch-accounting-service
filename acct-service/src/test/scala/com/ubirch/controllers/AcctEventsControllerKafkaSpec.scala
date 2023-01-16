@@ -90,7 +90,7 @@ class AcctEventsControllerKafkaSpec
 
         get(s"/v1/${identityId.toString}?date=$formattedDate&cat=verification", headers = Map("authorization" -> s"bearer $token")) {
           status should equal(200)
-          val expected = s"""{"version":"0.7.14","ok":true,"data":[{"year":2022,"month":${DateUtil.dateToLocalDate(date).getMonthValue},"count":50}]}""".stripMargin
+          val expected = s"""{"version":"0.7.14","ok":true,"data":[{"year":${DateUtil.dateToLocalDate(date).getYear},"month":${DateUtil.dateToLocalDate(date).getMonthValue},"count":50}]}""".stripMargin
           assert(body == expected)
         }
 
@@ -102,7 +102,7 @@ class AcctEventsControllerKafkaSpec
 
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
-    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.connection.execute(x) }
+    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.session.execute(x) }
   }
 
   protected override def afterAll(): Unit = {

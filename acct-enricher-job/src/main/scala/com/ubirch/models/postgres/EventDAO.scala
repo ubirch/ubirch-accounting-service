@@ -2,7 +2,7 @@ package com.ubirch.models.postgres
 
 import com.ubirch.services.DailyCountResult
 import com.ubirch.services.formats.JsonConverterService
-import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query }
+import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query, Quoted }
 import io.getquill.context.sql.idiom.SqlIdiom
 import monix.eval.Task
 
@@ -58,7 +58,7 @@ class EventDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[D
   private def store_Q(eventRow: EventRow): Quoted[Insert[EventRow]] = {
     quote {
       query[EventRow]
-        .insert(lift(eventRow))
+        .insertValue(lift(eventRow))
         .onConflictUpdate(_.identityId, _.tenantId, _.category, _.date)(
           (t, e) => t.count -> e.count,
           (t, _) => t.updatedAt -> lift(new Date())
@@ -94,7 +94,7 @@ class DefaultEventDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect]
   private def store_Q(eventRow: EventRow): Quoted[Insert[EventRow]] = {
     quote {
       query[EventRow]
-        .insert(lift(eventRow))
+        .insertValue(lift(eventRow))
     }
   }
 

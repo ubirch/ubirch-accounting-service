@@ -1,13 +1,14 @@
 package com.ubirch.services.cluster
 
 import com.ubirch.{ Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase }
-import com.github.nosan.embedded.cassandra.api.cql.CqlScript
+import com.github.nosan.embedded.cassandra.cql.StringCqlScript
 import com.google.inject.Guice
+import io.getquill.context.ExecutionInfo
 
 /**
   * Test for the cassandra cluster
   */
-class ClusterSpec extends TestBase with EmbeddedCassandra {
+class CQLSessionSpec extends TestBase with EmbeddedCassandra {
   override def getInjector: InjectorHelper = new InjectorHelperImpl() {}
 
   val cassandra = new CassandraTest
@@ -22,7 +23,7 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
 
       val db = connectionService.context
 
-      val t = db.executeQuery("SELECT * FROM acct_events").headOptionL.runToFuture
+      val t = db.executeQuery("SELECT * FROM acct_events")(ExecutionInfo.unknown, ()).headOptionL.runToFuture
       assert(await(t).nonEmpty)
     }
 
@@ -32,7 +33,7 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
 
       val db = connectionService.context
 
-      val t = db.executeQuery("SELECT * FROM acct_events").headOptionL.runToFuture
+      val t = db.executeQuery("SELECT * FROM acct_events")(ExecutionInfo.unknown, ()).headOptionL.runToFuture
       assert(await(t).nonEmpty)
     }
 
@@ -53,7 +54,7 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
     cassandra.start()
 
     (EmbeddedCassandra.creationScripts ++ List(
-      CqlScript.ofString(
+      new StringCqlScript(
         """
           |drop table if exists acct_system.acct_events;
           |create table if not exists acct_system.acct_events
@@ -72,7 +73,7 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
           |);
           |""".stripMargin
       ),
-      CqlScript.ofString(
+      new StringCqlScript(
         ("INSERT INTO acct_system.acct_events (" +
           "id, " +
           "identity_id, " +
@@ -95,6 +96,6 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
           "'2020-12-03 19:44:43.243'" +
           ");").stripMargin
       )
-    )).foreach(x => x.forEachStatement { x => val _ = cassandra.connection.execute(x) })
+    )).foreach(x => x.forEachStatement { x => val _ = cassandra.session.execute(x) })
   }
 }

@@ -1,14 +1,13 @@
 package com.ubirch
 
 import com.ubirch.models.postgres.{ DefaultPostgresEventDAO, DefaultPostgresFlywaySupport, DefaultPostgresIdentityDAO, DefaultPostgresJobDAO, DefaultPostgresQuillJdbcContext, DefaultPostgresTenantDAO, EventDAO, FlywaySupport, IdentityDAO, JobDAO, QuillJdbcContext, TenantDAO }
-import com.ubirch.services.cluster.{ ClusterService, ConnectionService, DefaultClusterService, DefaultConnectionService }
+import com.ubirch.services.cluster.{ CQLSessionService, ConnectionService, DefaultCQLSessionService, DefaultConnectionService }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution.{ ExecutionProvider, SchedulerProvider }
 import com.ubirch.services.externals.{ DefaultHttpClient, DefaultThingAPI, HttpClient, ThingAPI }
 import com.ubirch.services.formats.{ DefaultJsonConverterService, JsonConverterService, JsonFormatsProvider }
 import com.ubirch.services.lifeCycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.{ AcctEventsService, DefaultAcctEventsService }
-
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.{ AbstractModule, Module, TypeLiteral }
 import com.typesafe.config.Config
@@ -32,7 +31,7 @@ class Binder
   def Lifecycle: ScopedBindingBuilder = bind(classOf[Lifecycle]).to(classOf[DefaultLifecycle])
   def JVMHook: ScopedBindingBuilder = bind(classOf[JVMHook]).to(classOf[DefaultJVMHook])
   def JsonConverterService: ScopedBindingBuilder = bind(classOf[JsonConverterService]).to(classOf[DefaultJsonConverterService])
-  def ClusterService: ScopedBindingBuilder = bind(classOf[ClusterService]).to(classOf[DefaultClusterService])
+  def CQLSessionService: ScopedBindingBuilder = bind(classOf[CQLSessionService]).to(classOf[DefaultCQLSessionService])
   def ConnectionService: ScopedBindingBuilder = bind(classOf[ConnectionService]).to(classOf[DefaultConnectionService])
   def QuillJdbcContext: ScopedBindingBuilder = bind(new TypeLiteral[QuillJdbcContext[PostgresDialect]]() {}).to(classOf[DefaultPostgresQuillJdbcContext])
   def FlywaySupport: ScopedBindingBuilder = bind(classOf[FlywaySupport]).to(classOf[DefaultPostgresFlywaySupport])
@@ -52,7 +51,7 @@ class Binder
     Lifecycle
     JVMHook
     JsonConverterService
-    ClusterService
+    CQLSessionService
     ConnectionService
     QuillJdbcContext
     FlywaySupport

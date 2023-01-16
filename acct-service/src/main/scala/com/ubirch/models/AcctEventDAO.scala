@@ -8,7 +8,7 @@ import monix.reactive.Observable
 import java.util.UUID
 import javax.inject.{ Inject, Singleton }
 
-trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
+trait AcctEventRowsQueries extends CassandraBase[AcctEventRow] {
 
   import db._
 
@@ -17,7 +17,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
   implicit val pointingAt: db.SchemaMeta[AcctEventRow] = schemaMeta[AcctEventRow]("acct_events")
 
   def insertQ(acctEventRow: AcctEventRow) = quote {
-    query[AcctEventRow].insert(lift(acctEventRow))
+    query[AcctEventRow].insertValue(lift(acctEventRow))
   }
 
   def selectAllQ = quote(query[AcctEventRow])
@@ -64,7 +64,7 @@ trait AcctEventRowsQueries extends TablePointer[AcctEventRow] {
 
 @Singleton
 class AcctEventDAO @Inject() (val connectionService: ConnectionService) extends AcctEventRowsQueries {
-  val db: CassandraStreamContext[SnakeCase.type] = connectionService.context
+  val db: CassandraStreamContext[SnakeCase] = connectionService.context
 
   import db._
 

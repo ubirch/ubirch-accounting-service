@@ -8,6 +8,7 @@ abstract class ServiceException(message: String) extends Exception(message) with
 
 case class NoContactPointsException(message: String) extends ServiceException(message)
 case class NoKeyspaceException(message: String) extends ServiceException(message)
+case class NoConsistencyLevelException(message: String) extends ServiceException(message)
 case class InvalidConsistencyLevel(message: String) extends ServiceException(message)
 case class InvalidContactPointsException(message: String) extends ServiceException(message)
 case class StoringException(message: String, reason: String) extends ServiceException(message)

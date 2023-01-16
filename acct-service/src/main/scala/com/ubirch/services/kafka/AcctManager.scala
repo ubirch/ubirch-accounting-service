@@ -5,13 +5,12 @@ import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
 import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
-import com.ubirch.kafka.util.Exceptions.NeedForPauseException
 import com.ubirch.models.{ AcctEvent, AcctEventOwnerRow, AcctEventRow, AcctStoreDAO }
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.DateUtil
 
-import com.datastax.driver.core.exceptions.{ InvalidQueryException, NoHostAvailableException }
+import com.datastax.oss.driver.api.core.servererrors.{ InvalidQueryException }
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
@@ -107,11 +106,11 @@ class DefaultAcctManager @Inject() (
           month = day.getMonthValue,
           day = day.getDayOfMonth,
           hour = day.getHour,
-          occurredAt = acctEvent.occurredAt,
+          occurredAt = acctEvent.occurredAt.toInstant,
           externalId = acctEvent.externalId
         )
         val eventsOwnerRow = acctEvent.ownerId.map { o =>
-          AcctEventOwnerRow(o, acctEvent.identityId, acctEvent.occurredAt)
+          AcctEventOwnerRow(o, acctEvent.identityId, acctEvent.occurredAt.toInstant)
         }
         for {
           res <- acctStoreDAO
@@ -129,9 +128,10 @@ class DefaultAcctManager @Inject() (
       .onErrorHandle {
         case e: ExecutionException =>
           e.getCause match {
-            case e: NoHostAvailableException =>
+            // @todo check what is the error when no host is available
+            /*case e: NoHostAvailableException =>
               logger.error("Error connecting to host: " + e)
-              p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))
+              p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))*/
             case e: InvalidQueryException =>
               logger.error("Error storing data (invalid query): " + e)
               p.failure(StoringException("Invalid Query ", e.getMessage))

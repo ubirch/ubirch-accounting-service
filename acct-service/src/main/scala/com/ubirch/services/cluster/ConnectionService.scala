@@ -3,30 +3,21 @@ package services.cluster
 
 import com.ubirch.ConfPaths.CassandraClusterConfPaths
 import com.ubirch.services.lifeCycle.Lifecycle
-
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
+import io.getquill.context.cassandra.encoding.{ Decoders, Encoders }
 import io.getquill.{ CassandraStreamContext, NamingStrategy, SnakeCase }
 
 import javax.inject._
 import scala.concurrent.Future
 
 /**
-  * Component that represent the basic configuration for the ConnectionService Component.
-  */
-trait ConnectionServiceConfig {
-  val keyspace: String
-  val preparedStatementCacheSize: Long
-}
-
-/**
   * Component that represents a Connection Service.
   * A Connection Service represents the connection established to the
   * Cassandra database.
   */
-trait ConnectionServiceBase extends ConnectionServiceConfig {
-  type N <: NamingStrategy
-  val context: CassandraStreamContext[N]
+trait ConnectionServiceBase[N <: NamingStrategy] {
+  val context: CassandraStreamContext[N] with Encoders with Decoders
 }
 
 /**
@@ -34,9 +25,7 @@ trait ConnectionServiceBase extends ConnectionServiceConfig {
   * is ShakeCase.
   */
 
-trait ConnectionService extends ConnectionServiceBase {
-  type N = SnakeCase.type
-}
+trait ConnectionService extends ConnectionServiceBase[SnakeCase]
 
 /**
   * Default Implementation of the Connection Service Component.
@@ -47,28 +36,18 @@ trait ConnectionService extends ConnectionServiceBase {
   */
 
 @Singleton
-class DefaultConnectionService @Inject() (clusterService: ClusterService, config: Config, lifecycle: Lifecycle)
+class DefaultConnectionService @Inject() (cqlSessionService: CQLSessionService, config: Config, lifecycle: Lifecycle)
   extends ConnectionService with CassandraClusterConfPaths with LazyLogging {
 
-  val keyspace: String = config.getString(KEYSPACE)
   val preparedStatementCacheSize: Long = config.getLong(PREPARED_STATEMENT_CACHE_SIZE)
 
-  if (keyspace.isEmpty) {
-    throw NoKeyspaceException("Keyspace must be provided.")
-  }
-
-  private def createContext() = new CassandraStreamContext(
+  private def createContext() = new CassandraStreamContext[SnakeCase](
     SnakeCase,
-    clusterService.cluster,
-    keyspace,
+    cqlSessionService.cqlSession,
     preparedStatementCacheSize
-  )
+  ) with Encoders with Decoders
 
-  override val context = {
-    val conn = createContext()
-    logger.info("Connected to keyspace: " + keyspace)
-    conn
-  }
+  override val context = createContext()
 
   lifecycle.addStopHook { () =>
     logger.info("Shutting down Connection Service")

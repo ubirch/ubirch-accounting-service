@@ -71,8 +71,8 @@
         <scala.logging.version>3.9.0</scala.logging.version>
         <mockito.version>3.2.9.0</mockito.version>
 
-        <quill.cassandra.version>3.4.1</quill.cassandra.version>
-        <embedded-cassandra>3.0.3</embedded-cassandra>
+        <io.quill.version>4.6.0</io.quill.version>
+        <embedded-cassandra>4.0.7</embedded-cassandra>
 
         <guice.version>4.1.0</guice.version>
 
@@ -120,13 +120,13 @@
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra-monix_${scala.compat.version}</artifactId>
-            <version>3.7.2</version>
+            <version>${io.quill.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra_${scala.compat.version}</artifactId>
-            <version>3.7.2</version>
+            <version>${io.quill.version}</version>
         </dependency>
 
         <dependency>
@@ -160,7 +160,7 @@
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-jdbc_${scala.compat.version}</artifactId>
-            <version>3.7.2</version>
+            <version>${io.quill.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

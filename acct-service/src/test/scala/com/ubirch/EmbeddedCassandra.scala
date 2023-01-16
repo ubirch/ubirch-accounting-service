@@ -1,11 +1,12 @@
 package com.ubirch
 
-import com.github.nosan.embedded.cassandra.EmbeddedCassandraFactory
-import com.github.nosan.embedded.cassandra.api.Cassandra
-import com.github.nosan.embedded.cassandra.api.connection.{ CassandraConnection, DefaultCassandraConnectionFactory }
-import com.github.nosan.embedded.cassandra.api.cql.CqlScript
+import com.datastax.oss.driver.api.core.CqlSession
+import com.github.nosan.embedded.cassandra.{ Cassandra, CassandraBuilder }
+import com.github.nosan.embedded.cassandra.commons.ClassPathResource
+import com.github.nosan.embedded.cassandra.cql.{ CqlScript, ResourceCqlScript, StringCqlScript }
 import com.typesafe.scalalogging.LazyLogging
 
+import java.net.InetSocketAddress
 import scala.collection.JavaConverters._
 
 /**
@@ -16,24 +17,23 @@ trait EmbeddedCassandra {
   class CassandraTest extends LazyLogging {
 
     @volatile var cassandra: Cassandra = _
-    @volatile var cassandraConnectionFactory: DefaultCassandraConnectionFactory = _
-    @volatile var connection: CassandraConnection = _
+    @volatile var session: CqlSession = _
 
     def start(): Unit = {
-      val factory: EmbeddedCassandraFactory = new EmbeddedCassandraFactory()
-      factory.getJvmOptions.addAll(List("-Xms500m", "-Xmx1000m").asJava)
-      cassandra = factory.create()
+      cassandra = new CassandraBuilder().addJvmOptions(List("-Xms500m", "-Xmx1000m").asJava).build()
       cassandra.start()
-      cassandraConnectionFactory = new DefaultCassandraConnectionFactory
-      connection = cassandraConnectionFactory.create(cassandra)
-
+      val settings = cassandra.getSettings()
+      session = CqlSession.builder()
+        .addContactPoint(new InetSocketAddress(settings.getAddress(), settings.getPort()))
+        .withLocalDatacenter("datacenter1")
+        .build()
     }
 
     def stop(): Unit = {
-      if (connection != null) try connection.close()
+      if (session != null) try session.close()
       catch {
         case ex: Throwable =>
-          logger.error("CassandraConnection '" + connection + "' is not closed", ex)
+          logger.error("CqlSession '" + session + "' is not closed", ex)
       }
       cassandra.stop()
       if (cassandra != null) cassandra.stop()
@@ -41,7 +41,7 @@ trait EmbeddedCassandra {
 
     def startAndCreateDefaults(scripts: Seq[CqlScript] = EmbeddedCassandra.creationScripts): Unit = {
       start()
-      scripts.foreach(x => x.forEachStatement { x => val _ = connection.execute(x) })
+      scripts.foreach(x => x.forEachStatement { x => val _ = session.execute(x) })
     }
 
   }
@@ -50,15 +50,14 @@ trait EmbeddedCassandra {
 
 object EmbeddedCassandra {
 
-  def truncateScript: CqlScript = {
-    CqlScript.ofString("truncate acct_system.acct_events;")
+  def truncateScript: StringCqlScript = {
+    new StringCqlScript("truncate acct_system.acct_events;")
   }
-
   def creationScripts: Seq[CqlScript] = List(
-    CqlScript.ofString("drop keyspace IF EXISTS acct_system;"),
-    CqlScript.ofString("CREATE KEYSPACE acct_system WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};"),
-    CqlScript.ofString("USE acct_system;"),
-    CqlScript.ofClasspath("db/migrations/v1_Adding_acct_events_table.cql"),
-    CqlScript.ofClasspath("db/migrations/v2_Adding_owner_table.cql")
+    new StringCqlScript("drop keyspace IF EXISTS acct_system;"),
+    new StringCqlScript("CREATE KEYSPACE acct_system WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};"),
+    new StringCqlScript("USE acct_system;"),
+    new ResourceCqlScript(new ClassPathResource("db/migrations/v1_Adding_acct_events_table.cql")),
+    new ResourceCqlScript(new ClassPathResource("db/migrations/v2_Adding_owner_table.cql"))
   )
 }

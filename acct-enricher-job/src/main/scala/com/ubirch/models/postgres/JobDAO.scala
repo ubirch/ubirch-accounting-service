@@ -1,7 +1,7 @@
 package com.ubirch.models.postgres
 
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query, Update }
+import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query, Quoted, Update }
 import monix.eval.Task
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
 
@@ -41,7 +41,7 @@ class JobDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[Dia
   private def store_Q(jobRow: JobRow): Quoted[Insert[JobRow]] = {
     quote {
       query[JobRow]
-        .insert(lift(jobRow))
+        .insertValue(lift(jobRow))
         .onConflictUpdate(_.id)(
           (t, e) => t.success -> e.success,
           (t, e) => t.comment -> e.comment,
@@ -82,7 +82,7 @@ class DefaultH2JobDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dialect]
   private def store_Q(jobRow: JobRow): Quoted[Insert[JobRow]] = {
     quote {
       query[JobRow]
-        .insert(lift(jobRow))
+        .insertValue(lift(jobRow))
     }
   }
 

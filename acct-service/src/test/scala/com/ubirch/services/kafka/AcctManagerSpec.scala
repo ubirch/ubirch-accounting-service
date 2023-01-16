@@ -139,7 +139,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
 
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
-    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.connection.execute(x) }
+    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.session.execute(x) }
   }
 
   protected override def afterAll(): Unit = {

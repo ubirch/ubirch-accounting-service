@@ -25,6 +25,7 @@ object ConfPaths {
 
   trait CassandraClusterConfPaths {
     final val CONTACT_POINTS = "system.cassandra.cluster.contactPoints"
+    final val LOCAL_DATACENTER = "system.cassandra.cluster.localDataCenter"
     final val CONSISTENCY_LEVEL = "system.cassandra.cluster.consistencyLevel"
     final val SERIAL_CONSISTENCY_LEVEL = "system.cassandra.cluster.serialConsistencyLevel"
     final val WITH_SSL = "system.cassandra.cluster.withSSL"
