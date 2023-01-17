@@ -1,8 +1,11 @@
 package com.ubirch.services.cluster
 
+import com.datastax.oss.driver.api.core.CqlSession
 import com.ubirch.{ Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase }
 import com.github.nosan.embedded.cassandra.cql.StringCqlScript
 import com.google.inject.Guice
+import com.typesafe.config.Config
+import com.ubirch.services.lifeCycle.Lifecycle
 import io.getquill.context.ExecutionInfo
 
 /**
@@ -19,7 +22,12 @@ class CQLSessionSpec extends TestBase with EmbeddedCassandra {
 
     "be able to get proper instance and do query" in {
 
-      val connectionService = serviceInjector.getInstance(classOf[ConnectionService])
+      val config = serviceInjector.getInstance(classOf[Config])
+      val lifecycle = serviceInjector.getInstance(classOf[Lifecycle])
+      val defaultCQLSessionService = new DefaultCQLSessionService(config) {
+        override val cqlSession: CqlSession = cassandra.session
+      }
+      val connectionService = new DefaultConnectionService(defaultCQLSessionService, config = config, lifecycle = lifecycle)
 
       val db = connectionService.context
 
@@ -29,7 +37,12 @@ class CQLSessionSpec extends TestBase with EmbeddedCassandra {
 
     "be able to get proper instance and do query without recreating it" in {
 
-      val connectionService = serviceInjector.getInstance(classOf[ConnectionService])
+      val config = serviceInjector.getInstance(classOf[Config])
+      val lifecycle = serviceInjector.getInstance(classOf[Lifecycle])
+      val defaultCQLSessionService = new DefaultCQLSessionService(config) {
+        override val cqlSession: CqlSession = cassandra.session
+      }
+      val connectionService = new DefaultConnectionService(defaultCQLSessionService, config = config, lifecycle = lifecycle)
 
       val db = connectionService.context
 

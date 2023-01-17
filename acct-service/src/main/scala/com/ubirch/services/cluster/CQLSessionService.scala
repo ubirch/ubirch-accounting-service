@@ -66,6 +66,11 @@ trait CQLSessionService {
 class DefaultCQLSessionService @Inject() (config: Config) extends CQLSessionService with CassandraClusterConfPaths with LazyLogging {
 
   val keyspace: String = config.getString(KEYSPACE)
+  /**
+    * @note
+    * If we use a test container for the test, this part should be changed so that we can easily inject the contact point of the test container.
+    * since we currently use a embedded cassandra which use localhost:9042, this code works in the test as well.
+    */
   val contactPoints: List[InetSocketAddress] = buildContactPointsFromString(config.getString(CONTACT_POINTS))
   val localDataCenter: String = config.getString(LOCAL_DATACENTER)
   val maybeConsistencyLevel: Option[ConsistencyLevel] = checkConsistencyLevel(config.getString(CONSISTENCY_LEVEL))
