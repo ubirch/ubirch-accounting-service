@@ -93,8 +93,6 @@ class DefaultCQLSessionService @Inject() (config: Config) extends CQLSessionServ
       .addContactPoints(contactPoints.asJavaCollection)
       .withLocalDatacenter(localDataCenter)
       .withApplicationName("accounting_service")
-    //TODO: Is it necessary to configure this as before.
-    //.withPoolingOptions(poolingOptions)
 
     maybeConsistencyLevel.foreach { cl =>
       driverConfigLoaderBuilder.withString(DefaultDriverOption.REQUEST_CONSISTENCY, cl.name())
