@@ -3,11 +3,11 @@ package services.cluster
 
 import com.ubirch.ConfPaths.CassandraClusterConfPaths
 import com.ubirch.util.URLsHelper
-
 import com.datastax.oss.driver.api.core._
 import com.datastax.oss.driver.api.core.config.{ DefaultDriverOption, DriverConfigLoader, ProgrammaticDriverConfigLoaderBuilder }
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
+import com.ubirch.InvalidTrustStore
 
 import java.net.InetSocketAddress
 import java.nio.file.{ Files, Paths }
@@ -42,6 +42,8 @@ trait CQLSessionService {
     val trustStore = KeyStore.getInstance("JKS")
     closableTry(Files.newInputStream(Paths.get(trustStorePath)))(_.close()) { stream =>
       trustStore.load(stream, trustStorePassword.toCharArray)
+    }.left.foreach { e =>
+      throw InvalidTrustStore("Failed to load trust store: " + e.getMessage)
     }
 
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm)

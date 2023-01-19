@@ -42,6 +42,8 @@ trait CQLSessionService {
     val trustStore = KeyStore.getInstance("JKS")
     closableTry(Files.newInputStream(Paths.get(trustStorePath)))(_.close()) { stream =>
       trustStore.load(stream, trustStorePassword.toCharArray)
+    }.left.foreach { e =>
+      throw InvalidTrustStore("Failed to load trust store: " + e.getMessage)
     }
 
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm)

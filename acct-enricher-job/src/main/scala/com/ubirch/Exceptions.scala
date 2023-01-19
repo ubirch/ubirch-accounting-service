@@ -25,6 +25,9 @@ case class NoKeyspaceException(message: String) extends ServiceException(message
 case class NoConsistencyLevelException(message: String) extends ServiceException(message) {
   override def reason: String = message
 }
+case class InvalidTrustStore(message: String) extends ServiceException(message) {
+  override def reason: String = message
+}
 
 case class InvalidConsistencyLevel(message: String) extends ServiceException(message) {
   override def reason: String = message
