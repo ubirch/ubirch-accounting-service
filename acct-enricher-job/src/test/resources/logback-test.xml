@@ -31,7 +31,7 @@
     </appender>
 
     <logger name="com.github.nosan.embedded.cassandra" level="ERROR"/>
-    <logger name="com.datastax.driver" level="ERROR"/>
+    <logger name="com.datastax.oss.driver" level="ERROR"/>
     <logger name="io.netty" level="ERROR"/>
     <logger name="io.getquill.CassandraStreamContext" level="ERROR"/>
 
