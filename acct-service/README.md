@@ -183,7 +183,7 @@ docker-compose up
 # run the evolutions scripts that are stored in 'src/main/resources/db/migrations'
 cd src/main/resources
 cassandra-migrate -H 127.0.0.1 -p 9042 migrate
-cd ../../../..
+cd ../../..
 
 # run the service
 mvn exec:java -Dexec.mainClass=com.ubirch.Service
