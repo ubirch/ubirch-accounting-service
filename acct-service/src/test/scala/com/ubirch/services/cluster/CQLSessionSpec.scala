@@ -3,12 +3,13 @@ package com.ubirch.services.cluster
 import com.github.nosan.embedded.cassandra.cql.StringCqlScript
 import com.ubirch.{ Binder, EmbeddedCassandra, TestBase }
 import com.google.inject.Guice
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
 import io.getquill.context.ExecutionInfo
 
 /**
   * Test for the cassandra cluster
   */
-class CQLSessionSpec extends TestBase with EmbeddedCassandra {
+class CQLSessionSpec extends TestBase with EmbeddedCassandraBase {
 
   val cassandra = new CassandraTest
 

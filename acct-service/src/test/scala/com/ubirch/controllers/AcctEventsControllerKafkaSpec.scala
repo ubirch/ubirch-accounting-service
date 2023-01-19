@@ -9,9 +9,9 @@ import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch.services.kafka.AcctManager
 import com.ubirch.util.DateUtil
-
 import com.google.inject.binder.ScopedBindingBuilder
 import com.typesafe.config.{ Config, ConfigValueFactory }
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
 import io.prometheus.client.CollectorRegistry
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 import org.scalatest.BeforeAndAfterEach
@@ -28,7 +28,7 @@ import scala.language.postfixOps
 class AcctEventsControllerKafkaSpec
   extends ScalatraWordSpec
   with EmbeddedKafka
-  with EmbeddedCassandra
+  with EmbeddedCassandraBase
   with BeforeAndAfterEach
   with ExecutionContextsTests
   with Awaits {
@@ -113,7 +113,7 @@ class AcctEventsControllerKafkaSpec
   protected override def beforeAll(): Unit = {
 
     CollectorRegistry.defaultRegistry.clear()
-    cassandra.startAndCreateDefaults()
+    cassandra.startAndCreateDefaults(EmbeddedCassandra.creationScripts)
 
     lazy val pool = Injector.get[PublicKeyPoolService]
     await(pool.init, 2 seconds)

@@ -4,14 +4,15 @@ import com.datastax.oss.driver.api.core.CqlSession
 import com.ubirch.{ Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase }
 import com.github.nosan.embedded.cassandra.cql.StringCqlScript
 import com.google.inject.Guice
-import com.typesafe.config.Config
 import com.ubirch.services.lifeCycle.Lifecycle
+import com.ubirch.util.cassandra.{ CassandraConfig, DefaultCQLSessionService }
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
 import io.getquill.context.ExecutionInfo
 
 /**
   * Test for the cassandra cluster
   */
-class CQLSessionSpec extends TestBase with EmbeddedCassandra {
+class CQLSessionSpec extends TestBase with EmbeddedCassandraBase {
   override def getInjector: InjectorHelper = new InjectorHelperImpl() {}
 
   val cassandra = new CassandraTest
@@ -22,12 +23,12 @@ class CQLSessionSpec extends TestBase with EmbeddedCassandra {
 
     "be able to get proper instance and do query" in {
 
-      val config = serviceInjector.getInstance(classOf[Config])
+      val config = serviceInjector.getInstance(classOf[CassandraConfig])
       val lifecycle = serviceInjector.getInstance(classOf[Lifecycle])
       val defaultCQLSessionService = new DefaultCQLSessionService(config) {
         override val cqlSession: CqlSession = cassandra.session
       }
-      val connectionService = new DefaultConnectionService(defaultCQLSessionService, config = config, lifecycle = lifecycle)
+      val connectionService = new DefaultConnectionService(defaultCQLSessionService, lifecycle = lifecycle)
 
       val db = connectionService.context
 
@@ -37,12 +38,12 @@ class CQLSessionSpec extends TestBase with EmbeddedCassandra {
 
     "be able to get proper instance and do query without recreating it" in {
 
-      val config = serviceInjector.getInstance(classOf[Config])
+      val config = serviceInjector.getInstance(classOf[CassandraConfig])
       val lifecycle = serviceInjector.getInstance(classOf[Lifecycle])
       val defaultCQLSessionService = new DefaultCQLSessionService(config) {
         override val cqlSession: CqlSession = cassandra.session
       }
-      val connectionService = new DefaultConnectionService(defaultCQLSessionService, config = config, lifecycle = lifecycle)
+      val connectionService = new DefaultConnectionService(defaultCQLSessionService, lifecycle = lifecycle)
 
       val db = connectionService.context
 

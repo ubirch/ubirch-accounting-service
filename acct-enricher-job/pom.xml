@@ -71,6 +71,7 @@
         <scala.logging.version>3.9.0</scala.logging.version>
         <mockito.version>3.2.9.0</mockito.version>
 
+        <ubirch-cassandra-utils.version>1.0-SNAPSHOT</ubirch-cassandra-utils.version>
         <io.quill.version>4.6.0</io.quill.version>
         <embedded-cassandra>4.0.7</embedded-cassandra>
 
@@ -112,9 +113,20 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/37429227/packages/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
+
+        <!-- https://gitlab.com/ubirch/ubirch-cassandra-utils -->
+        <dependency>
+            <groupId>com.ubirch</groupId>
+            <artifactId>ubirch-cassandra-utils_${scala.compat.version}</artifactId>
+            <version>${ubirch-cassandra-utils.version}</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.getquill/quill-cassandra-monix -->
         <dependency>

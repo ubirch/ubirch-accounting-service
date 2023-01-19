@@ -3,6 +3,7 @@ package com.ubirch.controllers
 import com.github.nosan.embedded.cassandra.cql.StringCqlScript
 import com.ubirch._
 import com.ubirch.services.jwt.PublicKeyPoolService
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
 import io.prometheus.client.CollectorRegistry
 import org.scalatest.BeforeAndAfterEach
 import org.scalatra.test.scalatest.ScalatraWordSpec
@@ -16,7 +17,7 @@ import scala.language.postfixOps
   */
 class AcctEventsControllerSpec
   extends ScalatraWordSpec
-  with EmbeddedCassandra
+  with EmbeddedCassandraBase
   with BeforeAndAfterEach
   with ExecutionContextsTests
   with Awaits {
@@ -120,7 +121,7 @@ class AcctEventsControllerSpec
   protected override def beforeAll(): Unit = {
 
     CollectorRegistry.defaultRegistry.clear()
-    cassandra.startAndCreateDefaults()
+    cassandra.startAndCreateDefaults(EmbeddedCassandra.creationScripts)
 
     lazy val pool = Injector.get[PublicKeyPoolService]
     await(pool.init, 2 seconds)

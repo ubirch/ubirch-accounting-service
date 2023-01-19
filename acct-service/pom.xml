@@ -70,6 +70,7 @@
         <scalatest.version>3.0.5</scalatest.version>
         <scala.logging.version>3.9.0</scala.logging.version>
 
+        <ubirch-cassandra-utils.version>1.0-SNAPSHOT</ubirch-cassandra-utils.version>
         <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
         <embedded-kafka>2.3.0</embedded-kafka>
 
@@ -127,6 +128,10 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/37429227/packages/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -180,6 +185,13 @@
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra_${scala.compat.version}</artifactId>
             <version>${io.getquill.version}</version>
+        </dependency>
+
+        <!-- https://gitlab.com/ubirch/ubirch-cassandra-utils -->
+        <dependency>
+            <groupId>com.ubirch</groupId>
+            <artifactId>ubirch-cassandra-utils_${scala.compat.version}</artifactId>
+            <version>${ubirch-cassandra-utils.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
