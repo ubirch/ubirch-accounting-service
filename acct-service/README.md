@@ -181,7 +181,7 @@ Visit https://accounting.dev.ubirch.com/docs on your browser to see the swagger 
 docker-compose up
 
 # run the evolutions scripts that are stored in 'src/main/resources/db/migrations'
-cd src/main/resources/db
+cd src/main/resources
 cassandra-migrate -H 127.0.0.1 -p 9042 migrate
 cd ../../../..
 
