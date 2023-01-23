@@ -1,20 +1,21 @@
 package com.ubirch
 package services.kafka
 
-import com.ubirch.ConfPaths.{ AcctConsumerConfPaths, AcctProducerConfPaths }
+import com.datastax.oss.driver.api.core.AllNodesFailedException
+import com.ubirch.ConfPaths.{AcctConsumerConfPaths, AcctProducerConfPaths}
 import com.ubirch.kafka.consumer.WithConsumerShutdownHook
 import com.ubirch.kafka.express.ExpressKafka
 import com.ubirch.kafka.producer.WithProducerShutdownHook
-import com.ubirch.models.{ AcctEvent, AcctEventOwnerRow, AcctEventRow, AcctStoreDAO }
+import com.ubirch.models.{AcctEvent, AcctEventOwnerRow, AcctEventRow, AcctStoreDAO}
 import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.lifeCycle.Lifecycle
 import com.ubirch.util.DateUtil
-
-import com.datastax.oss.driver.api.core.servererrors.{ InvalidQueryException }
+import com.datastax.oss.driver.api.core.servererrors.InvalidQueryException
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
+import com.ubirch.kafka.util.Exceptions.NeedForPauseException
 import monix.eval.Task
-import monix.execution.{ CancelableFuture, Scheduler }
+import monix.execution.{CancelableFuture, Scheduler}
 import monix.reactive.Observable
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization._
@@ -24,7 +25,7 @@ import java.io.ByteArrayInputStream
 import java.time.ZoneId
 import java.util.concurrent.ExecutionException
 import javax.inject._
-import scala.concurrent.{ ExecutionContext, Promise }
+import scala.concurrent.{ExecutionContext, Promise}
 
 abstract class AcctManager(val config: Config, lifecycle: Lifecycle)
   extends ExpressKafka[String, Array[Byte], Unit]
@@ -128,10 +129,9 @@ class DefaultAcctManager @Inject() (
       .onErrorHandle {
         case e: ExecutionException =>
           e.getCause match {
-            // @todo check what is the error when no host is available
-            /*case e: NoHostAvailableException =>
+            case e: AllNodesFailedException =>
               logger.error("Error connecting to host: " + e)
-              p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))*/
+              p.failure(NeedForPauseException("Error connecting", e.getLocalizedMessage))
             case e: InvalidQueryException =>
               logger.error("Error storing data (invalid query): " + e)
               p.failure(StoringException("Invalid Query ", e.getMessage))
