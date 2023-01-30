@@ -121,7 +121,7 @@ class AcctEventsControllerSpec
   protected override def beforeAll(): Unit = {
 
     CollectorRegistry.defaultRegistry.clear()
-    cassandra.startAndCreateDefaults(EmbeddedCassandra.creationScripts)
+    cassandra.startAndExecuteScripts(EmbeddedCassandra.creationScripts)
 
     lazy val pool = Injector.get[PublicKeyPoolService]
     await(pool.init, 2 seconds)
