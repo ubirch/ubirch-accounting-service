@@ -2,9 +2,8 @@ package com.ubirch.models.postgres
 
 import com.ubirch.services.externals.Tenant
 import com.ubirch.services.formats.JsonConverterService
-
 import io.getquill.context.sql.idiom.SqlIdiom
-import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect }
+import io.getquill.{ EntityQuery, H2Dialect, Insert, PostgresDialect, Quoted }
 import monix.eval.Task
 
 import java.util.{ Date, UUID }
@@ -73,7 +72,7 @@ class TenantDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContext[
   private def store_Q(tenantRow: TenantRow): Quoted[Insert[TenantRow]] = {
     quote {
       query[TenantRow]
-        .insert(lift(tenantRow))
+        .insertValue(lift(tenantRow))
         .onConflictUpdate(_.id)(
           (t, e) => t.groupName -> e.groupName,
           (t, e) => t.groupPath -> e.groupPath,
@@ -114,7 +113,7 @@ class DefaultH2TenantDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Diale
   private def store_Q(tenantRow: TenantRow): Quoted[Insert[TenantRow]] = {
     quote {
       query[TenantRow]
-        .insert(lift(tenantRow))
+        .insertValue(lift(tenantRow))
     }
   }
 

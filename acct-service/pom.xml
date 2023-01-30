@@ -70,12 +70,12 @@
         <scalatest.version>3.0.5</scalatest.version>
         <scala.logging.version>3.9.0</scala.logging.version>
 
+        <ubirch-cassandra-utils.version>1.0-SNAPSHOT</ubirch-cassandra-utils.version>
         <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
         <embedded-kafka>2.3.0</embedded-kafka>
 
         <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
-        <quill.cassandra.version>3.4.1</quill.cassandra.version>
-        <embedded-cassandra>3.0.3</embedded-cassandra>
+        <embedded-cassandra>4.0.7</embedded-cassandra>
 
         <guice.version>4.1.0</guice.version>
 
@@ -99,6 +99,8 @@
         <json4s-native.version>3.6.0</json4s-native.version>
         <json4s-jackson.version>3.6.1</json4s-jackson.version>
         <json4s-ext>3.6.0</json4s-ext>
+
+        <io.getquill.version>4.6.0</io.getquill.version>
 
         <!-- Scalatra -->
         <scalatra.version>2.6.5</scalatra.version>
@@ -125,6 +127,10 @@
         <repository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/37429227/packages/maven</url>
         </repository>
     </repositories>
 
@@ -172,20 +178,27 @@
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra-monix_${scala.compat.version}</artifactId>
-            <version>3.4.10</version>
+            <version>${io.getquill.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.getquill</groupId>
             <artifactId>quill-cassandra_${scala.compat.version}</artifactId>
-            <version>3.4.10</version>
+            <version>${io.getquill.version}</version>
+        </dependency>
+
+        <!-- https://gitlab.com/ubirch/ubirch-cassandra-utils -->
+        <dependency>
+            <groupId>com.ubirch</groupId>
+            <artifactId>ubirch-cassandra-utils_${scala.compat.version}</artifactId>
+            <version>${ubirch-cassandra-utils.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
         <dependency>
             <groupId>org.lz4</groupId>
             <artifactId>lz4-java</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.1</version>
         </dependency>
 
         <dependency>

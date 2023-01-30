@@ -6,9 +6,9 @@ import com.ubirch.kafka.util.PortGiver
 import com.ubirch.models.{ AcctEvent, AcctEventDAO }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.formats.JsonConverterService
-
 import com.google.inject.binder.ScopedBindingBuilder
 import com.typesafe.config.{ Config, ConfigValueFactory }
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
 import io.prometheus.client.CollectorRegistry
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 
@@ -16,7 +16,7 @@ import java.util.{ Date, UUID }
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka {
+class AcctManagerSpec extends TestBase with EmbeddedCassandraBase with EmbeddedKafka {
 
   val cassandra = new CassandraTest
 
@@ -139,7 +139,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
 
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
-    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.connection.execute(x) }
+    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.session.execute(x) }
   }
 
   protected override def afterAll(): Unit = {
@@ -147,7 +147,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandra with EmbeddedKafka
   }
 
   protected override def beforeAll(): Unit = {
-    cassandra.startAndCreateDefaults()
+    cassandra.startAndCreateDefaults(EmbeddedCassandra.creationScripts)
   }
 
 }

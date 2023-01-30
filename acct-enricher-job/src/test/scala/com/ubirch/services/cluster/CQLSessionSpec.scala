@@ -1,13 +1,18 @@
 package com.ubirch.services.cluster
 
+import com.datastax.oss.driver.api.core.CqlSession
 import com.ubirch.{ Binder, EmbeddedCassandra, InjectorHelper, InjectorHelperImpl, TestBase }
-import com.github.nosan.embedded.cassandra.api.cql.CqlScript
+import com.github.nosan.embedded.cassandra.cql.StringCqlScript
 import com.google.inject.Guice
+import com.ubirch.services.lifeCycle.Lifecycle
+import com.ubirch.util.cassandra.{ CassandraConfig, DefaultCQLSessionService }
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
+import io.getquill.context.ExecutionInfo
 
 /**
   * Test for the cassandra cluster
   */
-class ClusterSpec extends TestBase with EmbeddedCassandra {
+class CQLSessionSpec extends TestBase with EmbeddedCassandraBase {
   override def getInjector: InjectorHelper = new InjectorHelperImpl() {}
 
   val cassandra = new CassandraTest
@@ -18,21 +23,31 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
 
     "be able to get proper instance and do query" in {
 
-      val connectionService = serviceInjector.getInstance(classOf[ConnectionService])
+      val config = serviceInjector.getInstance(classOf[CassandraConfig])
+      val lifecycle = serviceInjector.getInstance(classOf[Lifecycle])
+      val defaultCQLSessionService = new DefaultCQLSessionService(config) {
+        override val cqlSession: CqlSession = cassandra.session
+      }
+      val connectionService = new DefaultConnectionService(defaultCQLSessionService, lifecycle = lifecycle)
 
       val db = connectionService.context
 
-      val t = db.executeQuery("SELECT * FROM acct_events").headOptionL.runToFuture
+      val t = db.executeQuery("SELECT * FROM acct_events")(ExecutionInfo.unknown, ()).headOptionL.runToFuture
       assert(await(t).nonEmpty)
     }
 
     "be able to get proper instance and do query without recreating it" in {
 
-      val connectionService = serviceInjector.getInstance(classOf[ConnectionService])
+      val config = serviceInjector.getInstance(classOf[CassandraConfig])
+      val lifecycle = serviceInjector.getInstance(classOf[Lifecycle])
+      val defaultCQLSessionService = new DefaultCQLSessionService(config) {
+        override val cqlSession: CqlSession = cassandra.session
+      }
+      val connectionService = new DefaultConnectionService(defaultCQLSessionService, lifecycle = lifecycle)
 
       val db = connectionService.context
 
-      val t = db.executeQuery("SELECT * FROM acct_events").headOptionL.runToFuture
+      val t = db.executeQuery("SELECT * FROM acct_events")(ExecutionInfo.unknown, ()).headOptionL.runToFuture
       assert(await(t).nonEmpty)
     }
 
@@ -53,7 +68,7 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
     cassandra.start()
 
     (EmbeddedCassandra.creationScripts ++ List(
-      CqlScript.ofString(
+      new StringCqlScript(
         """
           |drop table if exists acct_system.acct_events;
           |create table if not exists acct_system.acct_events
@@ -72,7 +87,7 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
           |);
           |""".stripMargin
       ),
-      CqlScript.ofString(
+      new StringCqlScript(
         ("INSERT INTO acct_system.acct_events (" +
           "id, " +
           "identity_id, " +
@@ -95,6 +110,6 @@ class ClusterSpec extends TestBase with EmbeddedCassandra {
           "'2020-12-03 19:44:43.243'" +
           ");").stripMargin
       )
-    )).foreach(x => x.forEachStatement { x => val _ = cassandra.connection.execute(x) })
+    )).foreach(x => x.forEachStatement { x => val _ = cassandra.session.execute(x) })
   }
 }

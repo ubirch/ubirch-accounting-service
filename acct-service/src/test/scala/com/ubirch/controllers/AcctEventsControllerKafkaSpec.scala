@@ -9,9 +9,9 @@ import com.ubirch.services.formats.JsonConverterService
 import com.ubirch.services.jwt.PublicKeyPoolService
 import com.ubirch.services.kafka.AcctManager
 import com.ubirch.util.DateUtil
-
 import com.google.inject.binder.ScopedBindingBuilder
 import com.typesafe.config.{ Config, ConfigValueFactory }
+import com.ubirch.util.cassandra.test.EmbeddedCassandraBase
 import io.prometheus.client.CollectorRegistry
 import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 import org.scalatest.BeforeAndAfterEach
@@ -28,7 +28,7 @@ import scala.language.postfixOps
 class AcctEventsControllerKafkaSpec
   extends ScalatraWordSpec
   with EmbeddedKafka
-  with EmbeddedCassandra
+  with EmbeddedCassandraBase
   with BeforeAndAfterEach
   with ExecutionContextsTests
   with Awaits {
@@ -90,7 +90,7 @@ class AcctEventsControllerKafkaSpec
 
         get(s"/v1/${identityId.toString}?date=$formattedDate&cat=verification", headers = Map("authorization" -> s"bearer $token")) {
           status should equal(200)
-          val expected = s"""{"version":"0.7.14","ok":true,"data":[{"year":2022,"month":${DateUtil.dateToLocalDate(date).getMonthValue},"count":50}]}""".stripMargin
+          val expected = s"""{"version":"0.7.14","ok":true,"data":[{"year":${DateUtil.dateToLocalDate(date).getYear},"month":${DateUtil.dateToLocalDate(date).getMonthValue},"count":50}]}""".stripMargin
           assert(body == expected)
         }
 
@@ -102,7 +102,7 @@ class AcctEventsControllerKafkaSpec
 
   override protected def beforeEach(): Unit = {
     CollectorRegistry.defaultRegistry.clear()
-    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.connection.execute(x) }
+    EmbeddedCassandra.truncateScript.forEachStatement { x => val _ = cassandra.session.execute(x) }
   }
 
   protected override def afterAll(): Unit = {
@@ -113,7 +113,7 @@ class AcctEventsControllerKafkaSpec
   protected override def beforeAll(): Unit = {
 
     CollectorRegistry.defaultRegistry.clear()
-    cassandra.startAndCreateDefaults()
+    cassandra.startAndCreateDefaults(EmbeddedCassandra.creationScripts)
 
     lazy val pool = Injector.get[PublicKeyPoolService]
     await(pool.init, 2 seconds)

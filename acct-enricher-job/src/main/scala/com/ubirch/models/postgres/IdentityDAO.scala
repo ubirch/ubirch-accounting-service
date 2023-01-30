@@ -2,7 +2,7 @@ package com.ubirch.models.postgres
 
 import com.ubirch.services.externals.Identity
 import com.ubirch.services.formats.JsonConverterService
-import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query }
+import io.getquill.{ H2Dialect, Insert, PostgresDialect, Query, Quoted }
 import io.getquill.context.sql.idiom.SqlIdiom
 import monix.eval.Task
 
@@ -59,7 +59,7 @@ class IdentityDAOImpl[Dialect <: SqlIdiom](val quillJdbcContext: QuillJdbcContex
   private def store_Q(identityRow: IdentityRow): Quoted[Insert[IdentityRow]] = {
     quote {
       query[IdentityRow]
-        .insert(lift(identityRow))
+        .insertValue(lift(identityRow))
         .onConflictUpdate(_.id)(
           (t, e) => t.description -> e.description,
           (t, e) => t.attributes -> e.attributes,
@@ -96,7 +96,7 @@ class DefaultH2IdentityDAO @Inject() (quillJdbcContextH2: QuillJdbcContext[H2Dia
   private def store_Q(identityRow: IdentityRow): Quoted[Insert[IdentityRow]] = {
     quote {
       query[IdentityRow]
-        .insert(lift(identityRow))
+        .insertValue(lift(identityRow))
     }
   }
 

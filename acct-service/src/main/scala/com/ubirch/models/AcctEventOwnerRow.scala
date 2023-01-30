@@ -1,9 +1,10 @@
 package com.ubirch.models
 
-import java.util.{ Date, UUID }
+import java.time.Instant
+import java.util.UUID
 
 case class AcctEventOwnerRow(
     ownerId: UUID,
     identityId: UUID,
-    createdAt: Date
+    createdAt: Instant
 )

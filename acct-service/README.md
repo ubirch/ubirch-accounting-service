@@ -10,6 +10,7 @@ This service listens for AcctEvent records and stores them on Cassandra. It expo
 6. [Ingestion through HTTP Interface](#http-interface-ingestion)
 7. [Counter Tool](../counter/README.md)
 8. [Swagger](#swagger)
+9. [Run service locally](#run-service-locally)
 
 ## Motivation
 
@@ -173,3 +174,17 @@ The <response> codes could be:
 # Swagger
 
 Visit https://accounting.dev.ubirch.com/docs on your browser to see the swagger docs.
+
+# Run service locally
+```
+# run components the service uses
+docker-compose up
+
+# run the evolutions scripts that are stored in 'src/main/resources/db/migrations'
+cd src/main/resources
+cassandra-migrate -H 127.0.0.1 -p 9042 migrate
+cd ../../..
+
+# run the service
+mvn exec:java -Dexec.mainClass=com.ubirch.Service
+```
