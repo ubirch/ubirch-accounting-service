@@ -21,7 +21,7 @@
 
     <groupId>com.ubirch</groupId>
     <artifactId>ubirch-accounting-parent</artifactId>
-    <version>0.7.14</version>
+    <version>0.7.20</version>
     <packaging>pom</packaging>
 
     <licenses>
