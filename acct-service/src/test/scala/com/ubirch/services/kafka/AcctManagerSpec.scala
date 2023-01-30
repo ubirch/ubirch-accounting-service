@@ -147,7 +147,7 @@ class AcctManagerSpec extends TestBase with EmbeddedCassandraBase with EmbeddedK
   }
 
   protected override def beforeAll(): Unit = {
-    cassandra.startAndCreateDefaults(EmbeddedCassandra.creationScripts)
+    cassandra.startAndExecuteScripts(EmbeddedCassandra.creationScripts)
   }
 
 }
