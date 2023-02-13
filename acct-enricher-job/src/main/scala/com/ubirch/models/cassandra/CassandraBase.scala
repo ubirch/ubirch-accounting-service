@@ -12,8 +12,4 @@ import io.getquill.context.cassandra.encoding.{ Decoders, Encoders }
 trait CassandraBase[T] {
 
   val db: CassandraContext[_] with Encoders with Decoders
-  import db._
-
-  implicit val pointingAt: SchemaMeta[T]
-
 }
