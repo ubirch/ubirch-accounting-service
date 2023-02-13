@@ -47,13 +47,7 @@ trait AcctEventRowsQueries extends CassandraBase[AcctEventRow] {
       subCategory: String
   ) =
     quote {
-      querySchema[AcctEventRow]("acct_events")
-        .filter(_.identityId == lift(identityId))
-        .filter(_.category == lift(category))
-        .filter(_.year == lift(year))
-        .filter(_.month == lift(month))
-        .filter(_.day == lift(day))
-        .filter(_.hour == lift(hour))
+      byTimesQ(identityId, category, year, month, day, hour)
         .filter(_.subCategory == lift(subCategory)).map(x => x)
     }
 
