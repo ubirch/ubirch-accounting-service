@@ -12,17 +12,15 @@ trait AcctEventOwnerRowsQueries extends CassandraBase[AcctEventOwnerRow] {
 
   import db._
 
-  //These represent query descriptions only
-
   implicit val pointingAt: db.SchemaMeta[AcctEventOwnerRow] =
     schemaMeta[AcctEventOwnerRow]("acct_event_owners")
 
   def insertQ(acctEventOwnerRow: AcctEventOwnerRow) = quote {
-    query[AcctEventOwnerRow].insertValue(lift(acctEventOwnerRow))
+    querySchema[AcctEventOwnerRow]("acct_event_owners").insertValue(lift(acctEventOwnerRow))
   }
 
   def byOwnerIdQ(ownerId: UUID) = quote {
-    query[AcctEventOwnerRow].filter(_.ownerId == lift(ownerId))
+    querySchema[AcctEventOwnerRow]("acct_event_owners").filter(_.ownerId == lift(ownerId))
   }
 
 }
