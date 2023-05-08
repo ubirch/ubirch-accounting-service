@@ -65,7 +65,7 @@ class DefaultAcctManager @Inject() (
     jsonConverterService: JsonConverterService,
     config: Config,
     lifecycle: Lifecycle
-)(implicit val ec: ExecutionContext, scheduler: Scheduler, formats: Formats) extends AcctManager(config, lifecycle) {
+)(implicit val ec: ExecutionContext, val scheduler: Scheduler, formats: Formats) extends AcctManager(config, lifecycle) {
 
   override def storeAcctEvents(consumerRecords: Vector[ConsumerRecord[String, Array[Byte]]])(implicit scheduler: Scheduler): Promise[Unit] = {
     val p = Promise[Unit]()

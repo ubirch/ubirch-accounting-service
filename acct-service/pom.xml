@@ -71,7 +71,7 @@
         <scala.logging.version>3.9.0</scala.logging.version>
 
         <ubirch-cassandra-utils.version>1.0</ubirch-cassandra-utils.version>
-        <ubirch-kafka-express.version>1.2.12-SNAPSHOT</ubirch-kafka-express.version>
+        <ubirch-kafka-express.version>1.3.0-SNAPSHOT</ubirch-kafka-express.version>
         <embedded-kafka>2.3.0</embedded-kafka>
 
         <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
